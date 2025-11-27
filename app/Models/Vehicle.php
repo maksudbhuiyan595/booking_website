@@ -10,6 +10,7 @@ class Vehicle extends Model
 
     protected $casts = [
         'slabs' => 'array',
+        'features' => 'array',
         'has_extra_seat' => 'boolean',
         'is_active' => 'boolean',
     ];
