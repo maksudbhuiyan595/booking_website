@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Settings\GeneralSettings;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -17,6 +18,7 @@ use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class AdminPanelProvider extends PanelProvider
@@ -32,8 +34,18 @@ class AdminPanelProvider extends PanelProvider
                 'primary' => Color::Indigo,
                 'gray' => Color::Slate,
             ])
+            ->viteTheme('resources/css/filament/admin/theme.css')
             ->font('Outfit')
-            ->brandName('Boston Logan')
+            ->brandName(fn (GeneralSettings $settings) => $settings->site_name ?? 'Boston Logan')
+            ->brandLogo(fn (GeneralSettings $settings) => $settings->site_logo
+                ? Storage::url($settings->site_logo)
+                : null
+            )
+            ->darkModeBrandLogo(fn (GeneralSettings $settings) => $settings->site_logo
+                ? Storage::url($settings->site_logo)
+                : null
+            )
+            ->brandLogoHeight('3rem')
             ->sidebarCollapsibleOnDesktop()
             ->spa()
 

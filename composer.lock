@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7aec0c1e30abca9f97c8c246d630a65e",
+    "content-hash": "67fed9d154d466f7424908e2935302a3",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -689,6 +689,54 @@
                 "source": "https://github.com/dflydev/dflydev-dot-access-data/tree/v3.0.3"
             },
             "time": "2024-07-08T12:26:09+00:00"
+        },
+        {
+            "name": "doctrine/deprecations",
+            "version": "1.1.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/doctrine/deprecations.git",
+                "reference": "459c2f5dd3d6a4633d3b5f46ee2b1c40f57d3f38"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/doctrine/deprecations/zipball/459c2f5dd3d6a4633d3b5f46ee2b1c40f57d3f38",
+                "reference": "459c2f5dd3d6a4633d3b5f46ee2b1c40f57d3f38",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.1 || ^8.0"
+            },
+            "conflict": {
+                "phpunit/phpunit": "<=7.5 || >=13"
+            },
+            "require-dev": {
+                "doctrine/coding-standard": "^9 || ^12 || ^13",
+                "phpstan/phpstan": "1.4.10 || 2.1.11",
+                "phpstan/phpstan-phpunit": "^1.0 || ^2",
+                "phpunit/phpunit": "^7.5 || ^8.5 || ^9.6 || ^10.5 || ^11.5 || ^12",
+                "psr/log": "^1 || ^2 || ^3"
+            },
+            "suggest": {
+                "psr/log": "Allows logging deprecations via PSR-3 logger implementation"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Doctrine\\Deprecations\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "A small layer on top of trigger_error(E_USER_DEPRECATED) or PSR-3 logging with options to disable all deprecations or selectively for packages.",
+            "homepage": "https://www.doctrine-project.org/",
+            "support": {
+                "issues": "https://github.com/doctrine/deprecations/issues",
+                "source": "https://github.com/doctrine/deprecations/tree/1.1.5"
+            },
+            "time": "2025-04-07T20:06:18+00:00"
         },
         {
             "name": "doctrine/inflector",
@@ -4107,6 +4155,117 @@
             "time": "2025-09-24T15:06:41+00:00"
         },
         {
+            "name": "phpdocumentor/reflection-common",
+            "version": "2.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phpDocumentor/ReflectionCommon.git",
+                "reference": "1d01c49d4ed62f25aa84a747ad35d5a16924662b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phpDocumentor/ReflectionCommon/zipball/1d01c49d4ed62f25aa84a747ad35d5a16924662b",
+                "reference": "1d01c49d4ed62f25aa84a747ad35d5a16924662b",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.2 || ^8.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-2.x": "2.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "phpDocumentor\\Reflection\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jaap van Otterdijk",
+                    "email": "opensource@ijaap.nl"
+                }
+            ],
+            "description": "Common reflection classes used by phpdocumentor to reflect the code structure",
+            "homepage": "http://www.phpdoc.org",
+            "keywords": [
+                "FQSEN",
+                "phpDocumentor",
+                "phpdoc",
+                "reflection",
+                "static analysis"
+            ],
+            "support": {
+                "issues": "https://github.com/phpDocumentor/ReflectionCommon/issues",
+                "source": "https://github.com/phpDocumentor/ReflectionCommon/tree/2.x"
+            },
+            "time": "2020-06-27T09:03:43+00:00"
+        },
+        {
+            "name": "phpdocumentor/type-resolver",
+            "version": "1.12.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phpDocumentor/TypeResolver.git",
+                "reference": "92a98ada2b93d9b201a613cb5a33584dde25f195"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phpDocumentor/TypeResolver/zipball/92a98ada2b93d9b201a613cb5a33584dde25f195",
+                "reference": "92a98ada2b93d9b201a613cb5a33584dde25f195",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/deprecations": "^1.0",
+                "php": "^7.3 || ^8.0",
+                "phpdocumentor/reflection-common": "^2.0",
+                "phpstan/phpdoc-parser": "^1.18|^2.0"
+            },
+            "require-dev": {
+                "ext-tokenizer": "*",
+                "phpbench/phpbench": "^1.2",
+                "phpstan/extension-installer": "^1.1",
+                "phpstan/phpstan": "^1.8",
+                "phpstan/phpstan-phpunit": "^1.1",
+                "phpunit/phpunit": "^9.5",
+                "rector/rector": "^0.13.9",
+                "vimeo/psalm": "^4.25"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-1.x": "1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "phpDocumentor\\Reflection\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Mike van Riel",
+                    "email": "me@mikevanriel.com"
+                }
+            ],
+            "description": "A PSR-5 based resolver of Class names, Types and Structural Element Names",
+            "support": {
+                "issues": "https://github.com/phpDocumentor/TypeResolver/issues",
+                "source": "https://github.com/phpDocumentor/TypeResolver/tree/1.12.0"
+            },
+            "time": "2025-11-21T15:09:14+00:00"
+        },
+        {
             "name": "phpoption/phpoption",
             "version": "1.9.4",
             "source": {
@@ -4180,6 +4339,53 @@
                 }
             ],
             "time": "2025-08-21T11:53:16+00:00"
+        },
+        {
+            "name": "phpstan/phpdoc-parser",
+            "version": "2.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phpstan/phpdoc-parser.git",
+                "reference": "1e0cd5370df5dd2e556a36b9c62f62e555870495"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/1e0cd5370df5dd2e556a36b9c62f62e555870495",
+                "reference": "1e0cd5370df5dd2e556a36b9c62f62e555870495",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.4 || ^8.0"
+            },
+            "require-dev": {
+                "doctrine/annotations": "^2.0",
+                "nikic/php-parser": "^5.3.0",
+                "php-parallel-lint/php-parallel-lint": "^1.2",
+                "phpstan/extension-installer": "^1.0",
+                "phpstan/phpstan": "^2.0",
+                "phpstan/phpstan-phpunit": "^2.0",
+                "phpstan/phpstan-strict-rules": "^2.0",
+                "phpunit/phpunit": "^9.6",
+                "symfony/process": "^5.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PHPStan\\PhpDocParser\\": [
+                        "src/"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHPDoc parser with support for nullable, intersection and generic types",
+            "support": {
+                "issues": "https://github.com/phpstan/phpdoc-parser/issues",
+                "source": "https://github.com/phpstan/phpdoc-parser/tree/2.3.0"
+            },
+            "time": "2025-08-30T15:50:23+00:00"
         },
         {
             "name": "pragmarx/google2fa",
@@ -5068,87 +5274,6 @@
             "time": "2025-02-25T09:09:36+00:00"
         },
         {
-            "name": "saloonphp/saloon",
-            "version": "v3.14.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/saloonphp/saloon.git",
-                "reference": "634be16ca5eb0b71ab01533f58dc88d174a2e28b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/saloonphp/saloon/zipball/634be16ca5eb0b71ab01533f58dc88d174a2e28b",
-                "reference": "634be16ca5eb0b71ab01533f58dc88d174a2e28b",
-                "shasum": ""
-            },
-            "require": {
-                "guzzlehttp/guzzle": "^7.6",
-                "guzzlehttp/promises": "^1.5 || ^2.0",
-                "guzzlehttp/psr7": "^2.0",
-                "php": "^8.2",
-                "psr/http-factory": "^1.0",
-                "psr/http-message": "^1.1 || ^2.0"
-            },
-            "conflict": {
-                "sammyjo20/saloon": "*"
-            },
-            "require-dev": {
-                "ext-simplexml": "*",
-                "friendsofphp/php-cs-fixer": "^3.5",
-                "illuminate/collections": "^10.0 || ^11.0 || ^12.0",
-                "league/flysystem": "^3.0",
-                "pestphp/pest": "^2.36.0 || ^3.8.2 || ^4.1.4",
-                "phpstan/phpstan": "^2.1.13",
-                "saloonphp/xml-wrangler": "^1.1",
-                "spatie/invade": "^2.1",
-                "symfony/dom-crawler": "^6.0 || ^7.0",
-                "symfony/var-dumper": "^6.3 || ^7.0"
-            },
-            "suggest": {
-                "illuminate/collections": "Required for the response collect() method.",
-                "saloonphp/xml-wrangler": "Required for the response xmlReader() method.",
-                "symfony/dom-crawler": "Required for the response dom() method.",
-                "symfony/var-dumper": "Required for default debugging drivers."
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Saloon\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Sam Carré",
-                    "email": "29132017+Sammyjo20@users.noreply.github.com",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Build beautiful API integrations and SDKs with Saloon",
-            "homepage": "https://github.com/saloonphp/saloon",
-            "keywords": [
-                "api",
-                "api-integrations",
-                "saloon",
-                "sammyjo20",
-                "sdk"
-            ],
-            "support": {
-                "issues": "https://github.com/saloonphp/saloon/issues",
-                "source": "https://github.com/saloonphp/saloon/tree/v3.14.2"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/sammyjo20",
-                    "type": "github"
-                }
-            ],
-            "time": "2025-11-20T21:42:32+00:00"
-        },
-        {
             "name": "scrivo/highlight.php",
             "version": "v9.18.1.10",
             "source": {
@@ -5225,84 +5350,6 @@
                 }
             ],
             "time": "2022-12-17T21:53:22+00:00"
-        },
-        {
-            "name": "skagarwal/google-places-api",
-            "version": "3.1.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/SachinAgarwal1337/google-places-api.git",
-                "reference": "ec18bfd6e124242b88d0ad0ba1910a064e443d3c"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/SachinAgarwal1337/google-places-api/zipball/ec18bfd6e124242b88d0ad0ba1910a064e443d3c",
-                "reference": "ec18bfd6e124242b88d0ad0ba1910a064e443d3c",
-                "shasum": ""
-            },
-            "require": {
-                "guzzlehttp/guzzle": "^7.5",
-                "illuminate/container": "^10.0|^11.0|^12.0",
-                "illuminate/support": "^10.0|^11.0|^12.0",
-                "php": "^8.1",
-                "saloonphp/saloon": "^3.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^9.5.8|^10.5",
-                "skagarwal/reflection": "~1.0"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "aliases": {
-                        "GooglePlaces": "SKAgarwal\\GoogleApi\\Facade"
-                    },
-                    "providers": [
-                        "SKAgarwal\\GoogleApi\\ServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "files": [
-                    "src/helpers.php"
-                ],
-                "psr-4": {
-                    "SKAgarwal\\GoogleApi\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Sachin Agarwal",
-                    "email": "sachinkumaragarwal05@gmail.com"
-                }
-            ],
-            "description": "Google Places Api",
-            "keywords": [
-                "Google Places Api",
-                "google",
-                "google api",
-                "google places",
-                "places"
-            ],
-            "support": {
-                "issues": "https://github.com/SachinAgarwal1337/google-places-api/issues",
-                "source": "https://github.com/SachinAgarwal1337/google-places-api/tree/3.1.2"
-            },
-            "funding": [
-                {
-                    "url": "https://www.buymeacoffee.com/sachin1337",
-                    "type": "buy_me_a_coffee"
-                },
-                {
-                    "url": "https://github.com/SachinAgarwal1337",
-                    "type": "github"
-                }
-            ],
-            "time": "2016-02-05T00:00:00+00:00"
         },
         {
             "name": "spatie/invade",
@@ -5425,6 +5472,91 @@
             "time": "2025-07-17T15:46:43+00:00"
         },
         {
+            "name": "spatie/laravel-settings",
+            "version": "3.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spatie/laravel-settings.git",
+                "reference": "bdb12449ce1f7afcf12fac59f6c7a63a39513fe7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spatie/laravel-settings/zipball/bdb12449ce1f7afcf12fac59f6c7a63a39513fe7",
+                "reference": "bdb12449ce1f7afcf12fac59f6c7a63a39513fe7",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "illuminate/database": "^11.0|^12.0",
+                "php": "^8.2",
+                "phpdocumentor/type-resolver": "^1.5",
+                "spatie/temporary-directory": "^1.3|^2.0"
+            },
+            "require-dev": {
+                "ext-redis": "*",
+                "mockery/mockery": "^1.4",
+                "orchestra/testbench": "^9.0|^10.0",
+                "pestphp/pest": "^2.0|^3.0",
+                "pestphp/pest-plugin-laravel": "^2.0|^3.0",
+                "phpstan/extension-installer": "^1.1",
+                "phpstan/phpstan-deprecation-rules": "^1.0",
+                "phpstan/phpstan-phpunit": "^1.0",
+                "spatie/laravel-data": "^2.0.0|^4.0.0",
+                "spatie/pest-plugin-snapshots": "^2.0",
+                "spatie/phpunit-snapshot-assertions": "^4.2|^5.0",
+                "spatie/ray": "^1.36"
+            },
+            "suggest": {
+                "spatie/data-transfer-object": "Allows for DTO casting to settings. (deprecated)"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Spatie\\LaravelSettings\\LaravelSettingsServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Spatie\\LaravelSettings\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ruben Van Assche",
+                    "email": "ruben@spatie.be",
+                    "homepage": "https://spatie.be",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Store your application settings",
+            "homepage": "https://github.com/spatie/laravel-settings",
+            "keywords": [
+                "laravel-settings",
+                "spatie"
+            ],
+            "support": {
+                "issues": "https://github.com/spatie/laravel-settings/issues",
+                "source": "https://github.com/spatie/laravel-settings/tree/3.5.0"
+            },
+            "funding": [
+                {
+                    "url": "https://spatie.be/open-source/support-us",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/spatie",
+                    "type": "github"
+                }
+            ],
+            "time": "2025-10-24T13:01:51+00:00"
+        },
+        {
             "name": "spatie/shiki-php",
             "version": "2.3.2",
             "source": {
@@ -5488,6 +5620,67 @@
                 }
             ],
             "time": "2025-02-21T14:16:57+00:00"
+        },
+        {
+            "name": "spatie/temporary-directory",
+            "version": "2.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spatie/temporary-directory.git",
+                "reference": "580eddfe9a0a41a902cac6eeb8f066b42e65a32b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spatie/temporary-directory/zipball/580eddfe9a0a41a902cac6eeb8f066b42e65a32b",
+                "reference": "580eddfe9a0a41a902cac6eeb8f066b42e65a32b",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Spatie\\TemporaryDirectory\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Alex Vanderbist",
+                    "email": "alex@spatie.be",
+                    "homepage": "https://spatie.be",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Easily create, use and destroy temporary directories",
+            "homepage": "https://github.com/spatie/temporary-directory",
+            "keywords": [
+                "php",
+                "spatie",
+                "temporary-directory"
+            ],
+            "support": {
+                "issues": "https://github.com/spatie/temporary-directory/issues",
+                "source": "https://github.com/spatie/temporary-directory/tree/2.3.0"
+            },
+            "funding": [
+                {
+                    "url": "https://spatie.be/open-source/support-us",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/spatie",
+                    "type": "github"
+                }
+            ],
+            "time": "2025-01-13T13:04:43+00:00"
         },
         {
             "name": "symfony/clock",
@@ -8051,89 +8244,6 @@
                 }
             ],
             "time": "2025-09-27T09:00:46+00:00"
-        },
-        {
-            "name": "tapp/filament-google-autocomplete-field",
-            "version": "v4.0.6",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/TappNetwork/filament-google-autocomplete-field.git",
-                "reference": "7e5758a8d0283add936cb2807fc2419fd07ac8c9"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/TappNetwork/filament-google-autocomplete-field/zipball/7e5758a8d0283add936cb2807fc2419fd07ac8c9",
-                "reference": "7e5758a8d0283add936cb2807fc2419fd07ac8c9",
-                "shasum": ""
-            },
-            "require": {
-                "filament/filament": "^4.0",
-                "illuminate/contracts": "^10.0||^11.0||^12.0",
-                "php": "^8.2",
-                "skagarwal/google-places-api": "^3.0",
-                "spatie/laravel-package-tools": "^1.16"
-            },
-            "require-dev": {
-                "larastan/larastan": "^2.9|^3.0",
-                "laravel/pint": "^1.14",
-                "nunomaduro/collision": "^8.1.1||^7.10.0",
-                "orchestra/testbench": "^8.22.0||^9.0.0||^10.0.0",
-                "pestphp/pest": "^2.34||^3.0",
-                "pestphp/pest-plugin-arch": "^2.7||^3.0",
-                "pestphp/pest-plugin-laravel": "^2.3||^3.0",
-                "pestphp/pest-plugin-livewire": "^2.1||^3.0",
-                "phpstan/extension-installer": "^1.3",
-                "phpstan/phpstan-deprecation-rules": "^1.1||^2.0",
-                "phpstan/phpstan-phpunit": "^1.3||^2.0",
-                "spatie/laravel-ray": "^1.35"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Tapp\\FilamentGoogleAutocomplete\\FilamentGoogleAutocompleteServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Tapp\\FilamentGoogleAutocomplete\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Andreia Bohner",
-                    "email": "andreia.bohner@tappnetwork.com",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Filament plugin that provides a Google Autocomplete field",
-            "homepage": "https://github.com/tapp/filament-google-autocomplete-field",
-            "keywords": [
-                "Google Autocomplete",
-                "Google Places Api",
-                "address",
-                "filament",
-                "filament-google-autocomplete-field",
-                "laravel",
-                "php",
-                "tapp network"
-            ],
-            "support": {
-                "issues": "https://github.com/TappNetwork/filament-google-autocomplete-field/issues",
-                "source": "https://github.com/TappNetwork/filament-google-autocomplete-field/tree/v4.0.6"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/TappNetwork",
-                    "type": "github"
-                }
-            ],
-            "time": "2025-11-16T01:36:15+00:00"
         },
         {
             "name": "tijsverkoyen/css-to-inline-styles",
