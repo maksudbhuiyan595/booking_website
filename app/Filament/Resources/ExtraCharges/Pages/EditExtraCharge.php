@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\Airports\Pages;
+namespace App\Filament\Resources\ExtraCharges\Pages;
 
-use App\Filament\Resources\Airports\AirportResource;
+use App\Filament\Resources\ExtraCharges\ExtraChargeResource;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 
-class EditAirport extends EditRecord
+class EditExtraCharge extends EditRecord
 {
-    protected static string $resource = AirportResource::class;
+    protected static string $resource = ExtraChargeResource::class;
 
     protected function getHeaderActions(): array
     {
