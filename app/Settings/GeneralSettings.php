@@ -24,6 +24,8 @@ class GeneralSettings extends Settings
     public float $stopover_fee;
     public float $luggage_fee;
 
+    public array $luggage_rules;
+
     public static function group(): string
     {
         return 'general';

@@ -5,8 +5,10 @@ namespace App\Filament\Pages;
 use App\Settings\GeneralSettings;
 use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
@@ -44,6 +46,7 @@ class ManageSettings extends Page
             'booster_seat_fee' => $settings->booster_seat_fee,
             'stopover_fee' => $settings->stopover_fee,
             'luggage_fee' => $settings->luggage_fee,
+            'luggage_rules' => $settings->luggage_rules,
         ]);
     }
 
@@ -134,6 +137,53 @@ class ManageSettings extends Page
                                         ->prefix('$'),
                                 ]),
                             ]),
+                        // TAB 4: LUGGAGE RULES
+                        Tab::make('Luggage Rules')
+                            ->icon('heroicon-m-briefcase')
+                            ->schema([
+                                Repeater::make('luggage_rules')
+                                    ->label('Passenger & Luggage Settings')
+                                    ->schema([
+                                        Grid::make(2)->schema([
+                                            TextInput::make('passenger_count')
+                                                ->label('Max Passengers')
+                                                ->numeric()
+                                                ->required()
+                                                ->placeholder('e.g. 4'),
+
+                                            TextInput::make('allowed_children') // NEW FIELD
+                                                ->label('Allowed Children')
+                                                ->numeric()
+                                                ->default(0)
+                                                ->placeholder('e.g. 2'),
+                                        ]),
+
+                                        // Row 2: Luggage Details
+                                        Grid::make(2)->schema([
+                                            TextInput::make('max_luggage')
+                                                ->label('Allowed Luggage')
+                                                ->numeric()
+                                                ->required()
+                                                ->placeholder('e.g. 3'),
+
+                                            TextInput::make('free_luggage')
+                                                ->label('Free Luggage')
+                                                ->numeric()
+                                                ->required()
+                                                ->placeholder('e.g. 1'),
+                                        ]),
+                                        Toggle::make('is_active')
+                                            ->label('Active')
+                                            ->default(true)
+                                            ->inline(false)
+                                            ->onColor('success'),
+                                    ])
+                                    ->columns(2)
+                                    ->addActionLabel('Add New Rule')
+                                    ->defaultItems(1)
+                                    ->grid(1)
+                                    ->itemLabel(fn(array $state): ?string => 'Rule for ' . ($state['passenger_count'] ?? '?') . ' Passengers'),
+                            ]),
                     ])->columnSpanFull(),
             ])
             ->statePath('data');
@@ -147,8 +197,8 @@ class ManageSettings extends Page
         $data = $this->form->getState();
 
         if ($settings->site_logo && $settings->site_logo !== $data['site_logo']) {
-        Storage::disk('public')->delete($settings->site_logo);
-    }
+            Storage::disk('public')->delete($settings->site_logo);
+        }
 
         $settings->site_name = $data['site_name'];
         $settings->site_logo = $data['site_logo'];
@@ -164,6 +214,7 @@ class ManageSettings extends Page
         $settings->booster_seat_fee = $data['booster_seat_fee'];
         $settings->stopover_fee = $data['stopover_fee'];
         $settings->luggage_fee = $data['luggage_fee'];
+        $settings->luggage_rules = $data['luggage_rules'];
 
         $settings->save();
 
