@@ -19,7 +19,6 @@ class ExtraChargeResource extends Resource
     protected static ?string $model = ExtraCharge::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::CurrencyDollar;
-    // protected static ?string $navigationIcon = 'heroicon-o-currency-dollar';
     protected static \UnitEnum|string|null $navigationGroup = 'Fleet Management';
     protected static ?int $navigationSort = 3;
 
