@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -135,7 +136,7 @@
   </style>
 </head>
 <body>
-
+   @include('frontend.pages.nav')
   <div class="container page-header">
     <h2 class="fw-bold m-0">Select Vehicle & Confirm Ride Details</h2>
     <div class="step-text">Your Current Selection ( Step 2 of 4 )</div>

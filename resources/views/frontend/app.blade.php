@@ -1,249 +1,1604 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium Luxury UI - Template</title>
-
+    <title>Boston Logan Airport Taxi</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,400&display=swap"
+        rel="stylesheet">
 
     <style>
-        /* --- 1. VARIABLES & RESET --- */
         :root {
-            --bg-dark: #0f172a;       /* Deep Navy */
-            --bg-card: #1e293b;       /* Lighter Navy for cards */
-            --bg-footer: #0b1120;     /* Darker Navy */
-            --accent-gold: #d4af37;   /* Gold */
-            --text-light: #f8fafc;
-            --text-muted: #94a3b8;
+            /* PREMIUM PALETTE UPDATE */
+            --primary-bg: #05110e; /* Deep Midnight/Black Green */
+            --form-bg: #112621; /* Rich Dark Slate */
+            --form-border: #2a453d;
+            --btn-green: #008f58; /* Vibrant Emerald */
+            --btn-green-hover: #007a4d;
+            --btn-shadow: #003d26;
+            --input-bg: #ffffff; /* Crisp White for contrast */
+            --text-white: #ffffff;
+            --text-muted: #b0b0b0;
+            --header-yellow: #ffc800; /* Richer Gold */
+            --header-yellow-hover: #e0b000;
+            --footer-bg: #000000;
+            --light-section-bg: #f4f7f6;
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-light);
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-white);
+            overflow-x: hidden;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
         }
 
-        h1, h2, h3, h4, h5, .navbar-brand {
-            font-family: 'Playfair Display', serif;
+        /* --- HEADER STYLES --- */
+        .navbar-custom {
+            background-color: rgba(0, 0, 0, 0.95); /* Slight transparency */
+            padding: 15px 0;
+            border-bottom: 1px solid #333;
+            backdrop-filter: blur(5px);
         }
 
-        /* --- 2. NAVBAR --- */
-        .navbar {
-            padding: 10px 0;
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.4s ease;
+        .nav-link-custom {
+            color: var(--header-yellow) !important;
+            font-weight: 500;
+            font-size: 1.05rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 0 10px;
+            transition: all 0.3s ease;
         }
 
-        .navbar.scrolled {
-            padding: 5px 0;
-            background: rgba(15, 23, 42, 0.98);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        .nav-link-custom:hover {
+            color: #fff !important;
+            text-decoration: none;
+            transform: translateY(-1px);
         }
 
-        /* LOGO FIX */
-        .navbar-brand {
-            padding: 0 !important;
+        .btn-phone {
+            background: linear-gradient(45deg, var(--header-yellow), #ffd54f);
+            color: #000;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border-radius: 4px;
+            padding: 8px 25px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(255, 200, 0, 0.3);
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-phone:hover {
+            background: var(--header-yellow-hover);
+            color: #000;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 200, 0, 0.4);
+        }
+
+        /* --- HERO SECTION --- */
+        .hero-section {
+            position: relative;
+            flex: 1;
+            padding-top: 60px;
+            padding-bottom: 60px;
+            /* Subtle gradient overlay to add depth */
+            background: radial-gradient(circle at 70% 50%, #0e221b 0%, var(--primary-bg) 70%);
+        }
+
+        .main-title {
+            font-size: 3.5rem;
+            font-weight: 900;
+            line-height: 1.1;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            letter-spacing: -1px;
+        }
+
+        .description-text {
+            font-size: 1rem;
+            color: #e0e0e0;
+            margin-top: 25px;
+            margin-bottom: 30px;
+            line-height: 1.7;
+            max-width: 90%;
+            font-weight: 300;
+        }
+
+        /* --- RESPONSIVE FORM CARD STYLING --- */
+        .reservation-card {
+            background-color: var(--form-bg);
+            border: 1px solid var(--form-border);
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+            transition: all 0.3s ease-in-out;
+            z-index: 1000;
+        }
+
+        /* DESKTOP ONLY */
+        @media (min-width: 992px) {
+            .hero-section {
+                min-height: 120vh;
+            }
+            .reservation-card {
+                position: absolute;
+                top: 20px;
+                left: 15px;
+                right: 15px;
+            }
+            .form-column {
+                position: relative;
+            }
+        }
+
+        /* MOBILE/TABLET ONLY */
+        @media (max-width: 991px) {
+            .hero-section {
+                padding-top: 30px;
+                min-height: auto;
+            }
+            .main-title {
+                font-size: 2.2rem;
+            }
+            .reservation-card {
+                position: relative;
+                top: 0;
+                left: 0;
+                margin-top: 30px;
+                margin-bottom: 30px;
+                width: 100%;
+            }
+            .description-text {
+                max-width: 100%;
+            }
+        }
+
+        /* --- FORM ELEMENTS --- */
+        .form-header h3 {
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 1.5rem;
+            text-align: center;
+            margin-bottom: 8px;
+            color: white;
+            letter-spacing: 1px;
+        }
+
+        .form-header p {
+            font-size: 0.85rem;
+            text-align: center;
+            color: #ccc;
+            margin-bottom: 25px;
+            font-weight: 300;
+        }
+
+        .form-control,
+        .form-select {
+            background-color: var(--input-bg) !important;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            color: #333 !important;
+            font-size: 0.95rem;
+            padding: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            font-weight: 500;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            background-color: #fff !important;
+            border-color: var(--btn-green);
+            box-shadow: 0 0 0 3px rgba(0, 143, 88, 0.2);
+        }
+
+        .trip-type-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 15px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .form-check-label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #e0e0e0;
+            margin-left: 6px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .form-check-input:checked + .form-check-label {
+            color: var(--header-yellow);
+        }
+
+        .form-check-input {
+            cursor: pointer;
+            background-color: #fff;
+            border-color: #aaa;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--header-yellow);
+            border-color: var(--header-yellow);
+        }
+
+        .input-group-text {
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-right: none;
+            border-radius: 4px 0 0 4px;
+            color: #555;
+        }
+
+        .input-group .form-select, .input-group .form-control {
+            border-radius: 0 4px 4px 0;
+        }
+
+        .mini-label {
+            font-size: 0.75rem;
+            color: #aaa;
+            margin-bottom: 4px;
+            display: block;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        /* --- EXTRAS SECTION --- */
+        .extras-toggle {
+            cursor: pointer;
+            font-weight: 700;
+            color: #111; /* Changed for contrast inside light block if needed, but here it's on dark form */
+            color: var(--header-yellow); /* Make it pop */
+            font-size: 1rem;
             display: flex;
             align-items: center;
-            margin-right: 2rem;
-        }
-        .navbar-brand img {
-            height: 50px; /* Adjust height here */
-            width: auto;
-            object-fit: contain;
-            display: block;
-        }
-
-        /* Links */
-        .nav-link {
-            color: var(--text-light) !important;
-            font-size: 0.95rem;
-            font-weight: 500;
-            margin-left: 1.5rem;
-            position: relative;
+            margin-bottom: 15px;
+            user-select: none;
             transition: color 0.3s;
         }
-        .nav-link:hover { color: var(--accent-gold) !important; }
-        .nav-link::after {
-            content: ''; position: absolute; width: 0; height: 2px; bottom: 0; left: 0;
-            background-color: var(--accent-gold); transition: width 0.3s ease;
-        }
-        .nav-link:hover::after { width: 100%; }
 
-        .navbar-toggler { border: none; color: var(--text-light); }
-        .navbar-toggler:focus { box-shadow: none; }
-
-        @media (max-width: 991px) {
-            .navbar-collapse {
-                background-color: var(--bg-dark); padding: 20px; margin-top: 15px;
-                border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);
-            }
-            .nav-link { margin-left: 0; margin-bottom: 10px; }
+        .extras-toggle:hover {
+            color: #fff;
         }
 
-        /* --- 3. SECTIONS UTILITIES --- */
-        /* Standard Section Padding */
-        .content-section {
-            padding: 100px 0;
+        .extras-toggle i {
+            margin-right: 8px;
+            font-size: 1.1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .extras-toggle.active i {
+            transform: rotate(45deg);
+        }
+
+        #extrasSection {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: max-height 0.5s ease, opacity 0.3s ease;
+        }
+
+        #extrasSection.open {
+            max-height: 800px;
+            opacity: 1;
+            margin-bottom: 15px;
+            background: rgba(0,0,0,0.2);
+            padding: 15px;
+            border-radius: 6px;
+        }
+
+        .extra-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 18px;
             border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 10px;
         }
 
-        /* Hero Specifics */
-        .hero-section {
-            /* Placeholder background - replace URL with your image */
-            background: linear-gradient(rgba(15, 23, 42, 0.7), var(--bg-dark)),
-                        url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            min-height: 80vh; /* Takes 80% of screen height */
+        .extra-row:last-child {
+            border-bottom: none;
+        }
+
+        .extra-info {
+            line-height: 1.3;
+        }
+
+        .extra-label {
+            font-size: 0.95rem;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .extra-price-tag {
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--header-yellow);
+        }
+
+        .extra-unit {
+            font-size: 0.8rem;
+            font-weight: 400;
+            color: #ccc;
+        }
+
+        .extra-desc {
+            font-size: 0.8rem;
+            font-style: italic;
+            color: #aaa;
+            margin-top: 2px;
+        }
+
+        .extra-select-box {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 5px;
+            width: 60px;
+            font-size: 0.9rem;
+            height: 35px;
+            cursor: pointer;
+            margin-right: 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .total-price-display {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #fff;
+            min-width: 40px;
+            text-align: right;
+            padding-top: 5px;
+        }
+
+        .btn-get-fare {
+            background-color: var(--btn-green);
+            color: white;
+            font-weight: 600;
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+            border-radius: 6px;
+            border: none;
+            box-shadow: 0 4px 0 var(--btn-shadow);
+            transition: all 0.2s;
+            margin-top: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-get-fare:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 var(--btn-shadow);
+        }
+
+        .btn-get-fare:hover {
+            background-color: var(--btn-green-hover);
+            color: white;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #ccc;
+            margin-top: 18px;
+            line-height: 1.5;
+            font-weight: 300;
+        }
+
+        /* --- POPUP STYLES --- */
+        .custom-popup {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            background-color: white;
+            color: #333;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            min-width: 320px;
+            border-left: 6px solid;
+        }
+
+        .custom-popup.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .custom-popup.error { border-color: #dc3545; }
+        .custom-popup.error i { color: #dc3545; }
+        .custom-popup.success { border-color: #198754; }
+        .custom-popup.success i { color: #198754; }
+
+        .popup-icon { font-size: 1.5rem; }
+        .popup-message { font-size: 1rem; font-weight: 600; }
+
+        /* --- NEW SECTIONS STYLES --- */
+        .content-section {
+            background-color: #ffffff;
+            color: #333;
+            padding: 80px 0;
+        }
+
+        .bg-light {
+            background-color: var(--light-section-bg) !important;
+        }
+
+        .section-title {
+            font-weight: 800;
+            margin-bottom: 25px;
+            color: #111;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Services Grid */
+        .service-img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        /* Why Choose Us List */
+        .why-choose-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .why-choose-list li {
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 14px;
+            font-size: 1rem;
+            color: #444;
+        }
+
+        .why-choose-list li::before {
+            content: '\f00c'; /* FontAwesome check */
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            color: var(--btn-green);
+            position: absolute;
+            left: 0;
+        }
+
+        /* Testimonials */
+        .testimonial-box {
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            height: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border-top: 4px solid var(--header-yellow);
+        }
+
+        .testimonial-text {
+            font-style: italic;
+            font-size: 0.95rem;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .customer-name {
+            font-weight: 700;
+            margin-top: 20px;
+            color: #111;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* City Tags - Premium Button Look */
+        .city-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 40px;
+        }
+
+        .city-tag {
+            background-color: #222;
+            color: #fff;
+            padding: 12px 15px;
+            border-radius: 4px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 4px solid var(--header-yellow);
+        }
+
+        .city-tag:hover {
+            background-color: #000;
+            color: var(--header-yellow);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .city-tag i {
+            margin-right: 10px;
+            color: var(--header-yellow);
+        }
+
+        /* Ratings Row */
+        .ratings-row img {
+            max-height: 50px;
+            margin: 0 15px;
+            filter: grayscale(100%);
+            opacity: 0.7;
+            transition: all 0.3s;
+        }
+
+        .ratings-row img:hover {
+            filter: grayscale(0%);
+            opacity: 1;
+        }
+
+        /* --- CUSTOM FAQ ACCORDION STYLE (PREMIUM) --- */
+        .accordion-item {
+            border: 1px solid #e0e0e0;
+            margin-bottom: 10px;
+            border-radius: 4px !important;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        .accordion-button {
+            background-color: #fff;
+            color: #222;
+            font-weight: 600;
+            padding-left: 3.5rem;
+            position: relative;
+            box-shadow: none !important;
+            font-size: 1.05rem;
+        }
+
+        .accordion-button:not(.collapsed) {
+            background-color: #f9fdfb; /* Very light green tint */
+            color: var(--btn-green);
+        }
+
+        .accordion-button::after { display: none; }
+
+        .accordion-button::before {
+            content: '+';
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5rem;
+            font-weight: 300;
+            color: var(--header-yellow);
+            border: 1px solid #ddd;
+            width: 30px;
+            height: 30px;
             display: flex;
             align-items: center;
             justify-content: center;
-            text-align: center;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .accordion-button:not(.collapsed)::before {
+            content: '-';
+            background-color: var(--btn-green);
+            color: #fff;
+            border-color: var(--btn-green);
+        }
+
+        .accordion-body {
+            padding-left: 3.5rem;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        /* --- CUSTOM BLOG CARD STYLE --- */
+        .blog-card {
+            border: none;
+            border-radius: 8px;
+            background: #fff;
+            overflow: hidden;
+            height: 100%;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+        }
+
+        .blog-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        .blog-img-wrapper {
+            position: relative;
+            height: 220px;
+            width: 100%;
+        }
+
+        .blog-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .blog-badge-overlay {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: var(--btn-green);
+            color: white;
+            padding: 5px 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 4px;
+            text-transform: uppercase;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .blog-avatar-overlay {
+            position: absolute;
+            bottom: -20px;
+            left: 25px;
+            width: 50px;
+            height: 50px;
+            background-color: #ddd;
+            border: 4px solid #fff;
+            border-radius: 50%;
+            z-index: 2;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .blog-content {
+            padding: 30px 25px 25px;
+        }
+
+        .blog-content h5 {
+            font-size: 1.15rem;
+            line-height: 1.4;
+            margin-bottom: 10px;
+        }
+
+        .read-more-link {
+            color: var(--btn-green);
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            text-decoration: none;
+            letter-spacing: 0.5px;
+        }
+
+        .read-more-link:hover {
+            color: #005a38;
+            text-decoration: underline;
+        }
+
+        /* --- FOOTER STYLES --- */
+        .footer-section {
+            background-color: var(--footer-bg);
+            color: #aaa;
             padding-top: 80px;
+            padding-bottom: 30px;
+            border-top: 1px solid #222;
         }
 
-        /* Placeholder Border (To help you see the section) */
-        .dummy-box {
-            border: 2px dashed rgba(255, 255, 255, 0.1);
-            padding: 40px;
-            border-radius: 10px;
-            background: rgba(255,255,255,0.02);
+        .footer-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-left: 3px solid var(--header-yellow);
+            padding-left: 10px;
         }
 
-        /* --- 4. FOOTER --- */
-        footer {
-            background-color: var(--bg-footer);
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            margin-top: auto;
+        .footer-links a {
+            color: #aaa;
+            transition: all 0.2s;
         }
-        .footer-link { text-decoration: none; color: var(--text-muted); display: block; margin-bottom: 10px; transition: 0.3s; }
-        .footer-link:hover { color: var(--accent-gold); padding-left: 5px; }
-        .social-icon {
-            width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center;
-            border: 1px solid rgba(255,255,255,0.1); border-radius: 50%; color: var(--text-light);
-            text-decoration: none; margin-right: 10px; transition: 0.3s;
+
+        .contact-icon {
+            color: var(--header-yellow);
         }
-        .social-icon:hover { border-color: var(--accent-gold); color: var(--accent-gold); transform: translateY(-3px); }
+
+        .social-btn {
+            border-color: #333;
+            color: #aaa;
+        }
+
+        .social-btn:hover {
+            background-color: var(--header-yellow);
+            border-color: var(--header-yellow);
+            color: #000;
+        }
+
+        .copyright-text {
+            color: #555;
+            font-size: 0.85rem;
+        }
+
     </style>
 </head>
+
 <body>
 
-    <nav class="navbar navbar-expand-lg fixed-top">
+    <div id="validationPopup" class="custom-popup">
+        <div class="popup-icon"><i class="fas fa-exclamation-circle"></i></div>
+        <div class="popup-message" id="popupText">Message goes here</div>
+    </div>
+
+    <nav class="navbar navbar-expand-lg navbar-custom">
         <div class="container">
             <a class="navbar-brand" href="#">
-                <img src="images/logo.png" alt="Logo">
+                <img src="{{ asset('images/logo.png') }}" alt="Boston Logan Airport Taxi" height="50">
             </a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#premiumNav">
-                <i class="fas fa-bars" style="font-size: 1.5rem;"></i>
+            <button class="navbar-toggler bg-warning" type="button" data-bs-toggle="collapse"
+                data-bs-target="#mainNav">
+                <span class="navbar-toggler-icon"></span>
             </button>
 
-            <div class="collapse navbar-collapse" id="premiumNav">
-                <ul class="navbar-nav ms-auto align-items-lg-center">
-                    <li class="nav-item"><a class="nav-link" href="#">Collections</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Atelier</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Journal</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
+            <div class="collapse navbar-collapse justify-content-center" id="mainNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link nav-link-custom" href="#">Home</a></li>
+                    <li class="nav-item"><a class="nav-link nav-link-custom" href="#">About</a></li>
+                    <li class="nav-item"><a class="nav-link nav-link-custom" href="#">Child Seat</a></li>
+                    <li class="nav-item"><a class="nav-link nav-link-custom" href="#">Minivan/SUV</a></li>
+                    <li class="nav-item"><a class="nav-link nav-link-custom" href="#">Area We Serve</a></li>
+                    <li class="nav-item"><a class="nav-link nav-link-custom" href="#">Contact</a></li>
                 </ul>
+            </div>
+
+            <div class="d-none d-lg-block">
+                <a href="tel:+18573319544" class="btn-phone">
+                    <i class="fas fa-phone-alt me-2"></i> +1857-331-9544
+                </a>
             </div>
         </div>
     </nav>
 
-
-    <section class="content-section">
+    <section class="hero-section">
         <div class="container">
             <div class="row">
-                @include('frontend.pages.booking')
+                <h1 class="main-title d-flex justify-content-center">Boston Logan Airport Taxi</h1>
 
-        </div>
-    </section>
-    <section class="content-section">
-        <div class="container">
-            <div class="row">
-                <div class="col-12 text-center mb-5">
-                    <h2>Section 2 Title</h2>
-                </div>
-                <div class="col-md-4"><div class="dummy-box">Content A</div></div>
-                <div class="col-md-4"><div class="dummy-box">Content B</div></div>
-                <div class="col-md-4"><div class="dummy-box">Content C</div></div>
-            </div>
-        </div>
-    </section>
+                <div class="col-lg-5 form-column">
+                    <div class="reservation-card" id="floatingCard">
 
-    <section class="content-section" style="background-color: #0b1120;"> <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-lg-10 dummy-box text-center">
-                    <h2>Section 3 Title</h2>
-                    <p>Place your full width content, map, or contact form here.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+                        <div class="form-header">
+                            <h3>Booking Reservation</h3>
+                            <p>Instant Reservation EMAIL Confirmation</p>
+                        </div>
 
-    <footer class="pt-5 pb-4">
-        <div class="container">
-            <div class="row gy-5">
-                <div class="col-lg-4 col-md-6">
-                    <h4 class="text-light mb-4">LUXE<span style="color: var(--accent-gold);">.</span></h4>
-                    <p class="text-muted">Your footer description goes here.</p>
-                    <div class="mt-4">
-                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                        <form id="reservationForm" action="step2.html" method="GET" novalidate>
+                            <input type="hidden" name="extras_total" id="extrasTotalInput" value="0">
+
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <div class="input-group">
+                                        <input type="date" id="date" name="date" class="form-control mb-0"
+                                            required>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="input-group">
+                                        <select id="time" name="time" class="form-select mb-0" required>
+                                            <option value="">Select Time</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="trip-type-container mt-3">
+                                <div class="form-check form-check-inline m-0">
+                                    <input class="form-check-input" type="radio" name="tripType" id="type_from"
+                                        value="fromAirport" checked>
+                                    <label class="form-check-label" for="type_from"><i class="fas fa-plane-arrival"></i>
+                                        From Airport</label>
+                                </div>
+                                <div class="form-check form-check-inline m-0">
+                                    <input class="form-check-input" type="radio" name="tripType" id="type_to"
+                                        value="toAirport">
+                                    <label class="form-check-label" for="type_to"><i
+                                            class="fas fa-plane-departure"></i> To Airport</label>
+                                </div>
+                                <div class="form-check form-check-inline m-0">
+                                    <input class="form-check-input" type="radio" name="tripType" id="type_ptp"
+                                        value="doorToDoor">
+                                    <label class="form-check-label" for="type_ptp"><i
+                                            class="fas fa-map-marker-alt"></i> Door to Door</label>
+                                </div>
+                            </div>
+
+                            <div class="mb-2" id="fromLocation"></div>
+                            <div class="mb-2" id="toLocation"></div>
+
+                            <div class="row g-2 mt-2">
+                                <div class="col-6">
+                                    <span class="mini-label">Adults - 8 Years & above</span>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-users"></i></span>
+                                        <select name="adults" class="form-select m-0" required>
+                                            <option value="">Select Passenger</option>
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5">5</option>
+                                            <option value="6">6</option>
+                                            <option value="7">7</option>
+                                            <option value="8">8</option>
+                                            <option value="9">9</option>
+                                            <option value="10">10</option>
+                                            <option value="11">11</option>
+                                            <option value="12">12</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <span class="mini-label">Children - Upto 7 Years</span>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-child"></i></span>
+                                        <select name="children" class="form-select m-0">
+                                            <option value="">-Select Children</option>
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row g-2 mt-2">
+                                <div class="col-6">
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-suitcase"></i></span>
+                                        <select name="luggage" class="form-select m-0" required>
+                                            <option value="">-Select Luggage</option>
+                                            <option value="0">0</option>
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5">5</option>
+                                            <option value="6">6</option>
+                                            <option value="7">7</option>
+                                            <option value="8">8</option>
+                                            <option value="9">9</option>
+                                            <option value="10">10</option>
+                                            <option value="11">11</option>
+                                            <option value="12">12</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-chair"></i></span>
+                                        <select name="seats_dummy" id="childSeatsTrigger" class="form-select m-0">
+                                            <option value="0">Select Child Seats</option>
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-4">
+                                <div class="extras-toggle" id="toggleExtrasBtn">
+                                    <i class="fas fa-plus-circle"></i> Add Child Seat and Stop Over
+                                </div>
+
+                                <div id="extrasSection">
+                                    <div class="extra-row">
+                                        <div class="extra-info">
+                                            <div class="extra-label">Stopover : <span
+                                                    class="extra-price-tag">$25</span><span
+                                                    class="extra-unit">/stop</span></div>
+                                            <div class="extra-desc">(only stops enroute to destination)</div>
+                                        </div>
+                                        <div class="d-flex align-items-start">
+                                            <select id="stopover" name="stopover" data-price="25"
+                                                class="extra-select-box">
+                                                <option value="0">0</option>
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                            </select>
+                                            <div id="stopoverDisplay" class="total-price-display">$0</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="extra-row">
+                                        <div class="extra-info">
+                                            <div class="extra-label">Infant Seat : <span
+                                                    class="extra-price-tag">$15</span><span
+                                                    class="extra-unit">/Seat</span></div>
+                                            <div class="extra-desc">(Rear Facing Infant Seat 0-24 Months)</div>
+                                        </div>
+                                        <div class="d-flex align-items-start">
+                                            <select id="infantSeat" name="infant_seat" data-price="15"
+                                                class="extra-select-box">
+                                                <option value="0">0</option>
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                            </select>
+                                            <div id="infantSeatDisplay" class="total-price-display">$0</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="extra-row">
+                                        <div class="extra-info">
+                                            <div class="extra-label">Front Facing Seat : <span
+                                                    class="extra-price-tag">$10</span><span
+                                                    class="extra-unit">/Seat</span></div>
+                                            <div class="extra-desc">(Front Facing Toddler Seat 2 Yrs - 5 Yrs)</div>
+                                        </div>
+                                        <div class="d-flex align-items-start">
+                                            <select id="frontSeat" name="front_seat" data-price="10"
+                                                class="extra-select-box">
+                                                <option value="0">0</option>
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                            </select>
+                                            <div id="frontSeatDisplay" class="total-price-display">$0</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="extra-row">
+                                        <div class="extra-info">
+                                            <div class="extra-label">Booster Seat : <span
+                                                    class="extra-price-tag">$5</span><span
+                                                    class="extra-unit">/Seat</span></div>
+                                            <div class="extra-desc">(Booster Seat 5 Yrs - 7 Yrs)</div>
+                                        </div>
+                                        <div class="d-flex align-items-start">
+                                            <select id="boosterSeat" name="booster_seat" data-price="5"
+                                                class="extra-select-box">
+                                                <option value="0">0</option>
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                            </select>
+                                            <div id="boosterSeatDisplay" class="total-price-display">$0</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn-get-fare">
+                                Get Fare » Continue Reservation
+                            </button>
+
+                            <p class="footer-note">
+                                Pay only $1 & confirm your reservation. Balance is payable after service by cash or
+                                card. Avail 10% discount on cash payment.
+                            </p>
+
+                        </form>
                     </div>
                 </div>
 
-                <div class="col-lg-2 col-md-6 col-6">
-                    <h5 class="text-light mb-4">Column 1</h5>
-                    <a href="#" class="footer-link">Link 1</a>
-                    <a href="#" class="footer-link">Link 2</a>
-                    <a href="#" class="footer-link">Link 3</a>
+                <div class="col-lg-7">
+                    <p class="description-text">
+                        One stop solutions for Boston Airport Transfer, Logan Ground Transportation, City Rides,
+                        Long Distance Car Services from/to Boston, Door to Door transfers and Chauffeured Cars for
+                        special occasions.
+                    </p>
+
+                    <img src="{{ asset('images/car.jpg') }}" alt="Lexus" class="img-fluid mt-3 d-none d-lg-block"
+                        style="max-width: 90%; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));">
                 </div>
 
-                <div class="col-lg-2 col-md-6 col-6">
-                    <h5 class="text-light mb-4">Column 2</h5>
-                    <a href="#" class="footer-link">Link 1</a>
-                    <a href="#" class="footer-link">Link 2</a>
-                    <a href="#" class="footer-link">Link 3</a>
+
+                <div class="col-12 text-center mt-3 d-lg-none">
+                    <img src="https://purepng.com/public/uploads/large/purepng.com-lexus-lx-570-white-carcarvehicletransportlexus-961524660429f4x8u.png"
+                        alt="Lexus" class="img-fluid" style="max-width: 90%;">
                 </div>
 
-                <div class="col-lg-4 col-md-6">
-                    <h5 class="text-light mb-4">Column 3</h5>
-                    <a href="#" class="footer-link">Link 1</a>
-                    <a href="#" class="footer-link">Link 2</a>
+            </div>
+        </div>
+    </section>
+     <section class="content-section border-top border-bottom">
+        <div class="container">
+            <div class="d-flex flex-wrap justify-content-center align-items-center gap-4 ratings-row">
+                <div class="text-center">
+                    <img src="{{ asset('images/Google-Rating-1.webp') }}" alt="Google Rating">
+                </div>
+                <div class="text-center">
+                    <img src="{{ asset('images/Tripadvisor.webp') }}" alt="Tripadvisor">
+                </div>
+                <div class="text-center">
+                    <img src="{{ asset('images/Trustpilot.webp') }}" alt="Trustpilot">
+                </div>
+                <div class="text-center">
+                    <img src="{{ asset('images/Flux_Dev_highresolution_stock_photo_of_Create_an_image_with_th_1.webp') }}" alt="Yelp">
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="content-section bg-light">
+        <div class="container">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <p>Planning a trip to or from Logan International Airport? You deserve a clean, safe, and reliable
+                        ride, and that's precisely what we provide. <strong>Boston Logan Airport Taxi</strong> is here
+                        with 24/7 professional airport transportation with licensed drivers, sanitized vehicles, and
+                        flat-rate pricing. Whether you are on a business trip, on vacation with your family, or need a
+                        hassle-free airport pickup, we've created our service to suit your comfort and peace of mind. We
+                        service all towns in Boston and guarantee on-time pickup every time. Just let us manage your
+                        ride so you can focus on your flight.</p>
                 </div>
             </div>
 
-            <div class="row mt-5 pt-4 border-top border-secondary border-opacity-25">
-                <div class="col-12 text-center text-muted small">
-                    &copy; 2025 LUXE Digital. All Rights Reserved.
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <img src="{{ asset('images/Boston Logaqn Aorport Taxi Service.webp') }}" alt="White Van"
+                        class="img-fluid rounded mb-3 w-100 service-img">
+
+                    <h3 class="section-title h4">Safe and Trusted Logan Airport Taxi Service Across Greater Boston</h3>
+                    <p>We prioritize your well-being and safety. So, after every ride, we clean and disinfect every car.
+                        We clean door handles and seat belts, sanitize the seats and floor, and make every effort to
+                        keep anything that may affect both you and your loved ones clean. We keep both our drivers
+                        clean, but our cars also feel fresh and enjoyable for today's discerning passenger on every
+                        ride. Your safety and well-being will never be overshadowed by entrepreneurship as you travel
+                        for any reason in and around Greater Boston.</p>
                 </div>
+
+                <div class="col-lg-6">
+                    <h3 class="section-title h4">Why Choose Boston Logan Airport Taxi?</h3>
+                    <ul class="why-choose-list">
+                        <li>Flat-Rate, No-Surge Pricing</li>
+                        <li>Vehicles Cleaned & Sanitized after Every Ride</li>
+                        <li><a href="#" style="color:var(--btn-green); font-weight:bold;">Child Seats</a> Available</li>
+                        <li>Available 24/7, Including on Holidays</li>
+                        <li>Licensed, Background-Checked Drivers</li>
+                        <li>Long-Distance & Event Rides Available</li>
+                        <li>Live Flight Tracking & Real-Time Adjustments</li>
+                    </ul>
+
+                    <div class="mt-4 position-relative">
+                        <img src="{{ asset('images/Sanitized Vehicles.webp') }}" alt="Sanitizing"
+                            class="img-fluid rounded w-100 service-img">
+                        <div
+                            class="bg-white px-3 py-1 position-absolute bottom-0 start-50 translate-middle-x mb-3 rounded shadow-sm fw-bold" style="border: 1px solid #ddd;">
+                            Sanitized Vehicles after every Ride
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="content-section">
+        <div class="container">
+            <div class="row align-items-center mb-5">
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <h3 class="section-title">CHILDREN'S SEATING CAPABILITIES</h3>
+                    <p>Safety comes first, especially with our littlest rides. We offer properly installed infant,
+                        toddler, and booster seats, upon request, so your child's safety can be ensured. Just tell us
+                        what you need when booking, and we will take care of the rest to ensure all your family can ride
+                        together.</p>
+                </div>
+                <div class="col-lg-4 mb-4 mb-lg-0 text-center">
+                    <img src="{{ asset('images/Child Seat.webp') }}" alt="Child Seat"
+                        class="img-fluid rounded service-img">
+                </div>
+                <div class="col-lg-4">
+                    <h3 class="section-title">TRAVEL WITH FAMILY OR LUGGAGE</h3>
+                    <p>Additional bags, or are you with elderly parents, or traveling with a group? Our spacious sedans
+                        and vans make traveling with a group of colleagues, family members, etc, comfortable and
+                        convenient. You'll enjoy the ride, whether your destination is near or far, with door-to-door
+                        service, friendly drivers, and in our spacious, cruise-worthy vehicles.</p>
+                </div>
+            </div>
+
+            <div class="row align-items-center mb-5">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <h3 class="section-title">Reliable Airport Service</h3>
+                    <p>We're the go-to transportation service for prompt trips to and from Logan Airport, offering
+                        service to neighborhoods and towns such as <a href="#" style="color:var(--btn-green);">Boston</a>, Cambridge, Somerville,
+                        <a href="#" style="color:var(--btn-green);">Hanscom AFB</a>, <a href="#" style="color:var(--btn-green);">Lexington</a>, Waltham, Brookline,
+                        Burlington, Belmont, Arlington, Haverhill, Worcester, Methuen, <a href="#" style="color:var(--btn-green);">Nashua</a>,
+                        and many more. Our professional drivers are only a stone's throw away, regardless of where you
+                        are. We monitor all flight delays in real-time, and your driver will be waiting for you on
+                        arrival at no extra cost. We promise one thing: on time, every time.</p>
+                </div>
+                <div class="col-lg-6">
+                    <img src="{{ asset('images/Boston Logan Airport.webp') }}" alt="Airport"
+                        class="img-fluid rounded w-100 service-img">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <h3 class="section-title">Long-Distance & Special Event Transfers</h3>
+                    <p>Need a ride beyond Boston? We have long-distance trips to <a href="#" style="color:var(--btn-green);">Cape Cod</a>, New
+                        York, New Hampshire, <a href="#" style="color:var(--btn-green);">Yarmouth MA</a>, and others. Whether it's business
+                        travel, weddings, or events, our dependable service ensures comfort, promptness, and peace of
+                        mind. Leave the driving to us, and let us worry about directions.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="content-section bg-light">
+        <div class="container">
+            <h2 class="text-center mb-5 fw-bold">Here's What Our Customers Say...</h2>
+
+            <div class="row g-4 mb-5">
+                <div class="col-md-4">
+                    <div class="testimonial-box">
+                        <p class="testimonial-text">"Reliable and clean taxi service. Got to Logan Airport with plenty
+                            of time to spare. Very professional driver. Highly recommend!"</p>
+                        <div class="customer-name">Jessica Morgan</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="testimonial-box">
+                        <p class="testimonial-text">"Smooth ride with the car seat set the right way. The vehicle was
+                            spotless. Great service. I'll book again!"</p>
+                        <div class="customer-name">Graham Bronson</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="testimonial-box">
+                        <p class="testimonial-text">"The driver was very polite and helped with our luggage, and the
+                            reservation was quite simple. Five stars from me."</p>
+                        <div class="customer-name">Liam O'Connor</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-5">
+                <div class="col-12 text-center">
+                    <h3 class="fw-bold">Book Your Ride with Confidence</h3>
+                    <p class="w-75 mx-auto">Whether you are booking ahead or need a ride at this time, <strong>Boston Logan Airport
+                            Taxi</strong> is ready for you! Booking is quick and easy, either give us a call or fill in
+                        our short reservation form. One of our employees will verify your booking, allocate a clean and
+                        modern car for your transfer, and guarantee a punctual driver. There is never any reason why
+                        traveling should be difficult, and with us, it isn't. Book your ride today!</p>
+                </div>
+            </div>
+
+            <h3 class="text-center fw-bold mt-5">Popular Cities for Car Service in Boston Neighborhood</h3>
+            <div class="city-grid">
+                <a href="#" class="city-tag"><i class="fas fa-taxi"></i> Provincetown</a>
+                <a href="#" class="city-tag"><i class="fas fa-taxi"></i> Eastham MA</a>
+                <a href="#" class="city-tag"><i class="fas fa-taxi"></i> Providence RI</a>
+                <a href="#" class="city-tag"><i class="fas fa-taxi"></i> Manchester NH</a>
+                <a href="#" class="city-tag"><i class="fas fa-taxi"></i> North Truro</a>
+                <a href="#" class="city-tag"><i class="fas fa-taxi"></i> Salem</a>
+                <a href="#" class="city-tag"><i class="fas fa-taxi"></i> Amherst MA</a>
+                <a href="#" class="city-tag"><i class="fas fa-taxi"></i> Wilmington MA</a>
+                <a href="#" class="city-tag"><i class="fas fa-taxi"></i> Falmouth MA</a>
+                <a href="#" class="city-tag"><i class="fas fa-taxi"></i> Merrimack</a>
+                <a href="#" class="city-tag"><i class="fas fa-taxi"></i> Portland ME</a>
+                <a href="#" class="city-tag"><i class="fas fa-taxi"></i> Wakefield MA</a>
+                <a href="#" class="city-tag"><i class="fas fa-taxi"></i> Barnstable MA</a>
+                <a href="#" class="city-tag"><i class="fas fa-taxi"></i> Derry NH</a>
+                <a href="#" class="city-tag"><i class="fas fa-taxi"></i> Boston MA</a>
+                <a href="#" class="city-tag"><i class="fas fa-taxi"></i> Burlington Ma</a>
+            </div>
+            <div class="text-center mt-4">
+                <button class="btn btn-warning fw-bold px-4 shadow">Show More</button>
+            </div>
+        </div>
+    </section>
+
+   <section class="content-section">
+    <div class="container">
+        <h2 class="text-center fw-bold mb-4">Frequently Asked Questions (FAQ)</h2>
+
+        <div class="accordion mb-5" id="faqAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingOne">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        How early in advance should I reserve a taxi to Logan Airport?
+                    </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+                    data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        We advise all guests to book at least 24 hours in advance to ensure availability, although
+                        same-day rides might still be available.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingTwo">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        Do you clean your vehicles often?
+                    </button>
+                </h2>
+                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
+                    data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Yes, we sanitize our vehicles after every single ride.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingThree">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                        Do you have child seats in your car?
+                    </button>
+                </h2>
+                <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
+                    data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Yes, we offer infant, toddler, and booster seats upon request.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingFour">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                        What if my flight is running late?
+                    </button>
+                </h2>
+                <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour"
+                    data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        We monitor flight delays in real-time and adjust pickup times accordingly at no extra cost.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingFive">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                        Are there hidden charges in your shipping prices?
+                    </button>
+                </h2>
+                <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive"
+                    data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Never. We provide open-book pricing with flat-rate rates. No hidden fees, no surprises.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingSix">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
+                        Do you cater for long-distance trips or event transit?
+                    </button>
+                </h2>
+                <div id="collapseSix" class="accordion-collapse collapse" aria-labelledby="headingSix"
+                    data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Yes. We offer rides to Cape Cod, New York, and beyond. We also provide for events such as weddings, company travel, and family vacations. Just let us know your needs.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="text-center fw-bold mb-4">Latest Blog</h2>
+        <div class="row g-4">
+
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-wrapper">
+                        <img src="https://placehold.co/400x300/orange/white?text=Cafe" class="blog-img" alt="Blog 1">
+                        <span class="blog-badge-overlay">TRAVEL TIPS</span>
+                        <div class="blog-avatar-overlay"></div> </div>
+                    <div class="blog-content">
+                        <h5 class="fw-bold mt-2">Explore Border Cafe in Burlington, MA 01803: A Local Gem</h5>
+                        <p class="text-muted small">If you are looking for a cozy spot to enjoy...</p>
+                        <a href="#" class="read-more-link">READ MORE »</a>
+                        <div class="mt-3 text-muted small" style="font-size: 0.7rem;">September 22, 2025 • No Comments</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-wrapper">
+                        <img src="https://placehold.co/400x300/brown/white?text=House" class="blog-img" alt="Blog 2">
+                        <span class="blog-badge-overlay">TRAVEL TIPS</span>
+                        <div class="blog-avatar-overlay"></div> </div>
+                    <div class="blog-content">
+                        <h5 class="fw-bold mt-2">Why Cary Memorial Library is a Must-Visit in Lexington</h5>
+                        <p class="text-muted small">Libraries are special places where people come to learn, read...</p>
+                        <a href="#" class="read-more-link">READ MORE »</a>
+                        <div class="mt-3 text-muted small" style="font-size: 0.7rem;">September 18, 2025 • No Comments</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-wrapper">
+                        <img src="https://placehold.co/400x300/green/white?text=Hospital" class="blog-img" alt="Blog 3">
+                        <span class="blog-badge-overlay">TAXI SERVICE TIPS</span>
+                        <div class="blog-avatar-overlay"></div> </div>
+                    <div class="blog-content">
+                        <h5 class="fw-bold mt-2">Get to Falmouth Hospital, MA, Fast with Our Taxi Service</h5>
+                        <p class="text-muted small">Going to a hospital can be stressful, even if it...</p>
+                        <a href="#" class="read-more-link">READ MORE »</a>
+                        <div class="mt-3 text-muted small" style="font-size: 0.7rem;">August 25, 2025 • No Comments</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+    <footer class="footer-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h5 class="footer-title">About</h5>
+                    <ul class="footer-links">
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Payment Policy</a></li>
+                        <li><a href="#">Terms & Conditions</a></li>
+                        <li><a href="#">Payment Policy</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-4 mb-4">
+                    <h5 class="footer-title">Helpful Links</h5>
+                    <ul class="footer-links">
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#">Child Seat</a></li>
+                        <li><a href="#">Minivan/SUV</a></li>
+                        <li><a href="#">Area we Serve</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-4 mb-4">
+                    <h5 class="footer-title">Contact Information</h5>
+                    <ul class="footer-links contact-info">
+                        <li>
+                            <i class="fas fa-map-marker-alt contact-icon"></i>
+                            <div>3 Putnam Gardens Apt 22<br>Cambridge, MA 02139</div>
+                        </li>
+                        <li>
+                            <i class="fas fa-phone-alt contact-icon"></i>
+                            <div>857-331-9544</div>
+                        </li>
+                        <li>
+                            <i class="fas fa-envelope contact-icon"></i>
+                            <div>booking@bostonloganairporttaxi.com</div>
+                        </li>
+                    </ul>
+
+                    <div class="social-icons">
+                        <a href="#" class="social-btn"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-btn"><i class="fab fa-x-twitter"></i></a>
+                        <a href="#" class="social-btn"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-btn"><i class="fab fa-pinterest-p"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="copyright-text">
+                Copyright © 2025. Logan Airport Taxi All Rights Reserved | Designed by Virtual Click USA
             </div>
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const navbar = document.querySelector('.navbar');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) { navbar.classList.add('scrolled'); }
-            else { navbar.classList.remove('scrolled'); }
+        document.addEventListener("DOMContentLoaded", () => {
+
+            // 1. DATE SETUP
+            const dateInput = document.getElementById("date");
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            dateInput.min = `${yyyy}-${mm}-${dd}`;
+
+            // 2. TIME SETUP
+            const timeSelect = document.getElementById("time");
+            for (let h = 0; h < 24; h++) {
+                for (let m = 0; m < 60; m += 15) {
+                    let hh = String(h).padStart(2, '0');
+                    let mm = String(m).padStart(2, '0');
+                    let ampm = h < 12 ? 'AM' : 'PM';
+                    let dH = h % 12 || 12;
+                    timeSelect.innerHTML += `<option value="${hh}:${mm}">${dH}:${mm} ${ampm}</option>`;
+                }
+            }
+
+            // 3. POPUP LOGIC
+            const popup = document.getElementById("validationPopup");
+            const popupText = document.getElementById("popupText");
+            const popupIcon = popup.querySelector("i");
+            let popupTimeout;
+
+            function showPopup(message, type = 'error') {
+                popupText.textContent = message;
+                popup.classList.remove("error", "success", "show");
+                if (type === 'error') {
+                    popup.classList.add("error");
+                    popupIcon.className = "fas fa-exclamation-circle";
+                } else {
+                    popup.classList.add("success");
+                    popupIcon.className = "fas fa-check-circle";
+                }
+                setTimeout(() => popup.classList.add("show"), 10);
+                clearTimeout(popupTimeout);
+                popupTimeout = setTimeout(() => {
+                    popup.classList.remove("show");
+                }, 4000);
+            }
+
+            // 4. VALIDATION & SUBMIT
+            const form = document.getElementById("reservationForm");
+            form.addEventListener("submit", function(e) {
+                e.preventDefault();
+
+                let missing = false;
+                const requiredNames = ["date", "time", "adults", "luggage"];
+                requiredNames.forEach(n => {
+                    if (!document.querySelector(`[name="${n}"]`).value) missing = true;
+                });
+
+                const fromEl = document.querySelector("#fromLocation select, #fromLocation input");
+                const toEl = document.querySelector("#toLocation select, #toLocation input");
+                if (fromEl && !fromEl.value) missing = true;
+                if (toEl && !toEl.value) missing = true;
+
+                if (missing) {
+                    showPopup("Please fill in all required fields.", "error");
+                    return;
+                }
+
+                const selectedDateStr = dateInput.value;
+                const selectedTimeStr = timeSelect.value;
+                const now = new Date();
+                const bookingDateTime = new Date(`${selectedDateStr}T${selectedTimeStr}:00`);
+
+                const todayStr =
+                    `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+                const isToday = selectedDateStr === todayStr;
+
+                if (bookingDateTime < now) {
+                    showPopup("You cannot book a time in the past.", "error");
+                    return;
+                }
+
+                if (isToday) {
+                    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+                    const [selH, selM] = selectedTimeStr.split(":").map(Number);
+                    const selectedMinutes = selH * 60 + selM;
+
+                    if (selH >= 22 || selH < 6) {
+                        showPopup("Same-day bookings are not allowed between 10 PM and 6 AM.", "error");
+                        return;
+                    }
+
+                    if ((selectedMinutes - currentMinutes) < 120) {
+                        showPopup("Booking must be at least 2 hours from now.", "error");
+                        return;
+                    }
+                }
+
+                showPopup("Validation Successful! Redirecting...", "success");
+                setTimeout(() => {
+                    form.submit();
+                }, 1500);
+            });
+
+            // 5. ADDRESS & EXTRAS LOGIC
+            const fromLoc = document.getElementById("fromLocation");
+            const toLoc = document.getElementById("toLocation");
+            const AIRPORT_HTML =
+                `<select name="pickup_airport" class="form-select" required><option value="">Select Airport</option><option value="logan">Logan Airport (BOS)</option><option value="jfk">JFK Airport (NY)</option></select>`;
+            const ADDR_HTML = (n, p) =>
+                `<input type="text" name="${n}" class="form-control" placeholder="${p}" required>`;
+
+            function updateTrip() {
+                const t = document.querySelector('input[name="tripType"]:checked').value;
+                if (t === 'fromAirport') {
+                    fromLoc.innerHTML = AIRPORT_HTML;
+                    toLoc.innerHTML = ADDR_HTML("dropoff_address", "(Provide Complete Drop Off Address)");
+                } else if (t === 'toAirport') {
+                    fromLoc.innerHTML = ADDR_HTML("pickup_address", "(Provide Complete PickUp Address)");
+                    toLoc.innerHTML =
+                        `<select name="dropoff_airport" class="form-select" required><option value="">Select Airport</option><option value="logan">Logan Airport (BOS)</option><option value="jfk">JFK Airport (NY)</option></select>`;
+                } else {
+                    fromLoc.innerHTML = ADDR_HTML("pickup_address", "(Provide Complete PickUp Address)");
+                    toLoc.innerHTML = ADDR_HTML("dropoff_address", "(Provide Complete Drop Off Address)");
+                }
+            }
+            document.querySelectorAll('input[name="tripType"]').forEach(r => r.addEventListener('change',
+                updateTrip));
+            updateTrip();
+
+            const toggleBtn = document.getElementById("toggleExtrasBtn");
+            const section = document.getElementById("extrasSection");
+            const childSeatSelect = document.getElementById("childSeatsTrigger");
+
+            toggleBtn.addEventListener("click", () => {
+                section.classList.toggle("open");
+                toggleBtn.classList.toggle("active");
+            });
+
+            childSeatSelect.addEventListener("change", function() {
+                const val = parseInt(this.value);
+                if (val >= 1 && val <= 4) {
+                    if (!section.classList.contains("open")) {
+                        section.classList.add("open");
+                        toggleBtn.classList.add("active");
+                    }
+                } else if (val === 0) {
+                    if (section.classList.contains("open")) {
+                        section.classList.remove("open");
+                        toggleBtn.classList.remove("active");
+                    }
+                }
+            });
+
+            const items = [{
+                    id: 'stopover',
+                    price: 25
+                },
+                {
+                    id: 'infantSeat',
+                    price: 15
+                },
+                {
+                    id: 'frontSeat',
+                    price: 10
+                },
+                {
+                    id: 'boosterSeat',
+                    price: 5
+                }
+            ];
+            items.forEach(item => {
+                const el = document.getElementById(item.id);
+                el.addEventListener("change", () => {
+                    const total = el.value * item.price;
+                    document.getElementById(item.id + "Display").innerText = "$" + total;
+                });
+            });
         });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

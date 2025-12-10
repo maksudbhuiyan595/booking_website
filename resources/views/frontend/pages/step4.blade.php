@@ -140,7 +140,7 @@
   </style>
 </head>
 <body>
-
+ @include('frontend.pages.nav')
   <div class="container page-header">
     <h2 class="fw-bold m-0">Payment Information</h2>
     <div class="step-text">Your Current Selection ( Step 4 of 4 )</div>
