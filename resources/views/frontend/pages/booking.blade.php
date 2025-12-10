@@ -1,519 +1,500 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Premium Reservation</title>
-
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
-
-  <style>
+<style>
     :root {
-      --primary-bg: #0b1d1f;
-      --secondary-bg: #132d2f;
-      --accent-color: #10b981;
-      --light-accent: #57d4a2;
-      --text-main: #f3f4f6;
-      --text-muted: #9ca3af;
-      --nav-height: 80px;
+        --accent-color: #10b981;
+        --light-accent: #34d399;
+        --bg-dark: #111827;
+        --card-bg: #1f2937;
+        --input-border: #374151;
+        --text-white: #ffffff;
     }
 
-    html, body {
-      height: 100%;
-      margin: 0;
-      font-family: 'Inter', sans-serif;
-      background: var(--primary-bg);
-      color: var(--text-main);
-      overflow-x: hidden;
+    /* --- SECTION LAYOUT --- */
+    .reservation-section {
+        background-color: var(--bg-dark);
+        /* Mobile: Allow scrolling, auto height */
+        min-height: auto;
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+        display: flex;
+        align-items: center;
     }
 
-    /* --- NAVBAR --- */
-    #navbar {
-      height: var(--nav-height);
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 1000;
-      background: rgba(11, 29, 31, 0.95);
-      backdrop-filter: blur(8px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-      display: flex;
-      align-items: center; /* Vertically center content */
+    /* Desktop: Full height centering */
+    @media (min-width: 992px) {
+        .reservation-section {
+            min-height: 100vh;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
     }
 
-    .nav-container {
-      width: 100%;
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 20px;
+    .reservation-card {
+        background-color: var(--card-bg);
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
 
-    /* LOGO FIX */
-    .navbar-brand {
-      padding: 0;
-      display: flex;
-      align-items: center;
-      text-decoration: none;
-    }
-    .navbar-brand img {
-      height: 50px; /* Fixed height for consistency */
-      width: auto;
-      object-fit: contain;
-      display: block;
-    }
-
-    .nav-links { display: flex; gap: 28px; align-items: center; list-style: none; margin: 0; padding: 0; }
-    .nav-link { color: var(--text-main); text-decoration: none; font-weight: 500; transition: color 0.3s; }
-    .nav-link:hover, .nav-link.active { color: var(--accent-color); }
-
-    /* Hamburger */
-    .menu-toggle { display: none; cursor: pointer; gap: 6px; flex-direction: column; }
-    .menu-toggle span { width: 28px; height: 3px; background: var(--accent-color); border-radius: 3px; }
-
-    /* Mobile Nav */
-    .mobile-nav {
-      position: fixed; top: var(--nav-height); right: -100%; width: 100%; height: calc(100vh - var(--nav-height));
-      background: var(--primary-bg); transition: right .32s ease; z-index: 999;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .mobile-nav.active { right: 0; }
-    .mobile-nav-links { list-style: none; padding: 0; text-align: center; }
-    .mobile-nav-links a { display: block; padding: 12px 24px; font-size: 1.4rem; color: var(--text-main); text-decoration: none; }
-
-    /* --- FORM STYLES --- */
-    .reservation-section { padding-top: calc(var(--nav-height) + 40px); padding-bottom: 60px; }
-    .reservation-card { background: var(--secondary-bg); border-radius: 14px; border: 1px solid rgba(255,255,255,0.04); }
-
+    /* --- FORM INPUTS --- */
     .form-control, .form-select {
-      background: var(--primary-bg) !important;
-      color: var(--text-main) !important;
-      border: 1px solid #2c4a4c !important;
-      padding: 12px 15px;
-    }
-    .form-control:focus, .form-select:focus {
-      box-shadow: 0 0 0 3px rgba(16,185,129,0.12) !important;
-      border-color: var(--accent-color) !important;
-      outline: none;
+        background-color: #111827 !important;
+        color: #f3f4f6 !important;
+        border: 1px solid var(--input-border) !important;
+        padding: 12px 15px;
+        font-size: 16px; /* Prevents zoom on iPhone */
+        border-radius: 8px;
     }
 
-    .input-icon { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); pointer-events: none; opacity: .75; }
+    .form-control::placeholder { color: #6b7280; }
+
+    .form-control:focus, .form-select:focus {
+        box-shadow: 0 0 0 3px rgba(16,185,129,0.15) !important;
+        border-color: var(--accent-color) !important;
+        outline: none;
+    }
+
+    /* --- ICONS --- */
     .position-relative { position: relative; }
 
-    /* Custom Radio */
-    .custom-radio-input { appearance: none; width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--light-accent); background: transparent; margin-right: 8px; vertical-align: middle; cursor: pointer; }
-    .custom-radio-input:checked { background: var(--light-accent); box-shadow: 0 0 12px rgba(87,212,162,0.18); }
-    .seat-select { padding-right: 1rem; min-width: 72px; }
-
-    /* Footer */
-    footer { background: #061213; padding: 60px 0 24px; border-top: 1px solid #1f3638; color: var(--text-muted); margin-top: auto; }
-    .footer-content { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 36px; padding: 0 20px 36px; }
-    .social-link { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; background: #1f3638; color: #fff; border-radius: 50%; text-decoration: none; margin-right: 8px; }
-    .social-link:hover { background: var(--accent-color); color: #000; }
-
-    @media (max-width: 992px) { .footer-content { grid-template-columns: 1fr 1fr; } }
-    @media (max-width: 768px) {
-      .nav-links { display: none; }
-      .menu-toggle { display: flex; }
-      .footer-content { grid-template-columns: 1fr; gap: 28px; }
+    .input-icon {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+        color: #9ca3af;
+        z-index: 5;
     }
-  </style>
-</head>
-<body>
 
-  <nav id="navbar">
-    <div class="nav-container">
-      <a class="navbar-brand" href="#">
-         <img src="https://cdn-icons-png.flaticon.com/512/3097/3097144.png" alt="Logo">
-      </a>
+    /* Fix for labeled inputs */
+    .labeled-input-wrapper .input-icon {
+        top: 38px; /* Precise adjustment for inputs with labels */
+        transform: none;
+    }
 
-      <ul class="nav-links">
-        <li><a href="#" class="nav-link active">Home</a></li>
-        <li><a href="#" class="nav-link">Services</a></li>
-        <li><a href="#" class="nav-link">Fleet</a></li>
-        <li><a href="#" class="nav-link">Contact</a></li>
-      </ul>
+    .date-icon svg, .time-icon svg { width: 20px; height: 20px; }
 
-      <div class="menu-toggle" id="menuToggle" aria-expanded="false">
-        <span></span><span></span><span></span>
-      </div>
-    </div>
-  </nav>
+    /* Date Input Specifics */
+    input[type="date"] {
+        padding-right: 40px !important;
+        color-scheme: dark;
+    }
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        background: transparent;
+        bottom: 0;
+        color: transparent;
+        cursor: pointer;
+        height: auto;
+        left: 0;
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 100%;
+        z-index: 10;
+    }
 
-  <div class="mobile-nav" id="mobileNav" aria-hidden="true">
-    <ul class="mobile-nav-links">
-      <li><a href="#">Home</a></li>
-      <li><a href="#">Services</a></li>
-      <li><a href="#">Fleet</a></li>
-      <li><a href="#">Contact</a></li>
-    </ul>
-  </div>
+    /* --- CUSTOM RADIO --- */
+    .custom-radio-input {
+        appearance: none;
+        min-width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        border: 2px solid #6b7280;
+        background: transparent;
+        margin-right: 10px;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-top: 3px;
+    }
+    .custom-radio-input:checked {
+        border-color: var(--accent-color);
+        background: var(--accent-color);
+        box-shadow: 0 0 10px rgba(16,185,129,0.3);
+    }
 
-  <section class="reservation-section">
+    .radio-card {
+        background: rgba(0,0,0,0.2);
+        border: 1px solid rgba(255,255,255,0.05);
+        border-radius: 8px;
+        padding: 10px;
+        height: 100%;
+        transition: 0.3s;
+    }
+    .radio-card:hover {
+        background: rgba(255,255,255,0.02);
+        border-color: rgba(255,255,255,0.1);
+    }
+    .radio-label { cursor: pointer; display: flex; align-items: flex-start; width: 100%; }
+
+    /* --- EXTRAS & IMAGE --- */
+    .extras-section { display: none; }
+    .toggle-extras { cursor: pointer; user-select: none; }
+
+    .hero-image-container {
+        height: 100%;
+        min-height: 550px;
+        border-radius: 12px;
+        overflow: hidden;
+        position: relative;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+    .hero-image-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* Mobile Banner Image */
+    .mobile-banner {
+        height: 150px;
+        border-radius: 12px 12px 0 0;
+        overflow: hidden;
+        position: relative;
+        margin-bottom: -10px; /* Overlap slightly */
+        z-index: 0;
+    }
+    .mobile-banner img { width: 100%; height: 100%; object-fit: cover; }
+</style>
+
+<section class="reservation-section">
     <div class="container">
-      <div class="row align-items-center">
 
-        <div class="col-lg-6 mb-5 mb-lg-0">
-          <div class="p-1 border border-secondary border-opacity-25 rounded shadow-lg">
-            <div class="p-4 reservation-card">
-
-              <header class="text-center mb-4">
-                <h1 class="fs-4 fw-bold text-white text-uppercase" style="letter-spacing:2px">Instant Reservation</h1>
-                <p class="small text-secondary mt-1">Instant SMS & Email Confirmation</p>
-              </header>
-
-              <form id="reservationForm" action="{{ route('step2') }}" method="GET" novalidate>
-                <input type="hidden" name="extras_total" id="extrasTotalInput" value="0">
-
-                <div class="row g-2 mb-3">
-                  <div class="col-6 position-relative">
-                    <label for="date" class="form-label small text-secondary">Date</label>
-                    <input type="date" id="date" name="date" required class="form-control" />
-                  </div>
-                  <div class="col-6 position-relative">
-                    <label for="time" class="form-label small text-secondary">Time</label>
-                    <select id="time" name="time" required class="form-select" aria-label="Select time">
-                      <option value="">Select Time</option>
-                    </select>
-                    <span class="input-icon">⏱️</span>
-                  </div>
-                </div>
-
-                <div class="row g-2 mb-3">
-                  <div class="col-4">
-                    <label class="d-flex align-items-center">
-                      <input class="custom-radio-input" type="radio" name="tripType" value="fromAirport">
-                      <span class="small text-white">From Airport</span>
-                    </label>
-                  </div>
-                  <div class="col-4">
-                    <label class="d-flex align-items-center">
-                      <input class="custom-radio-input" type="radio" name="tripType" value="toAirport" checked>
-                      <span class="small text-white">To Airport</span>
-                    </label>
-                  </div>
-                  <div class="col-4">
-                    <label class="d-flex align-items-center">
-                      <input class="custom-radio-input" type="radio" name="tripType" value="doorToDoor">
-                      <span class="small text-white">Door-to-Door</span>
-                    </label>
-                  </div>
-                </div>
-
-                <div class="mb-3">
-                  <p id="fromLabel" class="small text-secondary fw-bold ms-1 mb-1">Pickup Address</p>
-                  <div id="fromLocation" class="mb-3"></div>
-
-                  <p id="toLabel" class="small text-secondary fw-bold ms-1 mb-1">Destination</p>
-                  <div id="toLocation"></div>
-                </div>
-
-                <div class="row g-2 mb-3">
-                  <div class="col-6">
-                    <label class="small text-secondary mb-1">Adults</label>
-                    <div class="position-relative">
-                      <select id="adults" name="adults" class="form-select">
-                        <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>
-                      </select>
-                      <span class="input-icon">👥</span>
-                    </div>
-                  </div>
-                  <div class="col-6">
-                    <label class="small text-secondary mb-1">Children</label>
-                    <div class="position-relative">
-                      <select id="children" name="children" class="form-select">
-                        <option value="0">0</option><option value="1">1</option><option value="2">2</option>
-                      </select>
-                      <span class="input-icon">👶</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="row g-2 mb-3">
-                  <div class="col-6">
-                    <label class="small text-secondary mb-1">Luggage</label>
-                    <div class="position-relative">
-                      <select id="luggage" name="luggage" class="form-select">
-                        <option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option>
-                      </select>
-                      <span class="input-icon">💼</span>
-                    </div>
-                  </div>
-                  <div class="col-6">
-                    <label class="small text-secondary mb-1">Child Seats</label>
-                    <div class="position-relative">
-                      <select id="childSeats" name="childSeats" class="form-select">
-                        <option value="0">None</option><option value="1">1</option><option value="2">2</option>
-                      </select>
-                      <span class="input-icon">🧒</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="border-top border-secondary border-opacity-25 pt-3 mt-3">
-                  <div class="d-flex align-items-center mb-3">
-                    <span class="fs-5 fw-bold text-success me-2">+</span>
-                    <h3 class="fs-6 fw-semibold text-white mb-0">Extras</h3>
-                  </div>
-
-                  <div class="d-flex justify-content-between align-items-center py-1">
-                    <div>
-                      <label class="small text-light d-block mb-0 fw-semibold">Stopover</label>
-                      <span class="small text-secondary">$25 / stop</span>
-                    </div>
-                    <div class="d-flex align-items-center">
-                      <select id="stopover" name="stopover" data-price="25" class="form-select seat-select me-2">
-                        <option value="0">0</option><option value="1">1</option><option value="2">2</option>
-                      </select>
-                      <span id="stopoverTotal" class="fw-bold text-success" style="width:52px; text-align:right;">$0</span>
-                    </div>
-                  </div>
-
-                  <div class="d-flex justify-content-between align-items-center py-1">
-                    <div>
-                      <label class="small text-light d-block mb-0 fw-semibold">Infant Seat</label>
-                      <span class="small text-secondary">$10 (0-2 yrs)</span>
-                    </div>
-                    <div class="d-flex align-items-center">
-                      <select id="infantSeat" name="infant_seat" data-price="10" class="form-select seat-select me-2">
-                        <option value="0">0</option><option value="1">1</option>
-                      </select>
-                      <span id="infantSeatTotal" class="fw-bold text-success" style="width:52px; text-align:right;">$0</span>
-                    </div>
-                  </div>
-
-                  <div class="d-flex justify-content-between align-items-center py-1">
-                    <div>
-                      <label class="small text-light d-block mb-0 fw-semibold">Booster Seat</label>
-                      <span class="small text-secondary">$5 (5-7 yrs)</span>
-                    </div>
-                    <div class="d-flex align-items-center">
-                      <select id="boosterSeat" name="booster_seat" data-price="5" class="form-select seat-select me-2">
-                        <option value="0">0</option><option value="1">1</option>
-                      </select>
-                      <span id="boosterSeatTotal" class="fw-bold text-success" style="width:52px; text-align:right;">$0</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div id="messageBox" class="alert d-none mt-4 text-center fw-medium p-2 small"></div>
-
-                <button type="submit" class="btn w-100 mt-4 text-dark fw-bold text-uppercase py-3"
-                        style="background-color:var(--accent-color); box-shadow:0 4px 15px rgba(16,185,129,0.35);">
-                  Get Fare & Continue
-                </button>
-
-                <p class="text-center small mt-3 text-secondary" style="font-size:0.75rem;">
-                  Pay <span class="text-success">$1</span> to confirm. 10% Off for cash payments.
-                </p>
-
-              </form>
-              </div>
-          </div>
+        <div class="text-center mb-4 d-lg-none text-white pt-4">
+            <h1 class="h4 fw-bold">BOSTON AIRPORT CAR SERVICE</h1>
+            <p class="text-secondary small">Premium Rides, Flat Rates</p>
         </div>
 
-        <div class="col-lg-6 ps-lg-5">
-          <div class="position-relative">
-            <div style="position:absolute; top:-20px; right:-20px; width:100px; height:100px; border-radius:50%; border:2px solid var(--accent-color); z-index:-1;"></div>
+        <div class="row align-items-stretch justify-content-center">
 
-            <img src="https://images.unsplash.com/photo-1485291571150-772bcfc10da5?q=80&w=1000&auto=format&fit=crop"
-                 class="img-fluid rounded shadow-lg border border-secondary border-opacity-25 w-100"
-                 alt="Luxury car" style="object-fit:cover; height:700px; filter:brightness(0.8);">
+            <div class="col-lg-6 mb-4 mb-lg-0">
 
-            <div class="position-absolute bottom-0 start-0 bg-dark p-4 m-4 rounded shadow bg-opacity-75" style="backdrop-filter: blur(6px);">
-              <h4 class="text-white fw-bold">Luxury & Comfort</h4>
-              <p class="mb-0 text-light small">Professional chauffeurs, pristine vehicles.</p>
+                <div class="mobile-banner d-block d-lg-none">
+                    <img src="{{ asset('images/car.jpg') }}" alt="Premium Car">
+                    <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(to bottom, transparent, var(--bg-dark));"></div>
+                </div>
+
+                <div class="p-1 border border-secondary border-opacity-25 rounded shadow-lg h-100 position-relative" style="z-index: 2; background: var(--bg-dark);">
+                    <div class="p-3 p-md-5 reservation-card h-100 d-flex flex-column justify-content-center">
+
+                        <header class="text-center mb-4">
+                            <h2 class="fs-4 fw-bold text-white text-uppercase font-monospace" style="letter-spacing:2px">
+                                Reserve Your Ride
+                            </h2>
+                            <div class="d-flex align-items-center justify-content-center gap-2 mt-2">
+                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">Online Exclusive</span>
+                                <span class="small text-secondary">Instant Confirmation</span>
+                            </div>
+                        </header>
+
+                        <form id="reservationForm" action="{{ route('step2') }}" method="GET" novalidate>
+                            @csrf
+                            <input type="hidden" name="extras_total" id="extrasTotalInput" value="0">
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-6 labeled-input-wrapper position-relative">
+                                    <label class="form-label small text-secondary fw-semibold text-uppercase mb-1" style="font-size: 0.7rem;">Date</label>
+                                    <input type="date" id="date" name="date" required class="form-control" value="{{ old('date') }}" />
+                                    <span class="input-icon date-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                    </span>
+                                </div>
+                                <div class="col-6 labeled-input-wrapper position-relative">
+                                    <label class="form-label small text-secondary fw-semibold text-uppercase mb-1" style="font-size: 0.7rem;">Time</label>
+                                    <select id="time" name="time" required class="form-select">
+                                        <option value="">Select</option>
+                                    </select>
+                                    <span class="input-icon time-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <div class="row g-2">
+                                    <div class="col-12 col-sm-4">
+                                        <div class="radio-card">
+                                            <label class="radio-label">
+                                                <input class="custom-radio-input" type="radio" name="tripType" value="fromAirport">
+                                                <div>
+                                                    <span class="d-block text-white small fw-bold">From Airport</span>
+                                                    <span class="d-block text-secondary" style="font-size: 0.65rem;">Flight Tracking</span>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-4">
+                                        <div class="radio-card">
+                                            <label class="radio-label">
+                                                <input class="custom-radio-input" type="radio" name="tripType" value="toAirport" checked>
+                                                <div>
+                                                    <span class="d-block text-white small fw-bold">To Airport</span>
+                                                    <span class="d-block text-secondary" style="font-size: 0.65rem;">Timely Dropoff</span>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-4">
+                                        <div class="radio-card">
+                                            <label class="radio-label">
+                                                <input class="custom-radio-input" type="radio" name="tripType" value="doorToDoor">
+                                                <div>
+                                                    <span class="d-block text-white small fw-bold">Point-to-Point</span>
+                                                    <span class="d-block text-secondary" style="font-size: 0.65rem;">City Transfer</span>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label id="fromLabel" class="form-label small text-secondary fw-semibold text-uppercase ms-1 mb-1" style="font-size: 0.7rem;">Pickup</label>
+                                <div id="fromLocation" class="mb-3 position-relative"></div>
+
+                                <label id="toLabel" class="form-label small text-secondary fw-semibold text-uppercase ms-1 mb-1" style="font-size: 0.7rem;">Destination</label>
+                                <div id="toLocation" class="position-relative"></div>
+                            </div>
+
+                            <div class="row g-3 mb-4">
+                                <div class="col-6 col-md-3 labeled-input-wrapper position-relative">
+                                    <label class="small text-secondary mb-1" style="font-size: 0.7rem;">Adults</label>
+                                    <select id="adults" name="adults" class="form-select ps-2">
+                                        @for($i=1; $i<=10; $i++) <option value="{{$i}}">{{$i}}</option> @endfor
+                                    </select>
+                                </div>
+                                <div class="col-6 col-md-3 labeled-input-wrapper position-relative">
+                                    <label class="small text-secondary mb-1" style="font-size: 0.7rem;">Children</label>
+                                    <select id="children" name="children" class="form-select ps-2">
+                                        @for($i=0; $i<=5; $i++) <option value="{{$i}}">{{$i}}</option> @endfor
+                                    </select>
+                                </div>
+                                <div class="col-6 col-md-3 labeled-input-wrapper position-relative">
+                                    <label class="small text-secondary mb-1" style="font-size: 0.7rem;">Luggage</label>
+                                    <select id="luggage" name="luggage" class="form-select ps-2">
+                                        @for($i=0; $i<=8; $i++) <option value="{{$i}}">{{$i}}</option> @endfor
+                                    </select>
+                                </div>
+                                <div class="col-6 col-md-3 labeled-input-wrapper position-relative">
+                                    <label class="small text-secondary mb-1" style="font-size: 0.7rem;">Seats</label>
+                                    <select id="childSeats" name="childSeats" class="form-select ps-2">
+                                        <option value="0">None</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="border-top border-secondary border-opacity-25 pt-3 mt-3">
+                                <div class="d-flex align-items-center mb-2 toggle-extras">
+                                    <div class="bg-success rounded-circle d-flex align-items-center justify-content-center me-2 text-white" style="width:24px; height:24px">
+                                        <span class="transition-icon fw-bold" style="line-height:0; margin-top:-2px">+</span>
+                                    </div>
+                                    <h3 class="fs-6 fw-semibold text-white mb-0">Add Stops & Seats</h3>
+                                </div>
+
+                                <div id="extrasSection" class="extras-section ps-1 pe-1">
+                                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-secondary border-opacity-10">
+                                        <div>
+                                            <label class="small text-light fw-semibold">Stopover</label>
+                                            <span class="small text-secondary d-block" style="font-size: 0.7rem;">$25 / stop</span>
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            <select id="stopover" name="stopover" data-price="25" class="form-select form-select-sm seat-select me-2" style="width: 60px;">
+                                                <option value="0">0</option><option value="1">1</option><option value="2">2</option>
+                                            </select>
+                                            <span id="stopoverTotal" class="fw-bold text-success small text-end" style="width: 30px;">$0</span>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-secondary border-opacity-10">
+                                        <div>
+                                            <label class="small text-light fw-semibold">Infant Seat</label>
+                                            <span class="small text-secondary d-block" style="font-size: 0.7rem;">$10 (0-2 yrs)</span>
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            <select id="infantSeat" name="infant_seat" data-price="10" class="form-select form-select-sm seat-select me-2" style="width: 60px;">
+                                                <option value="0">0</option><option value="1">1</option><option value="2">2</option>
+                                            </select>
+                                            <span id="infantSeatTotal" class="fw-bold text-success small text-end" style="width: 30px;">$0</span>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center py-2">
+                                        <div>
+                                            <label class="small text-light fw-semibold">Booster Seat</label>
+                                            <span class="small text-secondary d-block" style="font-size: 0.7rem;">$5 (5-7 yrs)</span>
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            <select id="boosterSeat" name="booster_seat" data-price="5" class="form-select form-select-sm seat-select me-2" style="width: 60px;">
+                                                <option value="0">0</option><option value="1">1</option><option value="2">2</option>
+                                            </select>
+                                            <span id="boosterSeatTotal" class="fw-bold text-success small text-end" style="width: 30px;">$0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-4">
+                                <div id="messageBox" class="alert d-none text-center fw-medium p-2 small mb-3"></div>
+                                <button type="submit" class="btn w-100 text-dark fw-bold text-uppercase py-3"
+                                    style="background-color: var(--accent-color); box-shadow:0 4px 15px rgba(16,185,129,0.25); letter-spacing: 1px;">
+                                    Get Price & Book
+                                </button>
+                                <p class="text-center small mt-3 text-secondary" style="font-size: 0.8rem;">
+                                    <i class="fas fa-lock me-1"></i> Secure • <span class="text-success">10% Off</span> for cash
+                                </p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
 
-      </div>
+            <div class="col-lg-6 ps-lg-5 d-none d-lg-block">
+                <div class="hero-image-container">
+                    <img src="{{ asset('images/car.jpg') }}" alt="Premium Luxury Car">
+                    <div class="position-absolute bottom-0 start-0 w-100 p-5" style="background: linear-gradient(to top, rgba(0,0,0,0.95), transparent);">
+                        <h1 class="text-white fw-bold display-5">Travel in Comfort</h1>
+                        <p class="text-light opacity-75 lead">Experience the best airport transfer service in Boston. Flat rates, professional drivers, and luxury vehicles.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
-  </section>
+</section>
 
-  <footer>
-    <div class="footer-content">
-      <div>
-        <h5 class="text-white mb-3">LUXE RIDE</h5>
-        <p class="small">Experience the best in class chauffeur service. Reliable, Safe and Luxurious.</p>
-        <div class="mt-3">
-            <a href="#" class="social-link">F</a>
-            <a href="#" class="social-link">T</a>
-            <a href="#" class="social-link">I</a>
-        </div>
-      </div>
-      <div>
-        <h6 class="text-white mb-3">Company</h6>
-        <div style="display:flex; flex-direction:column; gap:8px; font-size:0.9rem;">
-          <a href="#" style="color:inherit; text-decoration:none;">About</a>
-          <a href="#" style="color:inherit; text-decoration:none;">Services</a>
-          <a href="#" style="color:inherit; text-decoration:none;">Fleet</a>
-        </div>
-      </div>
-      <div>
-        <h6 class="text-white mb-3">Support</h6>
-        <div style="display:flex; flex-direction:column; gap:8px; font-size:0.9rem;">
-          <a href="#" style="color:inherit; text-decoration:none;">FAQ</a>
-          <a href="#" style="color:inherit; text-decoration:none;">Contact</a>
-          <a href="#" style="color:inherit; text-decoration:none;">Terms</a>
-        </div>
-      </div>
-      <div>
-        <h6 class="text-white mb-3">Contact</h6>
-        <p class="small">123 Luxury Ave,<br>New York, NY 10001<br>+1 (555) 123-4567</p>
-      </div>
-    </div>
-    <div class="text-center small border-top border-secondary border-opacity-25 pt-3">
-        &copy; 2025 Luxe Ride. All Rights Reserved.
-    </div>
-  </footer>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // --- 1. CONFIGURATION ---
+        const AIRPORTS = [
+            { value: 'logan', label: 'Logan Airport (BOS)' },
+            { value: 'jfk', label: 'JFK Airport (NY)' },
+            { value: 'pvd', label: 'T.F. Green (PVD)' },
+            { value: 'mht', label: 'Manchester (MHT)' }
+        ];
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        // --- 2. DOM ELEMENTS ---
+        const dateInput = document.getElementById("date");
+        const timeSelect = document.getElementById("time");
+        const reservationForm = document.getElementById("reservationForm");
+        const messageBox = document.getElementById("messageBox");
 
-  <script>
-    /* 1. Constants & Elements */
-    const AIRPORTS = [
-      { value: 'logan', label: 'Logan Airport (BOS)' },
-      { value: 'jfk', label: 'JFK Airport (NY)' },
-      { value: 'lax', label: 'Los Angeles (LAX)' }
-    ];
-
-    const timeSelect = document.getElementById('time');
-    const dateInput = document.getElementById('date');
-    const reservationForm = document.getElementById('reservationForm');
-    const messageBox = document.getElementById('messageBox');
-
-    /* 2. Mobile Menu Logic */
-    const menuToggle = document.getElementById('menuToggle');
-    const mobileNav = document.getElementById('mobileNav');
-    if(menuToggle){
-        menuToggle.addEventListener('click', () => {
-            mobileNav.classList.toggle('active');
-        });
-        // Close on link click
-        document.querySelectorAll('.mobile-nav-links a').forEach(a => {
-            a.addEventListener('click', () => mobileNav.classList.remove('active'));
-        });
-    }
-
-    /* 3. Generate Time Options */
-    function generateTimeOptions() {
-      if(!timeSelect) return;
-      timeSelect.innerHTML = '<option value="">Select Time</option>';
-      for (let h = 0; h < 24; h++) {
-        for (let m = 0; m < 60; m += 15) {
-          const hh = String(h).padStart(2,'0');
-          const mm = String(m).padStart(2,'0');
-          const display = `${h%12||12}:${mm} ${h<12?'AM':'PM'}`;
-          const opt = document.createElement('option');
-          opt.value = `${hh}:${mm}`;
-          opt.textContent = display;
-          timeSelect.appendChild(opt);
-        }
-      }
-    }
-
-    /* 4. Dynamic Addresses (With NAME attributes) */
-    const fromLocation = document.getElementById('fromLocation');
-    const toLocation = document.getElementById('toLocation');
-    const fromLabel = document.getElementById('fromLabel');
-    const toLabel = document.getElementById('toLabel');
-
-    function buildInput(id, name, placeholder) {
-        return `<div class="position-relative"><input type="text" id="${id}" name="${name}" class="form-control" placeholder="${placeholder}" required></div>`;
-    }
-
-    function buildSelect(id, name) {
-        let opts = AIRPORTS.map(a => `<option value="${a.value}">${a.label}</option>`).join('');
-        return `<div class="position-relative">
-                  <select id="${id}" name="${name}" class="form-select">${opts}</select>
-                  <span class="input-icon">✈️</span>
-                </div>`;
-    }
-
-    function updateAddressFields() {
-        const type = document.querySelector('input[name="tripType"]:checked').value;
-        fromLocation.innerHTML = '';
-        toLocation.innerHTML = '';
-
-        if(type === 'toAirport') {
-            fromLabel.textContent = 'Pickup Address';
-            toLabel.textContent = 'Dropoff Airport';
-            fromLocation.innerHTML = buildInput('pickupAddr', 'pickup_address', 'Enter Pickup Address');
-            toLocation.innerHTML = buildSelect('dropoffAirport', 'dropoff_airport');
-        } else if(type === 'fromAirport') {
-            fromLabel.textContent = 'Pickup Airport';
-            toLabel.textContent = 'Dropoff Address';
-            fromLocation.innerHTML = buildSelect('pickupAirport', 'pickup_airport');
-            toLocation.innerHTML = buildInput('dropoffAddr', 'dropoff_address', 'Enter Dropoff Address');
-        } else {
-            fromLabel.textContent = 'Pickup Address';
-            toLabel.textContent = 'Dropoff Address';
-            fromLocation.innerHTML = buildInput('pickupAddr', 'pickup_address', 'Enter Pickup Address');
-            toLocation.innerHTML = buildInput('dropoffAddr', 'dropoff_address', 'Enter Dropoff Address');
-        }
-    }
-
-    /* 5. Extras Calculation */
-    const extraIds = ['stopover', 'infantSeat', 'boosterSeat'];
-    function calcExtras() {
-        let total = 0;
-        extraIds.forEach(id => {
-            const el = document.getElementById(id);
-            const price = parseInt(el.dataset.price);
-            const qty = parseInt(el.value);
-            const sub = price * qty;
-            document.getElementById(id+'Total').textContent = '$' + sub;
-            total += sub;
-        });
-        document.getElementById('extrasTotalInput').value = total;
-    }
-
-    /* 6. Event Listeners & Init */
-    document.querySelectorAll('.custom-radio-input').forEach(r => r.addEventListener('change', updateAddressFields));
-    extraIds.forEach(id => document.getElementById(id).addEventListener('change', calcExtras));
-
-    window.addEventListener('DOMContentLoaded', () => {
-        // Set Min Date
-        const today = new Date().toISOString().split('T')[0];
+        // --- 3. INIT DATE & TIME ---
+        const today = new Date().toISOString().split("T")[0];
         dateInput.min = today;
-        dateInput.value = today;
+        if(!dateInput.value) dateInput.value = today;
 
+        function generateTimeOptions() {
+            timeSelect.innerHTML = '<option value="">Select Time</option>';
+            for (let h = 0; h < 24; h++) {
+                for (let m = 0; m < 60; m += 15) {
+                    const hh = String(h).padStart(2, "0");
+                    const mm = String(m).padStart(2, "0");
+                    const period = h < 12 ? "AM" : "PM";
+                    const displayH = h % 12 || 12;
+                    const label = `${displayH}:${mm} ${period}`;
+                    timeSelect.innerHTML += `<option value="${hh}:${mm}">${label}</option>`;
+                }
+            }
+        }
         generateTimeOptions();
-        updateAddressFields();
-        calcExtras();
-    });
 
-    /* 7. Form Submit */
-    reservationForm.addEventListener('submit', (e) => {
-        e.preventDefault();
+        // --- 4. DYNAMIC ADDRESS LOGIC ---
+        const fromLocation = document.getElementById("fromLocation");
+        const toLocation = document.getElementById("toLocation");
+        const fromLabel = document.getElementById("fromLabel");
+        const toLabel = document.getElementById("toLabel");
 
-        const dateVal = dateInput.value;
-        const timeVal = timeSelect.value;
-        const pInput = fromLocation.querySelector('input, select');
-        const dInput = toLocation.querySelector('input, select');
-
-        // Simple validation
-        if(!dateVal || !timeVal || !pInput.value || !dInput.value) {
-            messageBox.classList.remove('d-none', 'alert-success');
-            messageBox.classList.add('alert', 'alert-danger');
-            messageBox.textContent = "Please fill in all required fields (Date, Time, Locations).";
-            return;
+        function buildInput(id, name, placeholder) {
+            return `
+            <input type="text" id="${id}" name="${name}" class="form-control" placeholder="${placeholder}" required>
+            <span class="input-icon"><i class="fas fa-map-marker-alt"></i></span>
+            `;
         }
 
-        // Pass validation -> Submit to Server
-        messageBox.classList.remove('d-none', 'alert-danger');
-        messageBox.classList.add('alert', 'alert-success');
-        messageBox.textContent = "Validating... Redirecting...";
+        function buildAirportSelect(id, name) {
+            let options = AIRPORTS.map(a => `<option value="${a.value}">${a.label}</option>`).join("");
+            return `
+            <select id="${id}" name="${name}" class="form-select">${options}</select>
+            <span class="input-icon"><i class="fas fa-plane"></i></span>
+            `;
+        }
 
-        // Actually submit the form to the action URL
-        reservationForm.submit();
+        function updateAddressFields() {
+            const type = document.querySelector('input[name="tripType"]:checked').value;
+
+            if (type === "toAirport") {
+                fromLabel.textContent = "Pickup Address";
+                toLabel.textContent = "Dropoff Airport";
+                fromLocation.innerHTML = buildInput("pickup_address", "pickup_address", "City, Zip, Street");
+                toLocation.innerHTML = buildAirportSelect("dropoff_airport", "dropoff_airport");
+            } else if (type === "fromAirport") {
+                fromLabel.textContent = "Pickup Airport";
+                toLabel.textContent = "Dropoff Address";
+                fromLocation.innerHTML = buildAirportSelect("pickup_airport", "pickup_airport");
+                toLocation.innerHTML = buildInput("dropoff_address", "dropoff_address", "City, Zip, Street");
+            } else {
+                fromLabel.textContent = "Pickup Address";
+                toLabel.textContent = "Dropoff Address";
+                fromLocation.innerHTML = buildInput("pickup_address", "pickup_address", "Enter Pickup");
+                toLocation.innerHTML = buildInput("dropoff_address", "dropoff_address", "Enter Dropoff");
+            }
+        }
+
+        document.querySelectorAll(".custom-radio-input").forEach(r => r.addEventListener("change", updateAddressFields));
+        updateAddressFields();
+
+        // --- 5. EXTRAS CALCULATION ---
+        const extraIds = ["stopover", "infantSeat", "boosterSeat"];
+
+        function calcExtras() {
+            let total = 0;
+            extraIds.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) {
+                    const price = parseInt(el.dataset.price);
+                    const qty = parseInt(el.value);
+                    const sub = price * qty;
+                    total += sub;
+                    document.getElementById(id + "Total").textContent = "$" + sub;
+                }
+            });
+            document.getElementById("extrasTotalInput").value = total;
+        }
+        extraIds.forEach(id => document.getElementById(id)?.addEventListener("change", calcExtras));
+
+        // Toggle extras section
+        const toggleExtras = document.querySelector(".toggle-extras");
+        const extrasSection = document.getElementById("extrasSection");
+        const toggleIcon = toggleExtras.querySelector(".transition-icon");
+
+        toggleExtras.addEventListener("click", () => {
+            if (extrasSection.style.display === "none" || extrasSection.style.display === "") {
+                extrasSection.style.display = "block";
+                toggleIcon.textContent = "−";
+            } else {
+                extrasSection.style.display = "none";
+                toggleIcon.textContent = "+";
+            }
+        });
+
+        // --- 6. VALIDATION ---
+        reservationForm.addEventListener("submit", function (e) {
+            if (!this.checkValidity()) {
+                e.preventDefault();
+                e.stopPropagation();
+                messageBox.classList.remove("d-none", "alert-success");
+                messageBox.classList.add("alert", "alert-danger");
+                messageBox.textContent = "Please fill in all required fields.";
+                return;
+            }
+            if (!dateInput.value || !timeSelect.value) {
+                e.preventDefault();
+                messageBox.classList.remove("d-none");
+                messageBox.classList.add("alert", "alert-danger");
+                messageBox.textContent = "Please select Date & Time.";
+                return;
+            }
+            messageBox.classList.remove("d-none", "alert-danger");
+            messageBox.classList.add("alert", "alert-success");
+            messageBox.textContent = "Calculating fare...";
+        });
     });
-  </script>
-</body>
-</html>
+</script>
