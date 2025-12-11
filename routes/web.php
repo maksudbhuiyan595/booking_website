@@ -15,5 +15,5 @@ Route::controller(HomeController::class)->group(function () {
     Route::get('/step4', 'step4')->name('step4');
 
     // Route::get('/about', 'about')->name('about');
-    // Route::get('/contact', 'contact')->name('contact');
+    Route::get('/airports', 'airport')->name('airports');
 });
