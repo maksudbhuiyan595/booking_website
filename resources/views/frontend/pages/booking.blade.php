@@ -58,7 +58,7 @@
     </section>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAocOxnI1fKkcZPIDH-ir2iw8y2kBqk-H4&libraries=places"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key= &libraries=places"></script>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
