@@ -24,7 +24,25 @@ class GeneralSettings extends Settings
     public float $stopover_fee;
     public float $luggage_fee;
 
-    public array $luggage_rules;
+    public array $luggage_rules = [];
+
+    // --- AVAILABILITY SETTINGS ---
+    public string $booking_status; // 'open', 'closed', 'scheduled'
+    public ?string $closing_message;
+
+    public ?string $schedule_type; // 'daily', 'weekly', 'specific_date'
+
+    // Daily
+    public ?string $daily_start_time;
+    public ?string $daily_end_time;
+
+    // Weekly
+    public array $weekly_off_days = [];
+
+    // Specific Date
+    public ?string $closed_start_date;
+    public ?string $closed_end_date;
+
 
     public static function group(): string
     {

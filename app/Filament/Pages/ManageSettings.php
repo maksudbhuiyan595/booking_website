@@ -4,23 +4,30 @@ namespace App\Filament\Pages;
 
 use App\Settings\GeneralSettings;
 use Filament\Actions\Action;
+use Filament\Forms\Components\CheckboxList;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\TimePicker;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Schemas\Components\Utilities\Get;
 use Illuminate\Support\Facades\Storage;
 
 class ManageSettings extends Page
 {
-    // v4 Strict Type Fix
+
     protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-cog-6-tooth';
     protected static string | \UnitEnum | null $navigationGroup = 'Settings';
 
@@ -47,6 +54,16 @@ class ManageSettings extends Page
             'stopover_fee' => $settings->stopover_fee,
             'luggage_fee' => $settings->luggage_fee,
             'luggage_rules' => $settings->luggage_rules,
+
+            // Availability Settings
+            'booking_status' => $settings->booking_status,
+            'closing_message' => $settings->closing_message,
+            'schedule_type' => $settings->schedule_type,
+            'daily_start_time' => $settings->daily_start_time,
+            'daily_end_time' => $settings->daily_end_time,
+            'weekly_off_days' => $settings->weekly_off_days,
+            'closed_start_date' => $settings->closed_start_date,
+            'closed_end_date' => $settings->closed_end_date,
         ]);
     }
 
@@ -184,6 +201,81 @@ class ManageSettings extends Page
                                     ->grid(1)
                                     ->itemLabel(fn(array $state): ?string => 'Rule for ' . ($state['passenger_count'] ?? '?') . ' Passengers'),
                             ]),
+
+                        Tab::make('Availability')
+                            ->icon('heroicon-m-clock')
+                            ->schema([
+                                Section::make('Booking Status Control')
+                                    ->schema([
+                                        Radio::make('booking_status')
+                                            ->label('Current Status')
+                                            ->options([
+                                                'open' => 'Always Open (24/7)',
+                                                'closed' => 'Force Closed',
+                                                'scheduled' => 'Scheduled (Auto)',
+                                            ])
+                                            ->default('open')
+                                            ->live()
+                                            ->required()
+                                            ->columnSpanFull(),
+
+                                        TextInput::make('closing_message')
+                                            ->label('Message for Customers')
+                                            ->placeholder('e.g. We are currently closed.')
+                                            ->visible(fn(Get $get) => $get('booking_status') !== 'open')
+                                            ->columnSpanFull(),
+
+                                        // --- SCHEDULE LOGIC ---
+                                        Group::make([
+                                            Select::make('schedule_type')
+                                                ->label('Closing Type')
+                                                ->options([
+                                                    'daily' => 'Daily Recurring (Time)',
+                                                    'weekly' => 'Weekly Recurring (Day)',
+                                                    'specific_date' => 'Specific Date Range',
+                                                ])
+                                                ->default('daily')
+                                                ->live()
+                                                ->required(),
+
+                                            // 1. Daily Time
+                                            Group::make([
+                                                TimePicker::make('daily_start_time')->label('Close From')->seconds(false),
+                                                TimePicker::make('daily_end_time')->label('Open At')->seconds(false),
+                                            ])
+                                                ->visible(fn(Get $get) => $get('schedule_type') === 'daily')
+                                                ->columns(2),
+
+                                            // 2. Weekly Days
+                                            Group::make([
+                                                CheckboxList::make('weekly_off_days')
+                                                    ->label('Select Closed Days')
+                                                    ->options([
+                                                        'Monday' => 'Monday',
+                                                        'Tuesday' => 'Tuesday',
+                                                        'Wednesday' => 'Wednesday',
+                                                        'Thursday' => 'Thursday',
+                                                        'Friday' => 'Friday',
+                                                        'Saturday' => 'Saturday',
+                                                        'Sunday' => 'Sunday',
+                                                    ])
+                                                    ->columns(4),
+                                            ])
+                                                ->visible(fn(Get $get) => $get('schedule_type') === 'weekly'),
+
+                                            // 3. Specific Date
+                                            Group::make([
+                                                DateTimePicker::make('closed_start_date')->label('Close From'),
+                                                DateTimePicker::make('closed_end_date')->label('Open At'),
+                                            ])
+                                                ->visible(fn(Get $get) => $get('schedule_type') === 'specific_date')
+                                                ->columns(2),
+
+                                        ])
+                                            ->visible(fn(Get $get) => $get('booking_status') === 'scheduled')
+                                            ->columnSpanFull(),
+                                    ]),
+                            ]),
                     ])->columnSpanFull(),
             ])
             ->statePath('data');
@@ -193,28 +285,44 @@ class ManageSettings extends Page
     public function save(): void
     {
         $settings = app(GeneralSettings::class);
-
         $data = $this->form->getState();
 
-        if ($settings->site_logo && $settings->site_logo !== $data['site_logo']) {
+        // --- Company Profile ---
+        $settings->site_name = $data['site_name'] ?? $settings->site_name;
+
+        // Logo Logic
+        if (isset($data['site_logo']) && $settings->site_logo && $settings->site_logo !== $data['site_logo']) {
             Storage::disk('public')->delete($settings->site_logo);
         }
+        $settings->site_logo = $data['site_logo'] ?? $settings->site_logo;
 
-        $settings->site_name = $data['site_name'];
-        $settings->site_logo = $data['site_logo'];
-        $settings->company_phone = $data['company_phone'];
-        $settings->company_email = $data['company_email'];
-        $settings->company_address = $data['company_address'];
+        $settings->company_phone = $data['company_phone'] ?? null;
+        $settings->company_email = $data['company_email'] ?? null;
+        $settings->company_address = $data['company_address'] ?? null;
 
-        $settings->gratuity_percent = $data['gratuity_percent'];
-        $settings->tax_percent = $data['tax_percent'];
-        $settings->credit_card_fee = $data['credit_card_fee'];
+        // --- Booking Rules ---
+        $settings->gratuity_percent = $data['gratuity_percent'] ?? 0;
+        $settings->tax_percent = $data['tax_percent'] ?? 0;
+        $settings->credit_card_fee = $data['credit_card_fee'] ?? 0;
 
-        $settings->child_seat_fee = $data['child_seat_fee'];
-        $settings->booster_seat_fee = $data['booster_seat_fee'];
-        $settings->stopover_fee = $data['stopover_fee'];
-        $settings->luggage_fee = $data['luggage_fee'];
-        $settings->luggage_rules = $data['luggage_rules'];
+        // --- Fixed Charges ---
+        $settings->child_seat_fee = $data['child_seat_fee'] ?? 0;
+        $settings->booster_seat_fee = $data['booster_seat_fee'] ?? 0;
+        $settings->stopover_fee = $data['stopover_fee'] ?? 0;
+        $settings->luggage_fee = $data['luggage_fee'] ?? 0;
+
+        // --- Luggage Rules ---
+        $settings->luggage_rules = $data['luggage_rules'] ?? [];
+        // --- Availability Settings ---
+        $settings->booking_status = $data['booking_status'] ?? 'open';
+        $settings->closing_message = $data['closing_message'] ?? null;
+        $settings->schedule_type = $data['schedule_type'] ?? 'daily';
+
+        $settings->daily_start_time = $data['daily_start_time'] ?? null;
+        $settings->daily_end_time = $data['daily_end_time'] ?? null;
+        $settings->weekly_off_days = $data['weekly_off_days'] ?? [];
+        $settings->closed_start_date = $data['closed_start_date'] ?? null;
+        $settings->closed_end_date = $data['closed_end_date'] ?? null;
 
         $settings->save();
 
