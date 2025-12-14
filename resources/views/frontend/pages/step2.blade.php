@@ -2,253 +2,445 @@
 
 @section('content')
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
 <style>
     body {
         background: #ffffff !important;
         font-family: "Inter", sans-serif;
-    }
-
-    .page-header {
-        padding: 40px 0;
-        margin-bottom: 30px;
-        border-bottom: 1px solid #eaeaea;
-    }
-
-    .step-text {
-        color: #6c757d;
-        font-size: 0.9rem;
-    }
-
-    /* Cards */
-    .custom-card {
-        background: #ffffff;
-        border-radius: 14px;
-        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.05);
-        border: 1px solid #f0f0f0;
-    }
-
-    .vehicle-img-box {
-        padding: 25px;
-        background: #f7f9fc;
-        border-bottom: 1px solid #eee;
-        text-align: center;
-    }
-
-    .vehicle-img {
-        width: 100%;
-        max-width: 260px;
-    }
-
-    .vehicle-title {
-        text-align: center;
-        padding: 15px 0;
-        font-size: 1.1rem;
-        font-weight: 700;
         color: #333;
+        margin-top: 25px;
     }
 
-    .vehicle-stats {
-        display: flex;
-        justify-content: space-between;
+    /* --- Breadcrumbs --- */
+    .breadcrumb-nav {
+        font-size: 0.85rem;
+        color: #0FA96D;
+        margin-bottom: 20px;
+        padding-top: 20px;
+    }
+    .breadcrumb-nav a {
+        color: #666;
+        text-decoration: none;
+    }
+    .breadcrumb-nav span {
+        margin: 0 5px;
+        color: #999;
+    }
+
+    /* --- Page Headers --- */
+    .page-title {
+        font-weight: 800;
+        color: #222;
+        margin-bottom: 5px;
+    }
+    .step-text {
+        color: #999;
+        font-weight: 500;
+        margin-bottom: 30px;
+    }
+
+    /* --- LEFT COLUMN: Vehicle Card --- */
+    .vehicle-card-dark {
+        background: #2c3e50; /* Dark Slate Color */
+        border-radius: 8px;
         padding: 20px;
         text-align: center;
-    }
-
-    .stat-item i {
-        font-size: 1.6rem;
-        color: #0FA96D;
-        margin-bottom: 8px;
-    }
-
-    .stat-item span {
-        font-weight: 600;
-        color: #333;
-    }
-
-    /* Booking Details */
-    .price-row {
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+        min-height: 380px;
         display: flex;
+        flex-direction: column;
         justify-content: space-between;
-        padding: 10px 0;
-        border-bottom: 1px dashed #ddd;
-        font-size: 0.95rem;
-        color: #333;
     }
 
-    .total-row {
-        font-size: 1.25rem;
+    /* Simulate the city background graphic using a gradient or image if you have one */
+    .vehicle-card-dark::before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 100px;
+        background: linear-gradient(to top, rgba(0,0,0,0.3), transparent);
+        z-index: 0;
+    }
+
+    .info-icon-top {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        background: #fff;
+        color: #333;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        font-size: 0.8rem;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    .v-img-container {
+        position: relative;
+        z-index: 1;
+        margin-bottom: 10px;
+    }
+
+    .v-img {
+        width: 100%;
+        max-width: 250px;
+        filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3));
+    }
+
+    .v-name {
+        font-size: 1.1rem;
         font-weight: 700;
-        color: #0FA96D;
+        margin-bottom: 25px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .v-icons-row {
+        display: flex;
+        justify-content: space-around;
+        position: relative;
+        z-index: 1;
+        border-top: 1px solid rgba(255,255,255,0.1);
         padding-top: 15px;
     }
 
-    .extra-luggage-box {
-        background: #f8f9fc;
-        border: 1px solid #e3e3e3;
-        padding: 15px;
-        border-radius: 8px;
-        margin-top: 12px;
+    .v-icon-box i {
+        font-size: 1.8rem;
+        margin-bottom: 5px;
+        display: block;
+    }
+    .v-icon-box span {
+        font-size: 0.8rem;
+        opacity: 0.9;
     }
 
-    /* Summary Card */
-    .summary-card {
-        border-left: 4px solid #0FA96D;
-        background: #fdfdfd;
-        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.04);
-        border-radius: 12px;
+    /* --- LEFT COLUMN: Payment Box --- */
+    .payment-options-box {
+        background: #f9f9f9;
         border: 1px solid #eee;
+        margin-top: 20px;
+        position: relative;
+    }
+    .discount-badge {
+        position: absolute;
+        top: -10px;
+        left: -10px;
+        background: #ff0000;
+        color: #fff;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1rem;
+    }
+    .pay-col {
+        padding: 15px;
+        text-align: center;
+    }
+    .pay-col.left-col {
+        border-right: 1px solid #ddd;
+    }
+    .price-red { color: #ff0000; font-weight: 700; font-size: 1.2rem; }
+    .price-black { color: #333; font-weight: 700; font-size: 1.2rem; }
+    .pay-sub { font-size: 0.8rem; color: #555; margin-top: 4px; }
+    .pay-note {
+        font-size: 0.75rem;
+        color: #555;
+        margin-top: 10px;
+        line-height: 1.4;
     }
 
-    .s-label {
-        width: 110px;
+    /* --- MIDDLE COLUMN: Pricing --- */
+    .details-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #444;
+        margin-bottom: 20px;
+    }
+    .pricing-table {
+        width: 100%;
+        font-size: 0.95rem;
+        color: #444;
+    }
+    .pricing-table td {
+        padding: 8px 0;
+        vertical-align: top;
+    }
+    .pricing-table td:first-child {
         font-weight: 600;
+        width: 50%;
+    }
+    .pricing-table td:nth-child(2) {
+        text-align: center;
+        width: 20px;
+    }
+    .pricing-table td:last-child {
+        text-align: right;
+        font-weight: 700;
+    }
+
+    .extra-luggage-card {
+        background: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        padding: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 20px 0;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+    }
+    .el-price {
+        text-align: right;
+    }
+    .el-total { font-weight: 700; font-size: 1.1rem; color: #333; }
+    .el-per { font-size: 0.75rem; color: #666; }
+
+    /* --- RIGHT COLUMN: Summary & Button --- */
+    .btn-book-green {
+        background-color: #006644; /* Dark Green */
+        color: #fff;
+        font-weight: 600;
+        width: 100%;
+        padding: 12px;
+        border-radius: 5px;
+        border: none;
+        font-size: 1rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .btn-book-green:hover { background-color: #004d33; color: #fff; }
+
+    .summary-yellow-box {
+        background-color: #fffbeb; /* Light Beige/Yellow */
+        border: 1px solid #f3eacb;
+        padding: 20px;
+        margin-top: 25px;
+        border-radius: 4px;
+    }
+    .summary-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    .summary-title { font-size: 1.1rem; font-weight: 700; color: #555; }
+    .btn-change {
+        background: #888;
+        color: #fff;
+        font-size: 0.75rem;
+        padding: 3px 10px;
+        border-radius: 3px;
+        text-decoration: none;
+        font-weight: 600;
+    }
+    .btn-change:hover { color: #fff; background: #666; }
+
+    .summary-list td {
+        padding: 6px 0;
+        font-size: 0.9rem;
+        vertical-align: top;
         color: #333;
     }
-
-    .s-value {
-        color: #555;
-        font-weight: 500;
+    .summary-list td:first-child {
+        font-weight: 600;
+        width: 100px;
     }
+    .summary-list td:nth-child(2) { width: 15px; }
 
-    /* Book Button */
-    .btn-book {
-        background: #0FA96D;
-        color: #fff;
-        padding: 13px;
-        width: 100%;
-        border-radius: 10px;
-        font-weight: 700;
-        font-size: 1rem;
-        border: none;
-        transition: 0.2s;
+    .vehicle-details-section {
+        margin-top: 20px;
+        border-top: 1px solid #eaddbc;
+        padding-top: 15px;
     }
+    .v-det-title { font-size: 1.1rem; font-weight: 700; color: #555; margin-bottom: 10px; }
 
-    .btn-book:hover {
-        background: #0c8b59;
-    }
-
-    .payment-note {
-        font-size: 0.85rem;
-        margin-top: 8px;
-        color: #6c757d;
-    }
 </style>
 
-<div class="container page-header">
-    <h2 class="fw-bold m-0">Select Vehicle & Confirm Ride Details</h2>
-    <div class="step-text">Your Current Selection (Step 2 of 4)</div>
-</div>
-
 <div class="container">
+    <div class="breadcrumb-nav">
+        <a href="#">Home</a> <span>&raquo;</span>
+        <a href="#">Reservation</a> <span>&raquo;</span>
+        <span style="color:#0FA96D">Choose vehicle ( Step 2 of 4 )</span>
+    </div>
+
+    <h2 class="page-title">Select Vehicle & Confirm Ride Details</h2>
+    <div class="step-text">Your Current Selection ( Step 2 of 4 )</div>
 
     <form action="{{ route('step3') }}" method="GET">
-
         @foreach(['date','time','tripType','pickup_address','dropoff_address','adults','children','luggage'] as $field)
             <input type="hidden" name="{{ $field }}" value="{{ $request[$field] }}">
         @endforeach
 
-        <input type="hidden" name="final_total" value="5879">
-
         <div class="row g-4">
 
-            <!-- VEHICLE -->
             <div class="col-lg-4">
-                <div class="custom-card">
-                    <div class="vehicle-img-box">
-                        <img src="https://images.unsplash.com/photo-1549399542-7e3f8b79c341?q=80&w=1000&auto=format&fit=crop"
-                             class="vehicle-img" alt="Van">
-                    </div>
-                    <div class="vehicle-title">7 Passenger Luxury Van</div>
+                <div class="vehicle-card-dark">
+                    <div class="info-icon-top"><i class="fas fa-info"></i></div>
 
-                    <div class="vehicle-stats">
-                        <div class="stat-item">
+                    <div class="v-img-container">
+                        <img src="{{ asset('images/cars11.webp') }}" class="v-img" alt="Car">
+                    </div>
+
+                    <div class="v-name">4 Passenger Luxury Van 10<br>Bags Capacity</div>
+
+                    <div class="v-icons-row">
+                        <div class="v-icon-box">
                             <i class="fas fa-user"></i>
-                            <span>7<br>Passengers</span>
+                            <span>4<br>Passengers</span>
                         </div>
-                        <div class="stat-item">
+                        <div class="v-icon-box">
                             <i class="fas fa-suitcase"></i>
-                            <span>4<br>Luggage</span>
+                            <span>6<br>Luggage</span>
                         </div>
-                        <div class="stat-item">
+                        <div class="v-icon-box">
                             <i class="fas fa-baby"></i>
-                            <span>4<br>Child Seat</span>
+                            <span>2<br>Child Seat</span>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- PRICE DETAILS -->
-            <div class="col-lg-4">
-                <div class="custom-card p-3">
-
-                    <h4 class="fw-bold mb-3">Booking Breakdown</h4>
-
-                    <div class="price-row"><span>Distance Covered</span><span>960 Miles</span></div>
-                    <div class="price-row"><span>Estimated Fare</span><span>$4870</span></div>
-                    <div class="price-row"><span>Gratuity (20%)</span><span>$974</span></div>
-                    <div class="price-row"><span>Airport Toll Tax</span><span>$15</span></div>
-                    <div class="price-row"><span>Night Charges</span><span>$10</span></div>
-                    <div class="price-row">
-                        <span>Child Seat / Stopover</span>
-                        <span>${{ $request->extras_total }}</span>
-                    </div>
-
-                    <div class="price-row total-row">
-                        <span>Total Payable</span>
-                        <span>$5879</span>
-                    </div>
-
-                    <div class="extra-luggage-box">
-                        <strong>Extra Luggage</strong>
-                        <div class="text-end">
-                            <div class="fw-bold fs-5">$0</div>
-                            <div style="font-size: 0.75rem;">($10.00/Bag)</div>
+                <div class="payment-options-box">
+                    <div class="discount-badge">%</div>
+                    <div class="d-flex">
+                        <div class="pay-col left-col w-50">
+                            <div class="fw-bold">Pay Cash : <span class="price-red">$4109</span></div>
+                            <div class="pay-sub">Get 10% Discount</div>
+                        </div>
+                        <div class="pay-col w-50">
+                            <div class="fw-bold">Pay By Card : <span class="price-black">$4748</span></div>
+                            <div class="pay-sub">4% Transaction charges</div>
                         </div>
                     </div>
-
-                    <p class="mt-2 text-muted" style="font-size: 0.8rem;">* 4 bags Free with this car. Extra charges apply above limit.</p>
+                </div>
+                <div class="pay-note">
+                    Pay only $1 & confirm your reservation. Balance is payable after service by cash or card. Avail 10% discount on cash payment.
                 </div>
             </div>
 
-            <!-- SUMMARY -->
             <div class="col-lg-4">
-                <button class="btn-book" type="submit">Book Now</button>
-                <div class="payment-note">Pay only $1 to confirm your reservation.</div>
+                <h3 class="details-title">Booking Details</h3>
 
-                <div class="summary-card p-4 mt-4">
-                    <h5 class="fw-bold mb-3">Booking Summary</h5>
+                <table class="pricing-table">
+                    <tr>
+                        <td>Distance Covered</td>
+                        <td>:</td>
+                        <td>926 Miles</td>
+                    </tr>
+                    <tr>
+                        <td>Estimated Fare</td>
+                        <td>:</td>
+                        <td>$3759.0</td>
+                    </tr>
+                    <tr>
+                        <td>Gratuity(20% of fare)</td>
+                        <td>:</td>
+                        <td>$751.8</td>
+                    </tr>
+                    <tr>
+                        <td>Airport Toll Tax</td>
+                        <td>:</td>
+                        <td>$15.0</td>
+                    </tr>
+                    <tr>
+                        <td>Night Charges</td>
+                        <td>:</td>
+                        <td>$10.0</td>
+                    </tr>
+                    <tr>
+                        <td class="pt-3">Total Payable</td>
+                        <td class="pt-3">:</td>
+                        <td class="pt-3">$4565.8</td>
+                    </tr>
+                </table>
 
-                    <div class="d-flex mb-2">
-                        <span class="s-label">Service</span>
-                        <span class="s-value">
-                            {{ $request->tripType == 'fromAirport' ? 'Ride From Airport' : 'Door to Door' }}
-                        </span>
+                <div class="extra-luggage-card">
+                    <span class="fw-bold text-dark">Extra Luggage</span>
+                    <div class="el-price">
+                        <div class="el-total">$30.0</div>
+                        <div class="el-per">($15.0/Bag)</div>
+                    </div>
+                </div>
+
+                <div style="font-size: 0.8rem; color: #555;">
+                    *4 bags Free with this car. Select Extra luggage as required
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+
+                <button type="submit" class="btn-book-green">Book Now</button>
+                <div class="text-center mt-2 mb-4" style="font-size: 0.8rem; color: #333;">
+                    Pay only $1 & confirm your reservation. Balance is payable after service
+                </div>
+
+                <div class="summary-yellow-box">
+                    <div class="summary-header">
+                        <div class="summary-title">Booking Details</div>
+                        <a href="{{ route('home') }}" class="btn-change">Change</a>
                     </div>
 
-                    <div class="d-flex mb-2"><span class="s-label">Date</span><span class="s-value">{{ $request->date }}</span></div>
-                    <div class="d-flex mb-2"><span class="s-label">Time</span><span class="s-value">{{ $request->time }}</span></div>
-                    <div class="d-flex mb-2"><span class="s-label">Pickup</span><span class="s-value">{{ $request->pickup_address }}</span></div>
-                    <div class="d-flex mb-2"><span class="s-label">Dropoff</span><span class="s-value">{{ $request->dropoff_address }}</span></div>
+                    <table class="summary-list">
+                        <tr>
+                            <td>Service</td>
+                            <td>:</td>
+                            <td>{{ $request->tripType == 'fromAirport' ? 'Ride From Airport' : 'Door to Door' }}</td>
+                        </tr>
+                        <tr>
+                            <td>Date</td>
+                            <td>:</td>
+                            <td>{{ $request->date }}</td>
+                        </tr>
+                        <tr>
+                            <td>Time</td>
+                            <td>:</td>
+                            <td>{{ $request->time }}</td>
+                        </tr>
+                        <tr>
+                            <td>Pick up</td>
+                            <td>:</td>
+                            <td>{{ $request->pickup_address }}</td>
+                        </tr>
+                        <tr>
+                            <td>Drop off</td>
+                            <td>:</td>
+                            <td>{{ $request->dropoff_address }}</td>
+                        </tr>
+                        <tr>
+                            <td>Passengers</td>
+                            <td>:</td>
+                            <td>{{ (int)$request->adults + (int)$request->children }} ({{$request->adults}} Adults + {{$request->children}} Children)</td>
+                        </tr>
+                        <tr>
+                            <td>Luggage</td>
+                            <td>:</td>
+                            <td>{{ $request->luggage }} (4 Bags Free + 2 Extra)</td>
+                        </tr>
+                    </table>
 
-                    <div class="d-flex mb-2">
-                        <span class="s-label">Passengers</span>
-                        <span class="s-value">
-                            {{ (int)$request->adults + (int)$request->children }}
-                            <small class="text-muted"> ({{ $request->adults }} Adults + {{ $request->children }} Children)</small>
-                        </span>
-                    </div>
-
-                    <div class="d-flex mb-2">
-                        <span class="s-label">Luggage</span>
-                        <span class="s-value">{{ $request->luggage }}</span>
+                    <div class="vehicle-details-section">
+                        <div class="v-det-title">Vehicle Details</div>
+                        <table class="summary-list">
+                            <tr>
+                                <td>Vehicle</td>
+                                <td>:</td>
+                                <td>4 Passenger Luxury Van 10 Bags Capacity</td>
+                            </tr>
+                        </table>
                     </div>
 
                 </div>
             </div>
 
-        </div>
-    </form>
-
+        </div> </form>
 </div>
 
 @endsection
