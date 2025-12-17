@@ -265,182 +265,238 @@
 
 </style>
 
-<div class="container">
-    <div class="breadcrumb-nav">
-        <a href="#">Home</a> <span>&raquo;</span>
-        <a href="#">Reservation</a> <span>&raquo;</span>
-        <span style="color:#0FA96D">Choose vehicle ( Step 2 of 4 )</span>
-    </div>
+    <div class="container mb-5">
+        <div class="breadcrumb-nav">
+            <a href="#">Home</a> <span>&raquo;</span>
+            <a href="#">Reservation</a> <span>&raquo;</span>
+            <span style="color:#0FA96D">Choose vehicle ( Step 2 of 4 )</span>
+        </div>
 
-    <h2 class="page-title">Select Vehicle & Confirm Ride Details</h2>
-    <div class="step-text">Your Current Selection ( Step 2 of 4 )</div>
+        <h2 class="page-title">Select Vehicle & Confirm Ride Details</h2>
+        <div class="step-text">Your Current Selection ( Step 2 of 4 )</div>
 
-    <form action="{{ route('step3') }}" method="GET">
-        @foreach(['date','time','tripType','pickup_address','dropoff_address','adults','children','luggage'] as $field)
-            <input type="hidden" name="{{ $field }}" value="{{ $request[$field] }}">
-        @endforeach
+        <form action="{{ route('step3') }}" method="GET">
 
-        <div class="row g-4">
+                {{-- 1. Pass the Main Request Data (Step 1 Search Inputs) --}}
+                    @foreach($request as $key => $value)
+                        @if(!is_array($value))
+                            <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                        @endif
+                    @endforeach
 
-            <div class="col-lg-4">
-                <div class="vehicle-card-dark">
-                    <div class="info-icon-top"><i class="fas fa-info"></i></div>
+                    {{-- 2. Pass Root Level Controller Variables --}}
+                    <input type="hidden" name="trip_type" value="{{ $trip_type }}">
+                    <input type="hidden" name="distance_miles" value="{{ $distance_miles }}">
+                    <input type="hidden" name="vehicles_used" value="{{ $vehicles_used }}">
+                    <input type="hidden" name="pickup_formatted" value="{{ $pickup }}">
+                    <input type="hidden" name="dropoff_formatted" value="{{ $dropoff }}">
 
-                    <div class="v-img-container">
-                        <img src="{{ asset('images/cars11.webp') }}" class="v-img" alt="Car">
+                    {{-- 3. Pass Nested Fare Array (Flattened) --}}
+                    @foreach($fare as $fareKey => $fareValue)
+                        <input type="hidden" name="fare[{{ $fareKey }}]" value="{{ $fareValue }}">
+                    @endforeach
+
+                    {{-- 4. Pass Extra Charge Details (Flattened) --}}
+                    @if(isset($extra_charge_details) && is_array($extra_charge_details))
+                        @foreach($extra_charge_details as $index => $charge)
+                            <input type="hidden" name="extra_charge_details[{{ $index }}][name]" value="{{ $charge['name'] ?? '' }}">
+                            <input type="hidden" name="extra_charge_details[{{ $index }}][amount]" value="{{ $charge['amount'] ?? 0 }}">
+                        @endforeach
+                    @endif
+
+
+
+
+
+
+            <div class="row g-4">
+
+                {{-- LEFT COLUMN: Vehicle Card --}}
+                <div class="col-lg-4">
+                    <div class="vehicle-card-dark">
+                        <div class="info-icon-top"><i class="fas fa-info"></i></div>
+
+                        <div class="v-img-container">
+                            <img src="{{ asset('images/cars11.webp') }}" class="v-img" alt="Car">
+                        </div>
+
+                        <div class="v-name">6 Passenger Luxury Van 12<br>Bags Capacity</div>
+
+                        <div class="v-icons-row">
+                            <div class="v-icon-box">
+                                <i class="fas fa-user"></i>
+                                <span>{{ ((int)($request['adults'] ?? 0) + (int)($request['children'] ?? 0)) }}<br>Passengers</span>
+                            </div>
+                            <div class="v-icon-box">
+                                <i class="fas fa-suitcase"></i>
+                                <span>{{ $request['luggage'] }}<br>Luggage</span>
+                            </div>
+                            <div class="v-icon-box">
+                                <i class="fas fa-baby"></i>
+                                <span>{{ $request['seats_dummy'] }}<br>Child Seat</span>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="v-name">4 Passenger Luxury Van 10<br>Bags Capacity</div>
-
-                    <div class="v-icons-row">
-                        <div class="v-icon-box">
-                            <i class="fas fa-user"></i>
-                            <span>4<br>Passengers</span>
-                        </div>
-                        <div class="v-icon-box">
-                            <i class="fas fa-suitcase"></i>
-                            <span>6<br>Luggage</span>
-                        </div>
-                        <div class="v-icon-box">
-                            <i class="fas fa-baby"></i>
-                            <span>2<br>Child Seat</span>
+                    <div class="payment-options-box">
+                        <div class="discount-badge">%</div>
+                        <div class="d-flex">
+                            <div class="pay-col left-col w-50">
+                                <div class="fw-bold">Pay Cash : <span class="price-red">${{ number_format($fare['total'] * 0.9, 2) }}</span></div>
+                                <div class="pay-sub">Get 10% Discount</div>
+                            </div>
+                            <div class="pay-col w-50">
+                                <div class="fw-bold">Pay By Card : <span class="price-black">${{ number_format($fare['total'], 2) }}</span></div>
+                                <div class="pay-sub">Pay full online</div>
+                            </div>
                         </div>
                     </div>
-                </div>
-
-                <div class="payment-options-box">
-                    <div class="discount-badge">%</div>
-                    <div class="d-flex">
-                        <div class="pay-col left-col w-50">
-                            <div class="fw-bold">Pay Cash : <span class="price-red">$4109</span></div>
-                            <div class="pay-sub">Get 10% Discount</div>
-                        </div>
-                        <div class="pay-col w-50">
-                            <div class="fw-bold">Pay By Card : <span class="price-black">$4748</span></div>
-                            <div class="pay-sub">4% Transaction charges</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="pay-note">
-                    Pay only $1 & confirm your reservation. Balance is payable after service by cash or card. Avail 10% discount on cash payment.
-                </div>
-            </div>
-
-            <div class="col-lg-4">
-                <h3 class="details-title">Booking Details</h3>
-
-                <table class="pricing-table">
-                    <tr>
-                        <td>Distance Covered</td>
-                        <td>:</td>
-                        <td>926 Miles</td>
-                    </tr>
-                    <tr>
-                        <td>Estimated Fare</td>
-                        <td>:</td>
-                        <td>$3759.0</td>
-                    </tr>
-                    <tr>
-                        <td>Gratuity(20% of fare)</td>
-                        <td>:</td>
-                        <td>$751.8</td>
-                    </tr>
-                    <tr>
-                        <td>Airport Toll Tax</td>
-                        <td>:</td>
-                        <td>$15.0</td>
-                    </tr>
-                    <tr>
-                        <td>Night Charges</td>
-                        <td>:</td>
-                        <td>$10.0</td>
-                    </tr>
-                    <tr>
-                        <td class="pt-3">Total Payable</td>
-                        <td class="pt-3">:</td>
-                        <td class="pt-3">$4565.8</td>
-                    </tr>
-                </table>
-
-                <div class="extra-luggage-card">
-                    <span class="fw-bold text-dark">Extra Luggage</span>
-                    <div class="el-price">
-                        <div class="el-total">$30.0</div>
-                        <div class="el-per">($15.0/Bag)</div>
+                    <div class="pay-note">
+                        Pay only $1 & confirm your reservation. Balance is payable after service by cash or card. Avail 10% discount on cash payment.
                     </div>
                 </div>
 
-                <div style="font-size: 0.8rem; color: #555;">
-                    *4 bags Free with this car. Select Extra luggage as required
-                </div>
-            </div>
+                {{-- MIDDLE COLUMN: Fare Breakdown --}}
+                <div class="col-lg-4">
+                    <h3 class="details-title">Booking Details</h3>
 
-            <div class="col-lg-4">
+                    <table class="pricing-table">
+                        <tr>
+                            <td>Distance Covered</td>
+                            <td>:</td>
+                            <td>{{ number_format($distance_miles, 2) }} Miles</td>
+                        </tr>
+                        <tr>
+                            <td>Base Fare</td>
+                            <td>:</td>
+                            <td>${{ number_format($fare['base_fare'], 2) }}</td>
+                        </tr>
+                        <tr>
+                            <td>Distance Fare</td>
+                            <td>:</td>
+                            <td>${{ number_format($fare['distance_fare'], 2) }}</td>
+                        </tr>
+                        <tr>
+                            <td>Gratuity</td>
+                            <td>:</td>
+                            <td>${{ number_format($fare['gratuity'], 2) }}</td>
+                        </tr>
+                       @if($trip_type == 'toAirport')
+                        <tr>
+                            <td>Airport Toll Tax</td>
+                            <td>:</td>
+                            <td>${{ number_format($fare['dropoff_tax'], 2) }}</td>
+                        </tr>
+                        @endif
 
-                <button type="submit" class="btn-book-green">Book Now</button>
-                <div class="text-center mt-2 mb-4" style="font-size: 0.8rem; color: #333;">
-                    Pay only $1 & confirm your reservation. Balance is payable after service
-                </div>
-
-                <div class="summary-yellow-box">
-                    <div class="summary-header">
-                        <div class="summary-title">Booking Details</div>
-                        <a href="{{ route('home') }}" class="btn-change">Change</a>
-                    </div>
-
-                    <table class="summary-list">
+                        {{-- Pickup Tax / Airport Fee: Sudhu 'fromAirport' er khetre show korbe --}}
+                        @if($trip_type == 'fromAirport')
                         <tr>
-                            <td>Service</td>
+                            <td>Airport Toll Tax</td>
                             <td>:</td>
-                            <td>{{ $request->tripType == 'fromAirport' ? 'Ride From Airport' : 'Door to Door' }}</td>
+                            <td>${{ number_format($fare['pickup_tax'] ?? 0, 2) }}</td>
                         </tr>
+                        @endif
                         <tr>
-                            <td>Date</td>
-                            <td>:</td>
-                            <td>{{ $request->date }}</td>
-                        </tr>
-                        <tr>
-                            <td>Time</td>
-                            <td>:</td>
-                            <td>{{ $request->time }}</td>
-                        </tr>
-                        <tr>
-                            <td>Pick up</td>
-                            <td>:</td>
-                            <td>{{ $request->pickup_address }}</td>
-                        </tr>
-                        <tr>
-                            <td>Drop off</td>
-                            <td>:</td>
-                            <td>{{ $request->dropoff_address }}</td>
-                        </tr>
-                        <tr>
-                            <td>Passengers</td>
-                            <td>:</td>
-                            <td>{{ (int)$request->adults + (int)$request->children }} ({{$request->adults}} Adults + {{$request->children}} Children)</td>
-                        </tr>
-                        <tr>
-                            <td>Luggage</td>
-                            <td>:</td>
-                            <td>{{ $request->luggage }} (4 Bags Free + 2 Extra)</td>
+                            <td class="pt-3">Total Payable</td>
+                            <td class="pt-3">:</td>
+                            <td class="pt-3">${{ number_format($fare['total'], 2) }}</td>
                         </tr>
                     </table>
 
-                    <div class="vehicle-details-section">
-                        <div class="v-det-title">Vehicle Details</div>
-                        <table class="summary-list">
-                            <tr>
-                                <td>Vehicle</td>
-                                <td>:</td>
-                                <td>4 Passenger Luxury Van 10 Bags Capacity</td>
-                            </tr>
-                        </table>
+                    @if($fare['extra_luggage_fee'] > 0)
+                    <div class="extra-luggage-card">
+                        <span class="fw-bold text-dark">Extra Luggage</span>
+                        <div class="el-price">
+                            <div class="el-total">${{ number_format($fare['extra_luggage_fee'], 2) }}</div>
+                            <div class="el-per">(${{ number_format($fare['extra_luggage_fee'] / 2, 2) }}/Bag)</div>
+                        </div>
+                    </div>
+                    {{-- <div style="font-size: 0.8rem; color: #555;">
+                        *4 bags Free with this car. Select Extra luggage as required
+                    </div> --}}
+                    @endif
+                </div>
+
+                {{-- RIGHT COLUMN: Summary & Book --}}
+                <div class="col-lg-4">
+                    <button type="submit" class="btn-book-green">Book Now</button>
+                    <div class="text-center mt-2 mb-4" style="font-size: 0.8rem; color: #333;">
+                        Pay only $1 & confirm your reservation. Balance is payable after service
                     </div>
 
-                </div>
-            </div>
+                    <div class="summary-yellow-box">
+                        <div class="summary-header">
+                            <div class="summary-title">Booking Details</div>
+                            <a href="{{ route('home') }}" class="btn-change">Change</a>
+                        </div>
 
-        </div> </form>
-</div>
+
+                        <table class="summary-list">
+                            <tr>
+                                <td>Service</td>
+                                <td>:</td>
+                                <td>
+                                    @if($trip_type == 'fromAirport')
+                                        Ride From Airport
+                                    @elseif($trip_type == 'toAirport')
+                                        Ride To Airport
+                                    @elseif($trip_type == 'doorToDoor')
+                                        Door to Door Service
+                                    @else
+                                        {{ ucfirst($trip_type) }}
+                                    @endif
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Date</td>
+                                <td>:</td>
+                                <td>{{ $request['date'] ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <td>Time</td>
+                                <td>:</td>
+                                <td>{{ $request['time'] ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <td>Pick up</td>
+                                <td>:</td>
+                                <td>{{  $pickup ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <td>Drop off</td>
+                                <td>:</td>
+                                <td>{{ $dropoff ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <td>Passengers</td>
+                                <td>:</td>
+                                <td>{{ ((int)($request['adults'] ?? 0) + (int)($request['seats_dummy'] ?? 0)) }} ({{ $request['adults'] ?? 0 }} Adults + {{ $request['seats_dummy'] ?? 0 }} Children)</td>
+                            </tr>
+                            <tr>
+                                <td>Luggage</td>
+                                <td>:</td>
+                                <td>{{ $request['luggage'] ?? 0 }} ( + {{ max(0, ($request['luggage'] ?? 0)-4) }} Extra)</td>
+                            </tr>
+                        </table>
+
+                        <div class="vehicle-details-section">
+                            <div class="v-det-title">Vehicle Details</div>
+                            <table class="summary-list">
+                                <tr>
+                                    <td>Vehicle</td>
+                                    <td>:</td>
+                                    <td>6 Passenger Luxury Van 12 Bags Capacity</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </form>
+    </div>
+
 
 @endsection
