@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Http;
 
 class HomeController extends Controller
 {
+
     public function airport(Request $request)
     {
         $airport = Airport::where('is_active',true)->get();
@@ -209,11 +210,12 @@ class HomeController extends Controller
     }
     public function step3(Request $request)
     {
-        // dd($request->all());  
+        // dd($request->all());
         return view("frontend.pages.step3",compact("request"));
     }
     public function step4(Request $request)
     {
+        // dd($request->all());
         return view("frontend.pages.step4",compact("request"));
     }
     public function about(Request $request)

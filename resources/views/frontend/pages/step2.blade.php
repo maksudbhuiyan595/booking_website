@@ -276,9 +276,38 @@
         <div class="step-text">Your Current Selection ( Step 2 of 4 )</div>
 
         <form action="{{ route('step3') }}" method="GET">
-            @foreach(['date','time','tripType','pickup_address','dropoff_address','adults','children','luggage'] as $field)
-                <input type="hidden" name="{{ $field }}" value="{{ $request[$field] ?? '' }}">
-            @endforeach
+
+                {{-- 1. Pass the Main Request Data (Step 1 Search Inputs) --}}
+                    @foreach($request as $key => $value)
+                        @if(!is_array($value))
+                            <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                        @endif
+                    @endforeach
+
+                    {{-- 2. Pass Root Level Controller Variables --}}
+                    <input type="hidden" name="trip_type" value="{{ $trip_type }}">
+                    <input type="hidden" name="distance_miles" value="{{ $distance_miles }}">
+                    <input type="hidden" name="vehicles_used" value="{{ $vehicles_used }}">
+                    <input type="hidden" name="pickup_formatted" value="{{ $pickup }}">
+                    <input type="hidden" name="dropoff_formatted" value="{{ $dropoff }}">
+
+                    {{-- 3. Pass Nested Fare Array (Flattened) --}}
+                    @foreach($fare as $fareKey => $fareValue)
+                        <input type="hidden" name="fare[{{ $fareKey }}]" value="{{ $fareValue }}">
+                    @endforeach
+
+                    {{-- 4. Pass Extra Charge Details (Flattened) --}}
+                    @if(isset($extra_charge_details) && is_array($extra_charge_details))
+                        @foreach($extra_charge_details as $index => $charge)
+                            <input type="hidden" name="extra_charge_details[{{ $index }}][name]" value="{{ $charge['name'] ?? '' }}">
+                            <input type="hidden" name="extra_charge_details[{{ $index }}][amount]" value="{{ $charge['amount'] ?? 0 }}">
+                        @endforeach
+                    @endif
+
+
+
+
+
 
             <div class="row g-4">
 
@@ -352,26 +381,22 @@
                             <td>:</td>
                             <td>${{ number_format($fare['gratuity'], 2) }}</td>
                         </tr>
+                       @if($trip_type == 'toAirport')
                         <tr>
-                            <td>Pickup Tax</td>
-                            <td>:</td>
-                            <td>${{ number_format($fare['pickup_tax'], 2) }}</td>
-                        </tr>
-                        <tr>
-                            <td>Dropoff Tax</td>
+                            <td>Airport Toll Tax</td>
                             <td>:</td>
                             <td>${{ number_format($fare['dropoff_tax'], 2) }}</td>
                         </tr>
+                        @endif
+
+                        {{-- Pickup Tax / Airport Fee: Sudhu 'fromAirport' er khetre show korbe --}}
+                        @if($trip_type == 'fromAirport')
                         <tr>
-                            <td>Parking Fee</td>
+                            <td>Airport Toll Tax</td>
                             <td>:</td>
-                            <td>${{ number_format($fare['parking_fee'], 2) }}</td>
+                            <td>${{ number_format($fare['pickup_tax'] ?? 0, 2) }}</td>
                         </tr>
-                        <tr>
-                            <td>Extra Luggage Fee</td>
-                            <td>:</td>
-                            <td>${{ number_format($fare['extra_luggage_fee'], 2) }}</td>
-                        </tr>
+                        @endif
                         <tr>
                             <td class="pt-3">Total Payable</td>
                             <td class="pt-3">:</td>
@@ -387,9 +412,9 @@
                             <div class="el-per">(${{ number_format($fare['extra_luggage_fee'] / 2, 2) }}/Bag)</div>
                         </div>
                     </div>
-                    <div style="font-size: 0.8rem; color: #555;">
+                    {{-- <div style="font-size: 0.8rem; color: #555;">
                         *4 bags Free with this car. Select Extra luggage as required
-                    </div>
+                    </div> --}}
                     @endif
                 </div>
 
@@ -411,7 +436,17 @@
                             <tr>
                                 <td>Service</td>
                                 <td>:</td>
-                                <td>{{ $trip_type == 'fromAirport' ? 'Ride From Airport' : 'Ride To Airport' }}</td>
+                                <td>
+                                    @if($trip_type == 'fromAirport')
+                                        Ride From Airport
+                                    @elseif($trip_type == 'toAirport')
+                                        Ride To Airport
+                                    @elseif($trip_type == 'doorToDoor')
+                                        Door to Door Service
+                                    @else
+                                        {{ ucfirst($trip_type) }}
+                                    @endif
+                                </td>
                             </tr>
                             <tr>
                                 <td>Date</td>
@@ -441,7 +476,7 @@
                             <tr>
                                 <td>Luggage</td>
                                 <td>:</td>
-                                <td>{{ $request['luggage'] ?? 0 }} (4 Bags Free + {{ max(0, ($request['luggage'] ?? 0)-4) }} Extra)</td>
+                                <td>{{ $request['luggage'] ?? 0 }} ( + {{ max(0, ($request['luggage'] ?? 0)-4) }} Extra)</td>
                             </tr>
                         </table>
 
