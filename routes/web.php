@@ -21,5 +21,4 @@ Route::controller(BookingController::class)->group(function () {
 
 });
 
-Route::get('/payment', [BookingController::class, 'showForm']);
-Route::post('/payment', [BookingController::class, 'processPayment'])->name('payment.process');
+
