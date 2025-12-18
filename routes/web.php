@@ -18,4 +18,8 @@ Route::controller(HomeController::class)->group(function () {
 });
 Route::controller(BookingController::class)->group(function () {
     Route::post('/book-confirm', 'confirmBooking')->name('book.confirm');
+
 });
+
+Route::get('/payment', [BookingController::class, 'showForm']);
+Route::post('/payment', [BookingController::class, 'processPayment'])->name('payment.process');
