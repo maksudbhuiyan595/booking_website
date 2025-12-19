@@ -8,7 +8,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,400&display=swap" rel="stylesheet">
-
     @include('frontend.css.style')
     {{-- <style>
         :root {
@@ -304,96 +303,6 @@
     @include('frontend.pages.nav')
     @include('frontend.pages.booking')
 
-    {{-- <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
-        <div class="container">
-            <a class="navbar-brand" href="#">
-                <img src="{{ asset('images/logo.png') }}" alt="Boston Logan Airport Taxi" height="40">
-            </a>
-            <button class="navbar-toggler bg-warning border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse justify-content-center" id="mainNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link nav-link-custom" href="#">Home</a></li>
-                    <li class="nav-item"><a class="nav-link nav-link-custom" href="#">About</a></li>
-                    <li class="nav-item"><a class="nav-link nav-link-custom" href="#">Child Seat</a></li>
-                    <li class="nav-item"><a class="nav-link nav-link-custom" href="#">Minivan/SUV</a></li>
-                    <li class="nav-item"><a class="nav-link nav-link-custom" href="#">Area We Serve</a></li>
-                    <li class="nav-item"><a class="nav-link nav-link-custom" href="#">Contact</a></li>
-                </ul>
-                <div class="d-lg-none mt-3 text-center">
-                    <a href="tel:+18573319544" class="btn-phone w-100 justify-content-center">
-                        <i class="fas fa-phone-alt me-2"></i> +1857-331-9544
-                    </a>
-                </div>
-            </div>
-            <div class="d-none d-lg-block">
-                <a href="tel:+18573319544" class="btn-phone">
-                    <i class="fas fa-phone-alt me-2"></i> +1857-331-9544
-                </a>
-            </div>
-        </div>
-    </nav> --}}
-
-    {{-- <section class="hero-section">
-        <div class="container">
-            <h1 class="main-title d-flex justify-content-center">Boston Logan Airport Taxi</h1>
-            <div class="row hero-row">
-                <div class="col-lg-5 form-column mb-4 mb-lg-0">
-                    <div class="reservation-card" id="floatingCard">
-                        <div class="form-header">
-                            <h3>Booking Reservation</h3>
-                            <p>Instant Reservation EMAIL Confirmation</p>
-                        </div>
-                        <form id="reservationForm" action="{{ route('step2') }}" method="GET" novalidate>
-                            <input type="hidden" name="extras_total" id="extrasTotalInput" value="0">
-                            <div class="row g-1 mb-1">
-                                <div class="col-6"><div class="input-group"><input type="date" id="date" name="date" class="form-control" required></div></div>
-                                <div class="col-6"><div class="input-group"><select id="time" name="time" class="form-select" required><option value="">Time</option></select></div></div>
-                            </div>
-                            <div class="trip-type-container">
-                                <div class="trip-option"><input type="radio" name="tripType" id="type_from" value="fromAirport" checked><label class="trip-card" for="type_from"><i class="fas fa-plane-arrival"></i><span>From Airport</span></label></div>
-                                <div class="trip-option"><input type="radio" name="tripType" id="type_to" value="toAirport"><label class="trip-card" for="type_to"><i class="fas fa-plane-departure"></i><span>To Airport</span></label></div>
-                                <div class="trip-option"><input type="radio" name="tripType" id="type_ptp" value="doorToDoor"><label class="trip-card" for="type_ptp"><i class="fas fa-map-marker-alt"></i><span>Door-to-Door</span></label></div>
-                            </div>
-                            <div class="mb-1" id="fromLocation"></div>
-                            <div class="mb-1" id="toLocation"></div>
-                            <div class="row g-1 mt-1">
-                                <div class="col-6"><span class="mini-label">Adults (8+)</span><div class="input-group"><span class="input-group-text"><i class="fas fa-users"></i></span><select name="adults" class="form-select" required><option value="">Select</option>@for ($i = 1; $i <= 12; $i++) <option value="{{ $i }}">{{ $i }}</option> @endfor</select></div></div>
-                                <div class="col-6"><span class="mini-label">Children (<7)</span><div class="input-group"><span class="input-group-text"><i class="fas fa-child"></i></span><select name="children" class="form-select"><option value="">Select</option>@for ($i = 1; $i <= 4; $i++) <option value="{{ $i }}">{{ $i }}</option> @endfor</select></div></div>
-                            </div>
-                            <div class="row g-1 mt-1">
-                                <div class="col-6"><span class="mini-label">Luggage</span><div class="input-group"><span class="input-group-text"><i class="fas fa-suitcase"></i></span><select name="luggage" class="form-select" required><option value="">Select</option>@for ($i = 0; $i <= 12; $i++) <option value="{{ $i }}">{{ $i }}</option> @endfor</select></div></div>
-                                <div class="col-6"><span class="mini-label">Child Seats</span><div class="input-group"><span class="input-group-text"><i class="fas fa-chair"></i></span><select name="seats_dummy" id="childSeatsTrigger" class="form-select"><option value="0">Select</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></div></div>
-                            </div>
-                            <div class="mt-2">
-                                <div class="extras-toggle" id="toggleExtrasBtn"><i class="fas fa-plus-circle"></i> Add Stops & Specific Seats</div>
-                                <div id="extrasSection">
-                                    <div class="extra-row"><div class="extra-info"><div class="extra-label">Stopover <span class="extra-price-tag">$25</span></div></div><div class="d-flex align-items-center"><select id="stopover" name="stopover" data-price="25" class="extra-select-box"><option value="0">0</option><option value="1">1</option><option value="2">2</option></select><div id="stopoverDisplay" class="total-price-display">$0</div></div></div>
-                                    <div class="extra-row"><div class="extra-info"><div class="extra-label">Infant Seat <span class="extra-price-tag">$15</span></div></div><div class="d-flex align-items-center"><select id="infantSeat" name="infant_seat" data-price="15" class="extra-select-box"><option value="0">0</option><option value="1">1</option><option value="2">2</option></select><div id="infantSeatDisplay" class="total-price-display">$0</div></div></div>
-                                    <div class="extra-row"><div class="extra-info"><div class="extra-label">Front Facing <span class="extra-price-tag">$10</span></div></div><div class="d-flex align-items-center"><select id="frontSeat" name="front_seat" data-price="10" class="extra-select-box"><option value="0">0</option><option value="1">1</option><option value="2">2</option></select><div id="frontSeatDisplay" class="total-price-display">$0</div></div></div>
-                                    <div class="extra-row"><div class="extra-info"><div class="extra-label">Booster Seat <span class="extra-price-tag">$5</span></div></div><div class="d-flex align-items-center"><select id="boosterSeat" name="booster_seat" data-price="5" class="extra-select-box"><option value="0">0</option><option value="1">1</option><option value="2">2</option></select><div id="boosterSeatDisplay" class="total-price-display">$0</div></div></div>
-                                </div>
-                                <button type="submit" class="btn-get-fare">Get Fare & Reserve</button>
-                                <p class="footer-note">Pay only $1 to confirm. Balance payable after service. 10% cash discount.</p>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                <div class="col-lg-7">
-                    <div class="description-column">
-                        <p class="description-text">
-                            One stop solutions for Boston Airport Transfer, Logan Ground Transportation, City Rides, Long Distance Car Services from/to Boston, Door to Door transfers and Chauffeured Cars for special occasions.
-                        </p>
-                        <div class="hero-img-wrapper">
-                            <img src="{{ asset('images/car.jpg') }}" alt="Lexus" class="hero-img">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section> --}}
-
     <section class="content-section border-top border-bottom">
         <div class="container">
             <div class="d-flex flex-wrap justify-content-center align-items-center gap-4 ratings-row">
@@ -596,174 +505,32 @@
         </div>
     </section>
 
-
     @include('frontend.pages.footer')
-    {{-- <footer class="footer-section">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-4 mb-4">
-                    <h5 class="footer-title">About</h5>
-                    <ul class="footer-links">
-                        <li><a href="#">Blog</a></li>
-                        <li><a href="#">About Us</a></li>
-                        <li><a href="#">Payment Policy</a></li>
-                        <li><a href="#">Terms & Conditions</a></li>
-                        <li><a href="#">Payment Policy</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-4 mb-4">
-                    <h5 class="footer-title">Helpful Links</h5>
-                    <ul class="footer-links">
-                        <li><a href="#">Home</a></li>
-                        <li><a href="#">Child Seat</a></li>
-                        <li><a href="#">Minivan/SUV</a></li>
-                        <li><a href="#">Area we Serve</a></li>
-                        <li><a href="#">Contact</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-4 mb-4">
-                    <h5 class="footer-title">Contact Information</h5>
-                    <ul class="footer-links contact-info">
-                        <li><i class="fas fa-map-marker-alt contact-icon"></i> <div>3 Putnam Gardens Apt 22 Cambridge, MA 02139</div></li>
-                        <li><i class="fas fa-phone-alt contact-icon"></i> <div>857-331-9544</div></li>
-                        <li><i class="fas fa-envelope contact-icon"></i> <div>booking@bostonloganairporttaxi.com</div></li>
-                    </ul>
-                    <div class="social-icons">
-                        <a href="#" class="social-btn"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="social-btn"><i class="fab fa-x-twitter"></i></a>
-                        <a href="#" class="social-btn"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="social-btn"><i class="fab fa-pinterest-p"></i></a>
-                    </div>
-                </div>
-            </div>
-            <div class="copyright-text">
-                Copyright © 2025. Logan Airport Taxi All Rights Reserved | Designed by Virtual Click USA
-            </div>
-        </div>
-    </footer> --}}
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    {{-- <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            // 1. DATE SETUP
-            const dateInput = document.getElementById("date");
-            const today = new Date();
-            const yyyy = today.getFullYear();
-            const mm = String(today.getMonth() + 1).padStart(2, '0');
-            const dd = String(today.getDate()).padStart(2, '0');
-            dateInput.min = `${yyyy}-${mm}-${dd}`;
+   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-            // 2. TIME SETUP
-            const timeSelect = document.getElementById("time");
-            for (let h = 0; h < 24; h++) {
-                for (let m = 0; m < 60; m += 15) {
-                    let hh = String(h).padStart(2, '0');
-                    let mm = String(m).padStart(2, '0');
-                    let ampm = h < 12 ? 'AM' : 'PM';
-                    let dH = h % 12 || 12;
-                    timeSelect.innerHTML += `<option value="${hh}:${mm}">${dH}:${mm} ${ampm}</option>`;
-                }
-            }
-
-            // 3. POPUP LOGIC
-            const popup = document.getElementById("validationPopup");
-            const popupText = document.getElementById("popupText");
-            const popupIcon = popup.querySelector("i");
-            let popupTimeout;
-
-            function showPopup(message, type = 'error') {
-                popupText.textContent = message;
-                popup.classList.remove("error", "success", "show");
-                if (type === 'error') {
-                    popup.classList.add("error");
-                    popupIcon.className = "fas fa-exclamation-circle";
-                } else {
-                    popup.classList.add("success");
-                    popupIcon.className = "fas fa-check-circle";
-                }
-                setTimeout(() => popup.classList.add("show"), 10);
-                clearTimeout(popupTimeout);
-                popupTimeout = setTimeout(() => { popup.classList.remove("show"); }, 4000);
-            }
-
-            // 4. VALIDATION & SUBMIT
-            const form = document.getElementById("reservationForm");
-            form.addEventListener("submit", function(e) {
-                e.preventDefault();
-                let missing = false;
-                const requiredNames = ["date", "time", "adults", "luggage"];
-                requiredNames.forEach(n => {
-                    if (!document.querySelector(`[name="${n}"]`).value) missing = true;
-                });
-                const fromEl = document.querySelector("#fromLocation select, #fromLocation input");
-                const toEl = document.querySelector("#toLocation select, #toLocation input");
-                if (fromEl && !fromEl.value) missing = true;
-                if (toEl && !toEl.value) missing = true;
-
-                if (missing) {
-                    showPopup("Please fill in all required fields.", "error");
-                    return;
-                }
-                showPopup("Validation Successful! Redirecting...", "success");
-                setTimeout(() => { form.submit(); }, 1500);
+    <script>
+        const Notify = (type, message) => {
+            Swal.fire({
+                toast: true,
+                position: 'top-center',
+                icon: type,
+                title: message,
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
             });
+        };
+    </script>
 
-            // 5. ADDRESS & EXTRAS LOGIC
-            const fromLoc = document.getElementById("fromLocation");
-            const toLoc = document.getElementById("toLocation");
-            const AIRPORT_HTML = `<select name="pickup_airport" class="form-select" required><option value="">Select Airport</option><option value="logan">Logan Airport (BOS)</option><option value="jfk">JFK Airport (NY)</option></select>`;
-            const ADDR_HTML = (n, p) => `<input type="text" name="${n}" class="form-control" placeholder="${p}" required>`;
+    @if(session('notify'))
+    <script>
+        Notify("{{ session('notify.type') }}", "{{ session('notify.message') }}");
+    </script>
+    @endif
 
-            function updateTrip() {
-                const t = document.querySelector('input[name="tripType"]:checked').value;
-                if (t === 'fromAirport') {
-                    fromLoc.innerHTML = AIRPORT_HTML;
-                    toLoc.innerHTML = ADDR_HTML("dropoff_address", "Drop Off Address");
-                } else if (t === 'toAirport') {
-                    fromLoc.innerHTML = ADDR_HTML("pickup_address", "Pick Up Address");
-                    toLoc.innerHTML = `<select name="dropoff_airport" class="form-select" required><option value="">Select Airport</option><option value="logan">Logan Airport (BOS)</option><option value="jfk">JFK Airport (NY)</option></select>`;
-                } else {
-                    fromLoc.innerHTML = ADDR_HTML("pickup_address", "Pick Up Address");
-                    toLoc.innerHTML = ADDR_HTML("dropoff_address", "Drop Off Address");
-                }
-            }
-            document.querySelectorAll('input[name="tripType"]').forEach(r => r.addEventListener('change', updateTrip));
-            updateTrip();
 
-            const toggleBtn = document.getElementById("toggleExtrasBtn");
-            const section = document.getElementById("extrasSection");
-            const childSeatSelect = document.getElementById("childSeatsTrigger");
-
-            toggleBtn.addEventListener("click", () => {
-                section.classList.toggle("open");
-                toggleBtn.classList.toggle("active");
-            });
-
-            childSeatSelect.addEventListener("change", function() {
-                const val = parseInt(this.value);
-                if (val >= 1) {
-                     if (!section.classList.contains("open")) {
-                        section.classList.add("open");
-                        toggleBtn.classList.add("active");
-                    }
-                } else {
-                    if (section.classList.contains("open")) {
-                        section.classList.remove("open");
-                        toggleBtn.classList.remove("active");
-                    }
-                }
-            });
-
-            const items = [{ id: 'stopover', price: 25 }, { id: 'infantSeat', price: 15 }, { id: 'frontSeat', price: 10 }, { id: 'boosterSeat', price: 5 }];
-            items.forEach(item => {
-                const el = document.getElementById(item.id);
-                el.addEventListener("change", () => {
-                    const total = el.value * item.price;
-                    document.getElementById(item.id + "Display").innerText = "$" + total;
-                });
-            });
-        });
-    </script> --}}
 </body>
 </html>
