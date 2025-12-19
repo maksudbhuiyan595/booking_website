@@ -17,7 +17,8 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->string('cover_image')->nullable();
             $table->longText('content')->nullable();
-            $table->boolean('is_featured')->default(true); 
+            $table->json('faqs')->nullable();
+            $table->boolean('is_featured')->default(true);
             $table->timestamps();
         });
     }

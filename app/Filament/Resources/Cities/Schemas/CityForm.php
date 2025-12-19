@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Cities\Schemas;
 
 use App\Models\City;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -19,63 +20,84 @@ class CityForm
     {
         return $schema
             ->components([
-                    Section::make('City Details')
-                        ->schema([
-                            TextInput::make('name')
-                                ->label('City Name')
-                                ->required()
-                                ->live(onBlur: true)
-                                ->afterStateUpdated(fn(Set $set, ?string $state) => $set('slug', Str::slug($state))),
+                Section::make('City Details')
+                    ->schema([
+                        TextInput::make('name')
+                            ->label('City Name')
+                            ->required()
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(fn(Set $set, ?string $state) => $set('slug', Str::slug($state))),
 
-                            TextInput::make('slug')
-                                ->label('URL Slug')
-                                ->disabled()
-                                ->dehydrated()
-                                ->required()
-                                ->unique(City::class, 'slug', ignoreRecord: true),
+                        TextInput::make('slug')
+                            ->label('URL Slug')
+                            ->disabled()
+                            ->dehydrated()
+                            ->required()
+                            ->unique(City::class, 'slug', ignoreRecord: true),
 
-                            RichEditor::make('content')
-                                ->label('Page Content')
-                                ->fileAttachmentsDirectory('cities/content-images')
-                                ->fileAttachmentsVisibility('public')
-                                ->extraInputAttributes(['style' => 'min-height: 400px'])
-                                ->toolbarButtons([
-                                    'attachFiles',
-                                    'blockquote',
-                                    'bold',
-                                    'bulletList',
-                                    'codeBlock',
-                                    'h2',
-                                    'h3',
-                                    'italic',
-                                    'link',
-                                    'orderedList',
-                                    'redo',
-                                    'strike',
-                                    'underline',
-                                    'undo',
-                                    'alignJustify',
-                                    'alignCenter',
-                                    'textColor',
-                                ])
-                                ->columnSpanFull(),
-                        ])->columnSpan(['lg' => 2]),
+                        RichEditor::make('content')
+                            ->label('Page Content')
+                            ->fileAttachmentsDirectory('cities/content-images')
+                            ->fileAttachmentsVisibility('public')
+                            ->extraInputAttributes(['style' => 'min-height: 400px'])
+                            ->toolbarButtons([
+                                'attachFiles',
+                                'blockquote',
+                                'bold',
+                                'bulletList',
+                                'codeBlock',
+                                'h2',
+                                'h3',
+                                'italic',
+                                'link',
+                                'orderedList',
+                                'redo',
+                                'strike',
+                                'underline',
+                                'undo',
+                                'alignJustify',
+                                'alignCenter',
+                                'textColor',
+                            ])
+                            ->columnSpanFull(),
+                    ])->columnSpan(['lg' => 2]),
 
-                    Section::make('Media & Visibility')
-                        ->schema([
-                            FileUpload::make('cover_image')
-                                ->label('Cover Image')
-                                ->image()
-                                ->imageEditor()
-                                ->directory('cities/covers')
-                                ->required(),
+                Section::make('Media & Visibility')
+                    ->schema([
+                        FileUpload::make('cover_image')
+                            ->label('Cover Image')
+                            ->image()
+                            ->imageEditor()
+                            ->directory('cities/covers')
+                            ->required(),
 
-                            Toggle::make('is_featured')
-                                ->label('Is Featured City')
-                                ->default(true)
-                                ->onColor('success'),
-                        ])->columnSpanFull(),
-                        ]);
+                        Toggle::make('is_featured')
+                            ->label('Is Featured City')
+                            ->default(true)
+                            ->onColor('success'),
+                    ])->columnSpanFull(),
+                Section::make('Frequently Asked Questions')
+                    ->description('Add FAQs specific to this city.')
+                    ->schema([
+                        Repeater::make('faqs')
+                            ->label('Questions & Answers')
+                            ->schema([
+                                TextInput::make('question')
+                                    ->label('Question')
+                                    ->required()
+                                    ->columnSpanFull(),
 
+                                RichEditor::make('answer')
+                                    ->label('Answer')
+                                    ->toolbarButtons(['bold', 'italic', 'link', 'bulletList'])
+                                    ->required()
+                                    ->columnSpanFull(),
+                            ])
+                            ->itemLabel(fn(array $state): ?string => $state['question'] ?? null)
+                            ->collapsed()
+                            ->cloneable() 
+                            ->columnSpanFull(),
+                    ])->columnSpan(['lg' => 2])
+            ]);
     }
 }
