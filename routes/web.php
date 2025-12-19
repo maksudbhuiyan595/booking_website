@@ -18,7 +18,6 @@ Route::controller(HomeController::class)->group(function () {
 });
 Route::controller(BookingController::class)->group(function () {
     Route::post('/book-confirm', 'confirmBooking')->name('book.confirm');
-
 });
 
 

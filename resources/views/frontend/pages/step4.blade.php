@@ -186,15 +186,15 @@
                     <div class="payment-toggles">
                         {{-- CASH OPTION --}}
                         <div class="toggle-card active" onclick="selectPayment('cash')" id="box-cash">
-                            <div class="t-price">${{ number_format($request->fare['total'] * 0.9, 2) }}</div>
-                            <div class="t-desc">1$ Reservation</div>
+                            <div class="t-price">${{ number_format($request->fare['total'] , 2) }}</div>
+                            <div class="t-desc">1$ For Reservation</div>
                             <div class="visual-btn btn-cash">Pay Cash</div>
                         </div>
 
                         {{-- CARD STANDARD OPTION --}}
                         <div class="toggle-card" onclick="selectPayment('deposit')" id="box-deposit">
                             <div class="t-price">${{ number_format($request->fare['total'], 2) }}</div>
-                            <div class="t-desc">Standard Price</div>
+                            <div class="t-desc">Full revervation</div>
                             <div class="visual-btn btn-deposit">Pay Card</div>
                         </div>
 
@@ -209,7 +209,7 @@
 
                     {{-- RED PAYMENT ALERT --}}
                     <div id="paymentAlert" class="payment-alert">
-                        Pay <strong>$1.00</strong> Reservation Fee now via Square to confirm. Balance is payable by cash (10% Discounted).
+                        Pay <strong>$1.00</strong> Reservation Fee now via Square to confirm. Balance is payable by cash.
                     </div>
 
                     <h5 class="fw-bold mb-3">Billing & Card Details</h5>
@@ -395,12 +395,12 @@
                 amountInput.value = cardTotal;
             }
             else if (method === 'cash') {
-                alertBox.innerHTML = `Pay <strong>$1.00</strong> Reservation Fee now via Square to confirm. Balance is payable by cash (10% Discounted).`;
+                alertBox.innerHTML = `Pay <strong>$1.00</strong> Reservation Fee Now. Balance is payable by cash/card when you avail the service.`;
                 agreeLabel.innerText = `I allow you to charge my card $1.00 for the reservation.`;
                 amountInput.value = "1.00";
             }
             else { // deposit (Standard Card)
-                alertBox.innerHTML = `Pay <strong>$1.00</strong> Reservation Fee now via Square to confirm. Balance is payable by card (Standard Price).`;
+                alertBox.innerHTML = `Pay <strong>$${cardTotal}</strong> Full Reservation Fee Now. The remaining balance is payable by card.`;
                 agreeLabel.innerText = `I allow you to charge my card $1.00 for the reservation.`;
                 amountInput.value = "1.00";
             }
@@ -418,4 +418,26 @@
             selectPayment('cash');
         });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        const Notify = (type, message) => {
+            Swal.fire({
+                toast: true,
+                position: 'top-center',
+                icon: type,
+                title: message,
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+            });
+        };
+    </script>
+
+    @if(session('notify'))
+    <script>
+        Notify("{{ session('notify.type') }}", "{{ session('notify.message') }}");
+    </script>
+@endif
+
 @endsection

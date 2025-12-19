@@ -37,176 +37,189 @@ class HomeController extends Controller
             'stopover'     => 'nullable|integer|min:0',
             'front_seat'   => 'nullable|integer|min:0',
         ]);
-
-        // ---------------- ORIGIN & DESTINATION ----------------
-        if ($request->tripType === 'fromAirport') {
-            $airport = Airport::findOrFail($request->from_airport);
-            $origin = $airport->address;
-            $destination = $request->to_address;
-        } elseif ($request->tripType === 'toAirport') {
-            $airport = Airport::findOrFail($request->to_airport);
-            $origin = $request->from_address;
-            $destination = $airport->address;
-        } else { // doorToDoor
-            $origin = $request->from_address;
-            $destination = $request->to_address;
-            $airport = null;
-        }
-
-        if (!$origin || !$destination) {
-            return response()->json(['error' => 'Invalid origin or destination'], 422);
-        }
-
-        // ---------------- DISTANCE (MILES) ----------------
-        $response = Http::get(
-            'https://maps.googleapis.com/maps/api/distancematrix/json',
-            [
-                'origins'      => $origin,
-                'destinations' => $destination,
-                'units'        => 'imperial',
-                'key'          => config('services.google_maps.key'),
-            ]
-        );
-
-        $data = $response->json();
-
-        if (
-            ($data['status'] ?? null) !== 'OK' ||
-            ($data['rows'][0]['elements'][0]['status'] ?? null) !== 'OK'
-        ) {
-            return response()->json(['error' => 'Distance not found'], 422);
-        }
-
-        $distanceMiles = round(
-            $data['rows'][0]['elements'][0]['distance']['value'] * 0.000621371,
-            2
-        );
-
-        // ---------------- VEHICLE SELECTION ----------------
-        $vehicles = Vehicle::where('is_active', true)
-            ->orderBy('capacity_passenger', 'desc')
-            ->get();
-
-        $remaining = $request->adults;
-        $selectedVehicles = [];
-
-        foreach ($vehicles as $vehicle) {
-            while ($remaining >= $vehicle->capacity_passenger) {
-                $selectedVehicles[] = $vehicle;
-                $remaining -= $vehicle->capacity_passenger;
+        try{
+            // ---------------- ORIGIN & DESTINATION ----------------
+            if ($request->tripType === 'fromAirport') {
+                $airport = Airport::findOrFail($request->from_airport);
+                $origin = $airport->address;
+                $destination = $request->to_address;
+            } elseif ($request->tripType === 'toAirport') {
+                $airport = Airport::findOrFail($request->to_airport);
+                $origin = $request->from_address;
+                $destination = $airport->address;
+            } else { // doorToDoor
+                $origin = $request->from_address;
+                $destination = $request->to_address;
+                $airport = null;
             }
-        }
 
-        if ($remaining > 0 && $vehicles->count()) {
-            $selectedVehicles[] = $vehicles->last();
-        }
+            if (!$origin || !$destination) {
+                return redirect()->back()->with('notify', [
+                'type' => 'error',
+                'message' => 'Invalid origin or destination'
+            ]);
+            }
 
-        // ---------------- FARE CALCULATION ----------------
-        $distanceFare = 0;
-        $baseFare = 0;
+            // ---------------- DISTANCE (MILES) ----------------
+            $response = Http::get(
+                'https://maps.googleapis.com/maps/api/distancematrix/json',
+                [
+                    'origins'      => $origin,
+                    'destinations' => $destination,
+                    'units'        => 'imperial',
+                    'key'          => config('services.google_maps.key'),
+                ]
+            );
 
-        foreach ($selectedVehicles as $vehicle) {
-            $baseFare += $vehicle->base_fare;
+            $data = $response->json();
 
-            foreach ($vehicle->slabs ?? [] as $slab) {
-                if ($distanceMiles >= $slab['start_mile'] && $distanceMiles <= $slab['end_mile']) {
-                    $distanceFare += $distanceMiles * $slab['price'];
-                    break;
+            if (
+                ($data['status'] ?? null) !== 'OK' ||
+                ($data['rows'][0]['elements'][0]['status'] ?? null) !== 'OK'
+            ) {
+                return redirect()->back()->with('notify', [
+                    'type' => 'error',
+                    'message' => 'Distance not found'
+                ]);
+            }
+
+            $distanceMiles = round(
+                $data['rows'][0]['elements'][0]['distance']['value'] * 0.000621371,
+                2
+            );
+
+            // ---------------- VEHICLE SELECTION ----------------
+            $vehicles = Vehicle::where('is_active', true)
+                ->orderBy('capacity_passenger', 'desc')
+                ->get();
+
+            $remaining = $request->adults;
+            $selectedVehicles = [];
+
+            foreach ($vehicles as $vehicle) {
+                while ($remaining >= $vehicle->capacity_passenger) {
+                    $selectedVehicles[] = $vehicle;
+                    $remaining -= $vehicle->capacity_passenger;
                 }
             }
-        }
 
-        // ---------------- EXTRA FEES ----------------
-        $settings = app(GeneralSettings::class);
+            if ($remaining > 0 && $vehicles->count()) {
+                $selectedVehicles[] = $vehicles->last();
+            }
 
-        $estimatedFare = $distanceFare + $baseFare;
-        $gratuityFee = ($estimatedFare * ($settings->gratuity_percent ?? 0)) / 100;
+            // ---------------- FARE CALCULATION ----------------
+            $distanceFare = 0;
+            $baseFare = 0;
 
-        $extraLuggage = max(0, ($request->luggage ?? 0) - $request->adults);
-        $extraLuggageFee = ($settings->luggage_fee ?? 0) * $extraLuggage;
+            foreach ($selectedVehicles as $vehicle) {
+                $baseFare += $vehicle->base_fare;
 
-        $childSeatFee   = ($settings->child_seat_fee ?? 0) * ($request->childen ?? 0);
-        $boosterSeatFee = ($settings->booster_seat_fee ?? 0) * ($request->booster_seat ?? 0);
-        $stopoverFee    = ($settings->stopover_fee ?? 0) * ($request->stopover ?? 0);
-        $frontSeatFee   = ($settings->front_seat_fee ?? 0) * ($request->front_seat ?? 0);
-
-        $pickupTax  = $request->tripType === 'fromAirport' ? ($airport->pickup_tax_fee ?? 0) : 0;
-        $dropoffTax = $request->tripType === 'toAirport' ? ($airport->dropoff_tax_fee ?? 0) : 0;
-        $parkingFee = ($request->tripType === 'fromAirport' || $request->tripType === 'toAirport') ? ($airport->parking_fee ?? 0) : 0;
-
-        // ---------------- EXTRA CHARGES (ZIP BASED) ----------------
-        $extractZip = function($address) {
-            preg_match('/\b\d{5}\b/', $address, $matches);
-            return $matches[0] ?? null;
-        };
-
-        $originZip = $extractZip($origin);
-        $destinationZip = $extractZip($destination);
-
-        $extraChargeTotal = 0;
-        $tollFeeTotal = 0;
-        $appliedExtraCharges = [];
-
-        if ($originZip || $destinationZip) {
-            $extraCharges = ExtraCharge::where('is_active', true)->get();
-
-            foreach ($extraCharges as $charge) {
-                $zipCodes = is_array($charge->zip_codes) ? $charge->zip_codes : json_decode($charge->zip_codes, true);
-                if (!$zipCodes) continue;
-
-                if (in_array($originZip, $zipCodes) || in_array($destinationZip, $zipCodes)) {
-                    $extraChargeTotal += $charge->price ?? 0;
-                    $tollFeeTotal += $charge->toll_fee ?? 0;
-                    $appliedExtraCharges[] = [
-                        'name' => $charge->name,
-                        'price' => $charge->price,
-                        'toll_fee' => $charge->toll_fee,
-                    ];
+                foreach ($vehicle->slabs ?? [] as $slab) {
+                    if ($distanceMiles >= $slab['start_mile'] && $distanceMiles <= $slab['end_mile']) {
+                        $distanceFare += $distanceMiles * $slab['price'];
+                        break;
+                    }
                 }
             }
+
+            // ---------------- EXTRA FEES ----------------
+            $settings = app(GeneralSettings::class);
+
+            $estimatedFare = $distanceFare + $baseFare;
+            $gratuityFee = ($estimatedFare * ($settings->gratuity_percent ?? 0)) / 100;
+
+            $extraLuggage = max(0, ($request->luggage ?? 0) - $request->adults);
+            $extraLuggageFee = ($settings->luggage_fee ?? 0) * $extraLuggage;
+
+            $childSeatFee   = ($settings->child_seat_fee ?? 0) * ($request->childen ?? 0);
+            $boosterSeatFee = ($settings->booster_seat_fee ?? 0) * ($request->booster_seat ?? 0);
+            $stopoverFee    = ($settings->stopover_fee ?? 0) * ($request->stopover ?? 0);
+            $frontSeatFee   = ($settings->front_seat_fee ?? 0) * ($request->front_seat ?? 0);
+
+            $pickupTax  = $request->tripType === 'fromAirport' ? ($airport->pickup_tax_fee ?? 0) : 0;
+            $dropoffTax = $request->tripType === 'toAirport' ? ($airport->dropoff_tax_fee ?? 0) : 0;
+            $parkingFee = ($request->tripType === 'fromAirport' || $request->tripType === 'toAirport') ? ($airport->parking_fee ?? 0) : 0;
+
+            // ---------------- EXTRA CHARGES (ZIP BASED) ----------------
+            $extractZip = function($address) {
+                preg_match('/\b\d{5}\b/', $address, $matches);
+                return $matches[0] ?? null;
+            };
+
+            $originZip = $extractZip($origin);
+            $destinationZip = $extractZip($destination);
+
+            $extraChargeTotal = 0;
+            $tollFeeTotal = 0;
+            $appliedExtraCharges = [];
+
+            if ($originZip || $destinationZip) {
+                $extraCharges = ExtraCharge::where('is_active', true)->get();
+
+                foreach ($extraCharges as $charge) {
+                    $zipCodes = is_array($charge->zip_codes) ? $charge->zip_codes : json_decode($charge->zip_codes, true);
+                    if (!$zipCodes) continue;
+
+                    if (in_array($originZip, $zipCodes) || in_array($destinationZip, $zipCodes)) {
+                        $extraChargeTotal += $charge->price ?? 0;
+                        $tollFeeTotal += $charge->toll_fee ?? 0;
+                        $appliedExtraCharges[] = [
+                            'name' => $charge->name,
+                            'price' => $charge->price,
+                            'toll_fee' => $charge->toll_fee,
+                        ];
+                    }
+                }
+            }
+
+            // ---------------- TOTAL ----------------
+            $totalFare =
+                $distanceFare +
+                $baseFare +
+                $gratuityFee +
+                $pickupTax +
+                $dropoffTax +
+                $parkingFee +
+                $childSeatFee +
+                $boosterSeatFee +
+                $stopoverFee +
+                $frontSeatFee +
+                $extraLuggageFee +
+                $extraChargeTotal +
+                $tollFeeTotal;
+
+            return view('frontend.pages.step2', [
+                'trip_type' => $request->tripType,
+                'distance_miles' => $distanceMiles,
+                'vehicles_used' => count($selectedVehicles),
+                'pickup' => $origin,
+                'dropoff' => $destination,
+                'fare' => [
+                    'base_fare'        => round($baseFare, 2),
+                    'distance_fare'    => round($distanceFare, 2),
+                    'gratuity'         => round($gratuityFee, 2),
+                    'pickup_tax'       => $pickupTax,
+                    'dropoff_tax'      => $dropoffTax,
+                    'parking_fee'      => $parkingFee,
+                    'child_seat_fee'   => $childSeatFee,
+                    'booster_seat_fee' => $boosterSeatFee,
+                    'stopover_fee'     => $stopoverFee,
+                    'front_seat_fee'   => $frontSeatFee,
+                    'extra_luggage_fee'=> $extraLuggageFee,
+                    'extra_charges'    => $extraChargeTotal,
+                    'toll_fee'         => $tollFeeTotal,
+                    'total'            => round($totalFare, 2),
+                ],
+                'request' => $request->all(),
+                'extra_charge_details' => $appliedExtraCharges,
+            ]);
+
+        } catch (\Exception $e) {
+        return redirect()->back()->with('notify', [
+                'type' => 'error',
+                'message' => 'Something went wrong. Please try again.'
+            ]);
         }
-
-        // ---------------- TOTAL ----------------
-        $totalFare =
-            $distanceFare +
-            $baseFare +
-            $gratuityFee +
-            $pickupTax +
-            $dropoffTax +
-            $parkingFee +
-            $childSeatFee +
-            $boosterSeatFee +
-            $stopoverFee +
-            $frontSeatFee +
-            $extraLuggageFee +
-            $extraChargeTotal +
-            $tollFeeTotal;
-
-        return view('frontend.pages.step2', [
-            'trip_type' => $request->tripType,
-            'distance_miles' => $distanceMiles,
-            'vehicles_used' => count($selectedVehicles),
-            'pickup' => $origin,
-            'dropoff' => $destination,
-            'fare' => [
-                'base_fare'        => round($baseFare, 2),
-                'distance_fare'    => round($distanceFare, 2),
-                'gratuity'         => round($gratuityFee, 2),
-                'pickup_tax'       => $pickupTax,
-                'dropoff_tax'      => $dropoffTax,
-                'parking_fee'      => $parkingFee,
-                'child_seat_fee'   => $childSeatFee,
-                'booster_seat_fee' => $boosterSeatFee,
-                'stopover_fee'     => $stopoverFee,
-                'front_seat_fee'   => $frontSeatFee,
-                'extra_luggage_fee'=> $extraLuggageFee,
-                'extra_charges'    => $extraChargeTotal,
-                'toll_fee'         => $tollFeeTotal,
-                'total'            => round($totalFare, 2),
-            ],
-            'request' => $request->all(),
-            'extra_charge_details' => $appliedExtraCharges,
-        ]);
     }
     public function step3(Request $request)
     {
