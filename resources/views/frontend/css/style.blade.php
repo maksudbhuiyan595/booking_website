@@ -280,4 +280,151 @@
         .custom-popup.error { border-color: #dc3545; } .custom-popup.error i { color: #dc3545; }
         .custom-popup.success { border-color: #198754; } .custom-popup.success i { color: #198754; }
         .popup-icon { font-size: 1.2rem; } .popup-message { font-size: 0.9rem; font-weight: 600; }
+
+
+        /* Add this to your CSS */
+.ratings-row {
+    flex-wrap: nowrap !important; /* Forces items to stay in one line */
+    overflow-x: auto; /* Adds scroll if content overflows */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    padding-bottom: 5px; /* Spacing for scrollbar */
+}
+
+/* Hide scrollbar for cleaner look (optional) */
+.ratings-row::-webkit-scrollbar {
+    display: none;
+}
+.ratings-row {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Adjust image size on mobile to fit better */
+@media (max-width: 768px) {
+    .ratings-row img {
+        max-height: 40px; /* Smaller images on mobile */
+        margin: 0 5px; /* Reduce gap on mobile */
+    }
+    .ratings-row .gap-4 {
+        gap: 0.5rem !important; /* Override Bootstrap gap class on mobile */
+    }
+}
+
+
+/* bols for appp */
+  /* --- SERVICES/BANNER STYLES --- */
+    .services-section {
+        margin-top: 50px;
+        margin-bottom: 60px;
+    }
+
+    /* Banner Container (Full Width) */
+    .services-banner {
+        width: 100%;
+        margin-bottom: 40px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    /* Image Styling */
+    .services-banner img {
+        width: 100%;
+        height: 400px; /* Adjusted height for standard banner look */
+        object-fit: cover;
+        object-position: center;
+        display: block;
+        filter: brightness(0.7); /* Slightly darken image so text pops */
+    }
+
+    /* Overlay Text Styling - CENTERED */
+    .banner-text-overlay {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        width: 90%;
+        z-index: 2;
+        text-align: center;
+    }
+
+    .banner-text-overlay h2 {
+        font-weight: 800;
+        font-size: 3.5rem;
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+
+    /* --- BLOG GRID STYLES --- */
+    .blog-card {
+        margin-bottom: 30px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .blog-img-container {
+        width: 100%;
+        height: 220px; /* Fixed height for uniformity */
+        overflow: hidden;
+        margin-bottom: 15px;
+    }
+
+    .blog-img-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .blog-img-container img:hover {
+        transform: scale(1.05); /* Slight zoom effect on hover */
+    }
+
+    .blog-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1a0dab; /* Standard Title Blue */
+        margin-bottom: 8px;
+        line-height: 1.4;
+        text-decoration: none;
+        display: block;
+    }
+
+    .blog-title:hover {
+        text-decoration: underline;
+        color: #1a0dab;
+    }
+
+    .blog-meta {
+        font-size: 0.75rem;
+        color: #666;
+        margin-bottom: 12px;
+        font-weight: 400;
+    }
+
+    .read-more-btn {
+        font-size: 0.85rem;
+        color: #333;
+        font-weight: 500;
+        text-decoration: none;
+        margin-top: auto; /* Pushes button to bottom if heights vary */
+    }
+
+    .read-more-btn:hover {
+        text-decoration: underline;
+        color: #000;
+    }
+
+    /* --- RESPONSIVE DESIGN --- */
+    @media (max-width: 992px) {
+        .banner-text-overlay h2 { font-size: 2.5rem; }
+    }
+
+    @media (max-width: 768px) {
+        .services-banner img { height: 250px; }
+        .banner-text-overlay h2 { font-size: 2rem; }
+    }
     </style>

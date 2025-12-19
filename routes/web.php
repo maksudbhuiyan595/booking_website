@@ -14,7 +14,16 @@ Route::controller(HomeController::class)->group(function () {
     Route::get('/minivan/suv', 'minivan')->name('minivan');
     Route::get('/area-we-serve', 'areaWeServe')->name('area.we.serve');
     Route::get('/contact', 'contact')->name('contact');
+
+    Route::get('/blogs', 'blogs')->name('blogs');
+    Route::get('/blog-details', 'blogDetails')->name('blogDetails');
+    Route::get('/privacy-policy', 'privacyPolicy')->name('privacy.policy');
+    Route::get('/terms&conditions', 'termsConditions')->name('term.conditions');
+    Route::get('/payment-policy', 'paymentPolicy')->name('payment.policy');
+
     Route::get('/airports', 'airport')->name('airports');
+    Route::get('/setting', 'setting')->name('setting');
+    Route::get('/area-service', 'areService')->name('area.service');
 });
 Route::controller(BookingController::class)->group(function () {
     Route::post('/book-confirm', 'confirmBooking')->name('book.confirm');
