@@ -119,6 +119,8 @@
     <h1 class="hero-title">About Us</h1>
 </div>
 
+  @include('frontend.pages.rating')
+
 <div class="container">
 
     <!-- ======================= INTRO ======================= -->

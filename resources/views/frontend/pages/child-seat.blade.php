@@ -119,6 +119,7 @@
 <div class="child-seat-hero">
     <h1 class="hero-title">Child Seat Taxi Service</h1>
 </div>
+  @include('frontend.pages.rating')
 
 <div class="container" style="background-color: #ffffff;">
 

@@ -6,6 +6,7 @@ use App\Models\Airport;
 use App\Models\ExtraCharge;
 use App\Models\Vehicle;
 use App\Settings\GeneralSettings;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
@@ -17,12 +18,92 @@ class HomeController extends Controller
         $airport = Airport::where('is_active',true)->get();
         return response()->json($airport);
     }
+    public function areService(Request $request)
+    {
+        $area_services = ExtraCharge::where('is_active',true)->get();
+        return response()->json($area_services);
+    }
+//     public function setting(Request $request)
+//     {
+//         $settings = app(GeneralSettings::class);
+//         if($settings->booking_status ==='open'){
+
+//         }
+//         if($settings->booking_status ==='closed'){
+//             closing_message
+//         }
+//          if($settings->booking_status ==='scheduled'){
+//            schedule_type daily
+
+//            daily_start_time
+
+//            daily_end_time
+
+
+//            schedule_type  weekly
+
+//            weekly_off_days ["Monday","Wednesday","Saturday"]
+
+//            schedule_type     specific_date
+// closed_start_date  closed_end_date
+//         }
+//         return response()->json($area_services);
+//     }
     public function home()
     {
         return view("frontend.app");
     }
     public function step2(Request $request)
     {
+
+        $settings = app(GeneralSettings::class);
+        $now = Carbon::now();
+
+        if ($settings->booking_status === 'closed') {
+            return redirect()->back()->with('notify', [
+                'type' => 'error',
+                'message' => $settings->closing_message ?? 'Booking is currently closed'
+            ]);
+        }
+
+        if ($settings->booking_status === 'scheduled') {
+
+            if ($settings->schedule_type === 'daily') {
+                $start = Carbon::createFromFormat('H:i', $settings->daily_start_time);
+                $end   = Carbon::createFromFormat('H:i', $settings->daily_end_time);
+
+                if (!$now->between($start, $end)) {
+                    return redirect()->back()->with('notify', [
+                        'type' => 'error',
+                        'message' => $settings->closing_message ?? 'Booking is closed for now'
+                    ]);
+                }
+            }
+
+            if ($settings->schedule_type === 'weekly') {
+                $today = $now->format('l');
+
+                if (in_array($today, $settings->weekly_off_days ?? [])) {
+                    return redirect()->back()->with('notify', [
+                        'type' => 'error',
+                        'message' => $settings->closing_message ?? 'Booking is closed today'
+                    ]);
+                }
+            }
+
+            if ($settings->schedule_type === 'specific_date') {
+                $startDate = Carbon::parse($settings->closed_start_date);
+                $endDate   = Carbon::parse($settings->closed_end_date);
+
+                if ($now->between($startDate, $endDate)) {
+                    return redirect()->back()->with('notify', [
+                        'type' => 'error',
+                        'message' => $settings->closing_message ?? 'Booking is temporarily unavailable'
+                    ]);
+                }
+            }
+        }
+
         // ---------------- VALIDATION ----------------
         $request->validate([
             'tripType'     => 'required|in:fromAirport,toAirport,doorToDoor',
@@ -79,7 +160,7 @@ class HomeController extends Controller
             ) {
                 return redirect()->back()->with('notify', [
                     'type' => 'error',
-                    'message' => 'Distance not found'
+                    'message' => 'Distance area not found'
                 ]);
             }
 
@@ -250,5 +331,26 @@ class HomeController extends Controller
     public function contact(Request $request)
     {
         return view("frontend.pages.contact",compact("request"));
+    }
+    public function paymentPolicy(Request $request)
+    {
+        return view("frontend.pages.payment_policy",compact("request"));
+    }
+     public function termsConditions(Request $request)
+    {
+        return view("frontend.pages.term_conditions",compact("request"));
+    }
+     public function privacyPolicy(Request $request)
+    {
+        return view("frontend.pages.privacy_policy",compact("request"));
+    }
+     public function blogs(Request $request)
+    {
+        // $blogs = Blog::where("is_active",true)->pages(10)->orderBy("id","desc")->get();
+        return view("frontend.pages.blog",compact("request"));
+    }
+    public function blogDetails(Request $request)
+    {
+        return view("frontend.pages.blog_details",compact("request"));
     }
 }

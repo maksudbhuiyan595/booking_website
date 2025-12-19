@@ -1,2 +1,6 @@
 User-agent: *
-Disallow:
+Disallow: /admin/
+
+Allow: /
+
+Sitemap: https://bostonloganairporttaxi.com/sitemap.xml
