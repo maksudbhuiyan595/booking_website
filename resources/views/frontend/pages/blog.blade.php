@@ -2,9 +2,6 @@
 
 @section('content')
 
-{{-- FontAwesome is required for icons. Uncomment if not loaded in master layout --}}
-{{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> --}}
-
 <style>
     /* --- GLOBAL STYLES --- */
     body {
@@ -70,6 +67,7 @@
         height: 220px; /* Fixed height for uniformity */
         overflow: hidden;
         margin-bottom: 15px;
+        border-radius: 5px; /* Added subtle border radius */
     }
 
     .blog-img-container img {
@@ -139,106 +137,49 @@
 
 <div class="container">
     <div class="services-section">
-        <div class="row g-4"> <div class="col-md-4">
-                <div class="blog-card">
-                    <div class="blog-img-container">
-                        <img src="{{ asset('images/blog.webp') }}" alt="Border Cafe">
-                    </div>
-                    <a href="#" class="blog-title">Explore Border Cafe in Burlington, MA 01803: A Local Gem</a>
-                    <div class="blog-meta">admin /// September 20, 2025 /// No Comments</div>
-                    <a href="#" class="read-more-btn">Read More »</a>
-                </div>
-            </div>
+        <div class="row g-4">
 
-            <div class="col-md-4">
-                <div class="blog-card">
-                    <div class="blog-img-container">
-                        <img src="{{ asset('images/blog.webp') }}" alt="Cary Memorial Library">
-                    </div>
-                    <a href="#" class="blog-title">Why Cary Memorial Library is a Must-Visit in Lexington</a>
-                    <div class="blog-meta">admin /// September 18, 2025 /// No Comments</div>
-                    <a href="#" class="read-more-btn">Read More »</a>
-                </div>
-            </div>
+            {{-- Loop through the blogs passed from the Controller --}}
+            @forelse ($blogs as $blog)
+                <div class="col-md-4">
+                    <div class="blog-card">
+                        <div class="blog-img-container">
+                            {{-- Check if thumbnail exists, otherwise show default --}}
+                            @if($blog->thumbnail)
+                                <img src="{{ asset('storage/' . $blog->thumbnail) }}" alt="{{ $blog->title }}">
+                            @else
+                                <img src="{{ asset('images/blog_image.png') }}" alt="Default Blog Image">
+                            @endif
+                        </div>
 
-            <div class="col-md-4">
-                <div class="blog-card">
-                    <div class="blog-img-container">
-                        <img src="{{ asset('images/blog.webp') }}" alt="Falmouth Hospital">
-                    </div>
-                    <a href="#" class="blog-title">Get to Falmouth Hospital, MA, Fast with Our Taxi Service</a>
-                    <div class="blog-meta">admin /// August 25, 2025 /// No Comments</div>
-                    <a href="#" class="read-more-btn">Read More »</a>
-                </div>
-            </div>
+                        {{-- Link to details page --}}
+                        <a href="{{ route('blog.details', $blog->slug) }}" class="blog-title">
+                            {{ $blog->title }}
+                        </a>
 
-            <div class="col-md-4">
-                <div class="blog-card">
-                    <div class="blog-img-container">
-                        <img src="{{ asset('images/blog.webp') }}" alt="Falmouth MA">
-                    </div>
-                    <a href="#" class="blog-title">Top Things to Do in Falmouth, MA – A Local's Guide</a>
-                    <div class="blog-meta">admin /// August 18, 2025 /// No Comments</div>
-                    <a href="#" class="read-more-btn">Read More »</a>
-                </div>
-            </div>
+                        <div class="blog-meta">
+                            admin ///
+                            {{ \Carbon\Carbon::parse($blog->published_at)->format('F d, Y') }}
+                            /// No Comments
+                        </div>
 
-            <div class="col-md-4">
-                <div class="blog-card">
-                    <div class="blog-img-container">
-                        <img src="{{ asset('images/blog.webp') }}" alt="Parkside Cafe">
+                        <a href="{{ route('blog.details', $blog->slug) }}" class="read-more-btn">Read More »</a>
                     </div>
-                    <a href="#" class="blog-title">Visit Parkside Cafe in Falmouth, MA for Great Food</a>
-                    <div class="blog-meta">admin /// August 8, 2025 /// No Comments</div>
-                    <a href="#" class="read-more-btn">Read More »</a>
                 </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="blog-card">
-                    <div class="blog-img-container">
-                        <img src="{{ asset('images/blog6.jpg') }}" alt="Provincetown Vacation">
-                    </div>
-                    <a href="#" class="blog-title">Explore the Best Provincetown Vacation Rentals Cape Cod Today</a>
-                    <div class="blog-meta">admin /// August 1, 2025 /// No Comments</div>
-                    <a href="#" class="read-more-btn">Read More »</a>
+            @empty
+                <div class="col-12 text-center py-5">
+                    <h3>No blog posts available at the moment.</h3>
                 </div>
-            </div>
-
-             <div class="col-md-4">
-                <div class="blog-card">
-                    <div class="blog-img-container">
-                        <img src="{{ asset('images/blog7.jpg') }}" alt="Minivan Airport Taxi">
-                    </div>
-                    <a href="#" class="blog-title">Why Choose a Minivan Airport Taxi for Your Next Trip?</a>
-                    <div class="blog-meta">admin /// July 30, 2025 /// No Comments</div>
-                    <a href="#" class="read-more-btn">Read More »</a>
-                </div>
-            </div>
-
-             <div class="col-md-4">
-                <div class="blog-card">
-                    <div class="blog-img-container">
-                        <img src="{{ asset('images/blog8.jpg') }}" alt="Child Ride Front Seat">
-                    </div>
-                    <a href="#" class="blog-title">When Can a Child Ride in The Front Seat of The Taxi</a>
-                    <div class="blog-meta">admin /// July 28, 2025 /// No Comments</div>
-                    <a href="#" class="read-more-btn">Read More »</a>
-                </div>
-            </div>
-
-             <div class="col-md-4">
-                <div class="blog-card">
-                    <div class="blog-img-container">
-                        <img src="{{ asset('images/blog9.jpg') }}" alt="Minivan Airport Taxi">
-                    </div>
-                    <a href="#" class="blog-title">Why Choose a Minivan Airport Taxi for Your Next Trip?</a>
-                    <div class="blog-meta">admin /// July 20, 2025 /// No Comments</div>
-                    <a href="#" class="read-more-btn">Read More »</a>
-                </div>
-            </div>
+            @endforelse
 
         </div>
+
+        {{-- Optional: Pagination Links if you are paginating in the controller --}}
+        {{-- <div class="row mt-4">
+            <div class="col-12 d-flex justify-content-center">
+                {{ $blogs->links() }}
+            </div>
+        </div> --}}
     </div>
 </div>
 

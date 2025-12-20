@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Airport;
+use App\Models\BlogPost;
+use App\Models\City;
 use App\Models\ExtraCharge;
 use App\Models\Vehicle;
 use App\Settings\GeneralSettings;
@@ -23,35 +25,14 @@ class HomeController extends Controller
         $area_services = ExtraCharge::where('is_active',true)->get();
         return response()->json($area_services);
     }
-//     public function setting(Request $request)
-//     {
-//         $settings = app(GeneralSettings::class);
-//         if($settings->booking_status ==='open'){
-
-//         }
-//         if($settings->booking_status ==='closed'){
-//             closing_message
-//         }
-//          if($settings->booking_status ==='scheduled'){
-//            schedule_type daily
-
-//            daily_start_time
-
-//            daily_end_time
-
-
-//            schedule_type  weekly
-
-//            weekly_off_days ["Monday","Wednesday","Saturday"]
-
-//            schedule_type     specific_date
-// closed_start_date  closed_end_date
-//         }
-//         return response()->json($area_services);
-//     }
     public function home()
     {
-        return view("frontend.app");
+       $blogs = BlogPost::where("is_published", true)
+                         ->orderBy("published_at", "desc")
+                         ->take(3)
+                         ->get();
+         $cities = City::orderBy('name', 'asc')->paginate(12);
+        return view("frontend.app",compact("blogs","cities"));
     }
     public function step2(Request $request)
     {
@@ -326,7 +307,13 @@ class HomeController extends Controller
     }
     public function areaWeServe(Request $request)
     {
-        return view("frontend.pages.area-we-serve",compact("request"));
+        $cities = City::orderBy('name', 'asc')->paginate(12);
+        return view("frontend.pages.area-we-serve",compact("cities"));
+    }
+    public function serviceDetials($slug)
+    {
+        $city = City::where("slug",$slug)->first();
+        return view("frontend.pages.service_details",compact("city"));
     }
     public function contact(Request $request)
     {
@@ -344,13 +331,17 @@ class HomeController extends Controller
     {
         return view("frontend.pages.privacy_policy",compact("request"));
     }
-     public function blogs(Request $request)
+    public function blogs(Request $request)
     {
-        // $blogs = Blog::where("is_active",true)->pages(10)->orderBy("id","desc")->get();
-        return view("frontend.pages.blog",compact("request"));
+        $blogs = BlogPost::where("is_published", true)
+                         ->orderBy("published_at", "desc")
+                         ->paginate(10);
+        return view("frontend.pages.blog",compact("blogs"));
     }
-    public function blogDetails(Request $request)
+    public function blogDetails($slug)
     {
-        return view("frontend.pages.blog_details",compact("request"));
+        $blog = BlogPost::where('slug',$slug)->first();
+        return view("frontend.pages.blog_details",compact("blog"));
     }
 }
+
