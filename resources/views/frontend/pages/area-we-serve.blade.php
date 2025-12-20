@@ -2,9 +2,6 @@
 
 @section('content')
 
-{{-- FontAwesome is required for icons. Uncomment if not loaded in master layout --}}
-{{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> --}}
-
 <style>
     /* --- GLOBAL STYLES --- */
     body {
@@ -27,12 +24,12 @@
         position: relative;
     }
 
-    /* Image Styling - FIXED HEIGHT 550PX */
+    /* Image Styling - FIXED HEIGHT */
     .services-banner img {
         width: 100%;
-        height: 550px;       /* আপনার রিকোয়ারমেন্ট অনুযায়ী হাইট */
-        object-fit: cover;   /* ইমেজ যাতে চ্যাপ্টা না হয় */
-        object-position: center; /* ইমেজের মাঝখানের অংশ ফোকাস করবে */
+        height: 550px;       /* Fixed height */
+        object-fit: cover;   /* Prevents stretching */
+        object-position: center;
         display: block;
     }
 
@@ -41,12 +38,12 @@
         position: absolute;
         top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%); /* একদম মাঝখানে আনার জন্য */
+        transform: translate(-50%, -50%);
         color: white;
         text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
         width: 90%;
         z-index: 2;
-        text-align: center; /* টেক্সট সেন্টারে এলাইন করা হলো */
+        text-align: center;
     }
 
     .banner-text-overlay h2 {
@@ -68,7 +65,6 @@
         display: grid;
         grid-template-columns: repeat(4, 1fr);
         gap: 15px;
-        max-width: 1000px;
         margin: 0 auto;
     }
 
@@ -129,57 +125,28 @@
     </div>
 </div>
 
-  @include('frontend.pages.rating')
+@include('frontend.pages.rating')
 
-<div class="container ">
+<div class="container">
     <div class="services-section">
         <h3 class="services-title">Popular Cities for Car Service in Boston Neighborhood</h3>
 
-        <div class="city-grid">
-            <a href="#" class="city-badge"><i class="fas fa-taxi"></i> Cape Cod</a>
-            <a href="#" class="city-badge"><i class="fas fa-taxi"></i> Barnstable Ma</a>
-            <a href="#" class="city-badge"><i class="fas fa-taxi"></i> Salem</a>
-            <a href="#" class="city-badge"><i class="fas fa-taxi"></i> Amherst MA</a>
+       <div class="city-grid">
+            @forelse($cities as $city)
+                {{-- Updated Link to use 'service.details' route --}}
+                <a href="{{ route('service.details', $city->slug) }}" class="city-badge" title="{{ $city->name }}">
+                    <i class="fas fa-taxi"></i> {{ Str::limit($city->name, 15, '..') }}
+                </a>
+            @empty
+                <div class="col-12">
+                    <p class="text-muted">No service areas found.</p>
+                </div>
+            @endforelse
+        </div>
 
-            <a href="#" class="city-badge"><i class="fas fa-taxi"></i> Provincetown</a>
-            <a href="#" class="city-badge"><i class="fas fa-taxi"></i> Eastham MA</a>
-            <a href="#" class="city-badge"><i class="fas fa-taxi"></i> Merrimack NH</a>
-            <a href="#" class="city-badge"><i class="fas fa-taxi"></i> Portland ME</a>
-
-            <a href="#" class="city-badge"><i class="fas fa-taxi"></i> North Truro</a>
-            <a href="#" class="city-badge"><i class="fas fa-taxi"></i> Yarmouth MA</a>
-            <a href="#" class="city-badge"><i class="fas fa-taxi"></i> Derry NH</a>
-            <a href="#" class="city-badge"><i class="fas fa-taxi"></i> Lexington MA</a>
-
-            <a href="#" class="city-badge"><i class="fas fa-taxi"></i> Falmouth MA</a>
-            <a href="#" class="city-badge"><i class="fas fa-taxi"></i> Nashua NH</a>
-            <a href="#" class="city-badge"><i class="fas fa-taxi"></i> Providence RI</a>
-            <a href="#" class="city-badge"><i class="fas fa-taxi"></i> Boston MA</a>
-
-            <a href="#" class="city-badge"><i class="fas fa-taxi"></i> Manchester NH</a>
-            <a href="#" class="city-badge"><i class="fas fa-taxi"></i> Woburn MA</a>
-            <a href="#" class="city-badge"><i class="fas fa-taxi"></i> Andover MA</a>
-            <a href="#" class="city-badge"><i class="fas fa-taxi"></i> Greenfield MA</a>
-
-            <a href="#" class="city-badge"><i class="fas fa-taxi"></i> Winchester MA</a>
-            <a href="#" class="city-badge"><i class="fas fa-taxi"></i> Burlington Ma</a>
-            <a href="#" class="city-badge"><i class="fas fa-taxi"></i> Wilmington MA</a>
-            <a href="#" class="city-badge"><i class="fas fa-taxi"></i> Wakefield MA</a>
-
-            <a href="#" class="city-badge"><i class="fas fa-taxi"></i> Lawrence MA</a>
-            <a href="#" class="city-badge"><i class="fas fa-taxi"></i> Acton MA</a>
-            <a href="#" class="city-badge"><i class="fas fa-taxi"></i> Concord MA</a>
-            <a href="#" class="city-badge"><i class="fas fa-taxi"></i> Billerica MA</a>
-
-            <a href="#" class="city-badge"><i class="fas fa-taxi"></i> Beverly MA</a>
-            <a href="#" class="city-badge"><i class="fas fa-taxi"></i> Danvers MA</a>
-            <a href="#" class="city-badge"><i class="fas fa-taxi"></i> Belmont MA</a>
-            <a href="#" class="city-badge"><i class="fas fa-taxi"></i> Cambridge MA</a>
-
-            <a href="#" class="city-badge"><i class="fas fa-taxi"></i> Stoneham MA</a>
-            <a href="#" class="city-badge"><i class="fas fa-taxi"></i> Lynnfield MA</a>
-            <a href="#" class="city-badge"><i class="fas fa-taxi"></i> Tewksbury MA</a>
-            <a href="#" class="city-badge"><i class="fas fa-taxi"></i> Methuen MA</a>
+        {{-- Pagination Links --}}
+        <div class="mt-5 d-flex justify-content-center">
+            {{ $cities->links('pagination::bootstrap-5') }}
         </div>
     </div>
 </div>

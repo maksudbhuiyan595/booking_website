@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+    <meta name="google-site-verification" content="86x_Pxdx_MMID1zG3q322wIJHpeZOXtFCRYeghepuOc" />
+    <link rel="canonical" href="{{ url()->current() }}" />
     @if (isset($seo))
         <title>{{ $seo->meta_title }}</title>
         <meta name="description" content="{{ $seo->meta_description }}">
@@ -12,28 +13,23 @@
         <title>Boston Logan Airport Taxi</title>
         <meta name="description" content="Reliable airport taxi service in Boston.">
     @endif
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,400&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,400&display=swap"
+        rel="stylesheet">
     @include('frontend.css.style')
-    <link rel="canonical" href="{{ url()->current() }}" />
-
-
 
 </head>
-
 
 <body>
     <div id="validationPopup" class="custom-popup">
         <div class="popup-icon"><i class="fas fa-exclamation-circle"></i></div>
         <div class="popup-message" id="popupText">Message goes here</div>
     </div>
-
     @include('frontend.pages.nav')
     @include('frontend.pages.booking')
     @include('frontend.pages.rating')
-
     <section class="content-section bg-light">
         <div class="container">
             <div class="row mb-4">
@@ -85,7 +81,6 @@
             </div>
         </div>
     </section>
-
     <section class="content-section">
         <div class="container">
             <div class="row align-items-center mb-5">
@@ -139,7 +134,6 @@
             </div>
         </div>
     </section>
-
     <section class="content-section bg-light">
         <div class="container">
             <h2 class="text-center mb-5 fw-bold">Here's What Our Customers Say...</h2>
@@ -181,29 +175,18 @@
 
             <h3 class="text-center fw-bold mt-5">Popular Cities for Car Service in Boston Neighborhood</h3>
             <div class="city-grid">
-                <a href="#" class="city-tag"><i class="fas fa-taxi"></i> Provincetown</a>
-                <a href="#" class="city-tag"><i class="fas fa-taxi"></i> North Truro</a>
-                <a href="#" class="city-tag"><i class="fas fa-taxi"></i> Falmouth MA</a>
-                <a href="#" class="city-tag"><i class="fas fa-taxi"></i> Barnstable MA</a>
-                <a href="#" class="city-tag"><i class="fas fa-taxi"></i> Eastham MA</a>
-                <a href="#" class="city-tag"><i class="fas fa-taxi"></i> Salem</a>
-                <a href="#" class="city-tag"><i class="fas fa-taxi"></i> Merrimack</a>
-                <a href="#" class="city-tag"><i class="fas fa-taxi"></i> Derry NH</a>
-                <a href="#" class="city-tag"><i class="fas fa-taxi"></i> Providence RI</a>
-                <a href="#" class="city-tag"><i class="fas fa-taxi"></i> Amherst MA</a>
-                <a href="#" class="city-tag"><i class="fas fa-taxi"></i> Portland ME</a>
-                <a href="#" class="city-tag"><i class="fas fa-taxi"></i> Boston MA</a>
-                <a href="#" class="city-tag"><i class="fas fa-taxi"></i> Manchester NH</a>
-                <a href="#" class="city-tag"><i class="fas fa-taxi"></i> Wilmington MA</a>
-                <a href="#" class="city-tag"><i class="fas fa-taxi"></i> Wakefield MA</a>
-                <a href="#" class="city-tag"><i class="fas fa-taxi"></i> Burlington Ma</a>
+                {{-- Loop through cities passed from Controller --}}
+                @foreach($cities as $city)
+                    <a href="{{ route('service.details', $city->slug) }}" class="city-tag">
+                        <i class="fas fa-taxi"></i> {{ $city->name }}
+                    </a>
+                @endforeach
             </div>
             <div class="text-center mt-4">
                 <a href="{{ route('area.we.serve') }}" class="btn btn-warning fw-bold px-4 shadow">Show More</a>
             </div>
         </div>
     </section>
-
     <section class="content-section">
         <div class="container">
             <h2 class="text-center fw-bold mb-4">Frequently Asked Questions (FAQ)</h2>
@@ -269,108 +252,80 @@
             <div class="container">
                 <div class="services-section">
                     <div class="row g-4">
-                        <div class="col-md-4">
-                            <div class="blog-card">
-                                <div class="blog-img-container">
-                                    <img src="{{ asset('images/blog.webp') }}" alt="Border Cafe">
-                                </div>
-                                <a href="#" class="blog-title">Explore Border Cafe in Burlington, MA 01803: A
-                                    Local Gem</a>
-                                <div class="blog-meta">admin /// September 20, 2025 /// No Comments</div>
-                                <a href="#" class="read-more-btn">Read More »</a>
-                            </div>
-                        </div>
+                        {{-- Loop through the latest blogs --}}
+                        @forelse($blogs as $blog)
+                            <div class="col-md-4">
+                                <div class="blog-card h-100">
+                                    <div class="blog-img-container">
+                                        {{-- Dynamic Image Logic --}}
+                                        @if ($blog->thumbnail)
+                                            <img src="{{ asset('storage/' . $blog->thumbnail) }}"
+                                                alt="{{ $blog->title }}">
+                                        @else
+                                            <img src="{{ asset('images/blog.webp') }}" alt="Default Image">
+                                        @endif
+                                    </div>
 
-                        <div class="col-md-4">
-                            <div class="blog-card">
-                                <div class="blog-img-container">
-                                    <img src="{{ asset('images/blog.webp') }}" alt="Cary Memorial Library">
-                                </div>
-                                <a href="#" class="blog-title">Why Cary Memorial Library is a Must-Visit in
-                                    Lexington</a>
-                                <div class="blog-meta">admin /// September 18, 2025 /// No Comments</div>
-                                <a href="#" class="read-more-btn">Read More »</a>
-                            </div>
-                        </div>
+                                    {{-- Dynamic Link & Title --}}
+                                    <a href="{{ route('blog.details', $blog->slug) }}" class="blog-title">
+                                        {{ Str::limit($blog->title, 60) }} {{-- Limits title length to keep boxes even --}}
+                                    </a>
 
-                        <div class="col-md-4">
-                            <div class="blog-card">
-                                <div class="blog-img-container">
-                                    <img src="{{ asset('images/blog.webp') }}" alt="Falmouth Hospital">
-                                </div>
-                                <a href="#" class="blog-title">Get to Falmouth Hospital, MA, Fast with Our Taxi
-                                    Service</a>
-                                <div class="blog-meta">admin /// August 25, 2025 /// No Comments</div>
-                                <a href="#" class="read-more-btn">Read More »</a>
-                            </div>
-                        </div>
+                                    <div class="blog-meta">
+                                        admin ///
+                                        {{ \Carbon\Carbon::parse($blog->published_at)->format('F d, Y') }}
+                                        /// No Comments
+                                    </div>
 
+                                    <a href="{{ route('blog.details', $blog->slug) }}" class="read-more-btn">Read
+                                        More »</a>
+                                </div>
+                            </div>
+                        @empty
+                            {{-- Fallback if no blogs exist --}}
+                            <div class="col-12 text-center py-4">
+                                <p class="text-muted">No recent blog posts available.</p>
+                            </div>
+                        @endforelse
                     </div>
                 </div>
             </div>
         </div>
     </section>
-
     @include('frontend.pages.footer')
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    {{-- <script>
+    @if (session()->has('notify'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Notify(
+                    "{{ session('notify.type') }}",
+                    "{{ session('notify.message') }}"
+                );
+            });
+        </script>
+    @endif
+    <script>
         const Notify = (type, message) => {
             Swal.fire({
                 toast: true,
                 position: 'top-center',
                 icon: type,
                 title: message,
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true,
+                showConfirmButton: true,
+                confirmButtonText: 'OK',
+                timer: null,
+                timerProgressBar: false,
+                allowOutsideClick: false,
             });
         };
-    </script> --}}
-
-    {{-- @if (session('notify'))
-        <script>
-            Notify("{{ session('notify.type') }}", "{{ session('notify.message') }}");
-        </script>
-    @endif --}}
-    @if(session()->has('notify'))
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            Notify(
-                "{{ session('notify.type') }}",
-                "{{ session('notify.message') }}"
-            );
-        });
     </script>
+    @if (session('notify'))
+        <div class="alert alert-{{ session('notify.type') }} alert-dismissible fade show" role="alert">
+            {{ session('notify.message') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
     @endif
-
-    <script>
-    const Notify = (type, message) => {
-        Swal.fire({
-            toast: true,
-            position: 'top-center',
-            icon: type,
-            title: message,
-            showConfirmButton: true,     // ✅ OK button show
-            confirmButtonText: 'OK',
-            timer: null,                 // ❌ auto close off
-            timerProgressBar: false,
-            allowOutsideClick: false,    // optional (click outside won't close)
-        });
-    };
-</script>
-
-    @if(session('notify'))
-<div class="alert alert-{{ session('notify.type') }} alert-dismissible fade show" role="alert">
-    {{ session('notify.message') }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-</div>
-@endif
-
-
 </body>
 
 </html>
