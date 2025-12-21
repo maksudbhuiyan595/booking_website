@@ -32,7 +32,8 @@ class HomeController extends Controller
                          ->take(3)
                          ->get();
          $cities = City::orderBy('name', 'asc')->paginate(12);
-        return view("frontend.app",compact("blogs","cities"));
+         $settings = app(GeneralSettings::class);
+        return view("frontend.app",compact("blogs","cities","settings"));
     }
     public function step2(Request $request)
     {
