@@ -20,6 +20,8 @@ class BookingCalendarWidget extends CalendarWidget
 {
     protected bool $eventClickEnabled = true;
     protected bool $useFilamentTimezone = true;
+    protected static ?int $sort = 2;
+
 
     public function getEvents(FetchInfo $fetchInfo): Collection | array
     {
