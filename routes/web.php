@@ -22,6 +22,7 @@ Route::controller(HomeController::class)->group(function () {
     Route::get('/payment-policy', 'paymentPolicy')->name('payment.policy');
 
     Route::get('/airports', 'airport')->name('airports');
+    Route::get('/capacity-luggage', 'capacityLuggage')->name('luggage.capacity');
     Route::get('/setting', 'setting')->name('setting');
     Route::get('/services', 'areService')->name('area.service');
     Route::get('/service-details/{slug}', 'serviceDetials')->name('service.details');

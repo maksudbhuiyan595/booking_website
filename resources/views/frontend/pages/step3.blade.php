@@ -30,7 +30,6 @@
         /* --- LEFT COLUMN: FORM AREA --- */
         .form-container {
             background: #f4f4f4;
-            /* Light Gray Background */
             padding: 25px;
             border-radius: 4px;
         }
@@ -38,7 +37,6 @@
         /* "Are you also the traveler" Bar */
         .traveler-bar {
             background: #dcdcdc;
-            /* Darker Gray Bar */
             padding: 12px 20px;
             border-radius: 4px;
             display: flex;
@@ -49,7 +47,6 @@
             color: #333;
         }
 
-        /* Custom Radio Styling */
         .form-check-input:checked {
             background-color: #dc3545;
             border-color: #dc3545;
@@ -77,7 +74,6 @@
             border-color: #0FA96D;
         }
 
-        /* Helper for red asterisk */
         .text-danger {
             color: #dc3545 !important;
             margin-left: 2px;
@@ -86,7 +82,6 @@
         /* Green Button */
         .btn-submit {
             background: #006644;
-            /* Dark Green */
             color: #fff;
             font-weight: 700;
             padding: 12px 30px;
@@ -172,14 +167,13 @@
             text-align: center;
         }
 
-        /* Price Section Specifics */
         .price-section {
             margin-top: 20px;
             padding-top: 20px;
             border-top: 1px solid #eaddbc;
         }
 
-        /* Discount Boxes at bottom of Sidebar */
+        /* Discount Boxes */
         .discount-container {
             display: flex;
             gap: 10px;
@@ -232,7 +226,18 @@
             color: #777;
         }
 
-        /* Mobile adjustments */
+        /* Debug Section Style */
+        .debug-area {
+            background: #222;
+            color: #0f0;
+            padding: 20px;
+            margin-top: 50px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            overflow-x: auto;
+        }
+
         @media(max-width: 768px) {
             .traveler-bar {
                 flex-direction: column;
@@ -245,10 +250,6 @@
                 float: none;
                 margin-top: 10px;
             }
-
-            .form-container {
-                padding: 15px;
-            }
         }
     </style>
 
@@ -259,25 +260,28 @@
 
         <form action="{{ route('step4') }}" method="GET">
 
+            {{--
+                =========================================================
+                SMART HIDDEN INPUT GENERATOR (RECURSIVE)
+                এটি নিশ্চিত করছে যে আগের সব ডাটা (Nested Array সহ) পরের পেজে যাচ্ছে।
+                =========================================================
+            --}}
+            @php
+                $renderHiddenInputs = function($data, $prefix = '') use (&$renderHiddenInputs) {
+                    foreach ($data as $key => $value) {
+                        $name = $prefix === '' ? $key : $prefix . '[' . $key . ']';
+                        if (is_array($value)) {
+                            $renderHiddenInputs($value, $name);
+                        } else {
+                            echo '<input type="hidden" name="' . htmlspecialchars($name) . '" value="' . htmlspecialchars($value) . '">' . PHP_EOL;
+                        }
+                    }
+                };
+                // _token বাদে সব ডাটা জেনারেট করা হচ্ছে
+                $renderHiddenInputs(request()->except(['_token']));
+            @endphp
+            {{-- ========================================================= --}}
 
-            {{-- 1. Pass all existing request data as hidden fields --}}
-            @foreach ($request->all() as $key => $value)
-                @if (is_array($value))
-                    @foreach ($value as $subKey => $subValue)
-                        @if (is_array($subValue))
-                            @foreach ($subValue as $deepKey => $deepValue)
-                                <input type="hidden" name="{{ $key }}[{{ $subKey }}][{{ $deepKey }}]"
-                                    value="{{ $deepValue }}">
-                            @endforeach
-                        @else
-                            <input type="hidden" name="{{ $key }}[{{ $subKey }}]"
-                                value="{{ $subValue }}">
-                        @endif
-                    @endforeach
-                @else
-                    <input type="hidden" name="{{ $key }}" value="{{ $value }}">
-                @endif
-            @endforeach
 
             <div class="row g-4">
                 <div class="col-lg-8">
@@ -289,6 +293,11 @@
                                     <input class="form-check-input" type="radio" name="is_traveler" id="yesTraveler"
                                         value="yes" checked>
                                     <label class="form-check-label" for="yesTraveler">Yes</label>
+                                </div>
+                                <div class="form-check">
+                                    <input disabled class="form-check-input" type="radio" name="is_traveler" id="noTraveler"
+                                        value="no">
+                                    <label class="form-check-label" for="noTraveler">No</label>
                                 </div>
                             </div>
                         </div>
@@ -307,7 +316,8 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label">Airline Name @if (($request->tripType ?? $request->trip_type) == 'fromAirport')
+                                <label class="form-label">Airline Name
+                                    @if (($request->tripType ?? $request->trip_type) == 'fromAirport')
                                         <span class="text-danger">*</span>
                                     @endif
                                 </label>
@@ -316,7 +326,8 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label">Flight No. @if (($request->tripType ?? $request->trip_type) == 'fromAirport')
+                                <label class="form-label">Flight No.
+                                    @if (($request->tripType ?? $request->trip_type) == 'fromAirport')
                                         <span class="text-danger">*</span>
                                     @endif
                                 </label>
@@ -330,6 +341,7 @@
                                     <select class="form-select" name="phone_country_code" style="max-width: 100px;">
                                         <option value="+1">USA (+1)</option>
                                         <option value="+44">UK (+44)</option>
+                                        <option value="+880">BD (+880)</option>
                                     </select>
                                     <input type="tel" class="form-control" name="phone_number" required>
                                 </div>
@@ -363,147 +375,169 @@
                 </div>
                 <div class="col-lg-4">
 
-                        <div class="sidebar-yellow">
+                    <div class="sidebar-yellow">
 
-                            <div class="sidebar-header">
-                                <h3 class="sidebar-title">Booking Details</h3>
-                                <a href="{{ route('home') }}" class="btn-change">Change</a>
-                            </div>
-
-                            <table class="summary-table">
-                                <tr>
-                                    <td>Service</td>
-                                    <td>:</td>
-                                    <td>{{ $request->trip_type == 'fromAirport' ? 'Ride From Airport' : ($request->trip_type == 'toAirport' ? 'Ride To Airport' : 'Door to Door') }}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Date</td>
-                                    <td>:</td>
-                                    <td>{{ $request->date }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Time</td>
-                                    <td>:</td>
-                                    <td>{{ $request->time }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Pick up</td>
-                                    <td>:</td>
-                                    <td>{{ $request->pickup_formatted ?? '' }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Drop off</td>
-                                    <td>:</td>
-                                    <td>{{ $request->dropoff_formatted ?? '' }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Passengers</td>
-                                    <td>:</td>
-                                    <td>{{ (int) $request->adults + (int) $request->seats_dummy }} ({{ $request->adults }}
-                                        Adults + {{ $request->seats_dummy }} Children)</td>
-                                </tr>
-                                <tr>
-                                    <td>Luggage</td>
-                                    <td>:</td>
-                                    <td>{{ $request->luggage }} (4 Bags Free + {{ max(0, (int) $request->luggage - 4) }}
-                                        Extra)</td>
-                                </tr>
-                            </table>
-
-                            <div class="sidebar-header price-section">
-                                <h3 class="sidebar-title">Vehicle Details</h3>
-                                <a href="{{ route('step2', $request->all()) }}" class="btn-change">Change</a>
-                            </div>
-
-                            <table class="summary-table">
-                                <tr>
-                                    <td>Vehicle</td>
-                                    <td>:</td>
-                                    <td>{{ $request->vehicle_display_name ?? 'Luxury Van' }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Distance Covered</td>
-                                    <td>:</td>
-                                    <td>{{ number_format($request->distance_miles, 2) }} Miles</td>
-                                </tr>
-                                <tr>
-                                    <td>Base Fare</td>
-                                    <td>:</td>
-                                    <td>${{ number_format($request->fare['base_fare'] ?? 0, 2) }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Distance Fare</td>
-                                    <td>:</td>
-                                    <td>${{ number_format($request->fare['distance_fare'] ?? 0, 2) }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Gratuity</td>
-                                    <td>:</td>
-                                    <td>${{ number_format($request->fare['gratuity'] ?? 0, 2) }}</td>
-                                </tr>
-
-                                @if (($request->fare['pickup_tax'] ?? 0) > 0)
-                                    <tr>
-                                        <td>Airport Pickup Tax</td>
-                                        <td>:</td>
-                                        <td>${{ number_format($request->fare['pickup_tax'], 2) }}</td>
-                                    </tr>
-                                @endif
-
-                                @if (($request->fare['dropoff_tax'] ?? 0) > 0)
-                                    <tr>
-                                        <td>Airport Dropoff Tax</td>
-                                        <td>:</td>
-                                        <td>${{ number_format($request->fare['dropoff_tax'], 2) }}</td>
-                                    </tr>
-                                @endif
-
-                                {{-- Dynamic Extra Charges (Stops, Night, etc) --}}
-                                @if (isset($request->extra_charge_details) && is_array($request->extra_charge_details))
-                                    @foreach ($request->extra_charge_details as $charge)
-                                        <tr>
-                                            <td>{{ $charge['name'] }}</td>
-                                            <td>:</td>
-                                            <td>${{ number_format($charge['amount'], 2) }}</td>
-                                        </tr>
-                                    @endforeach
-                                @endif
-
-                                @if (($request->fare['extra_luggage_fee'] ?? 0) > 0)
-                                    <tr>
-                                        <td>Extra Luggage</td>
-                                        <td>:</td>
-                                        <td>${{ number_format($request->fare['extra_luggage_fee'], 2) }}</td>
-                                    </tr>
-                                @endif
-
-                                <tr>
-                                    <td style="color:#222; font-size:1.1rem; padding-top:15px;">Total Payable</td>
-                                    <td style="padding-top:15px;">:</td>
-                                    <td style="color:#222; font-weight:800; font-size:1.1rem; padding-top:15px;">
-                                        ${{ number_format($request->fare['total'] ?? 0, 2) }}
-                                    </td>
-                                </tr>
-                            </table>
-
-                            {{-- Cash vs Card Discount Box --}}
-                            <div class="discount-container">
-                                <div class="discount-badge">%</div>
-                                <div class="discount-box">
-                                    <div class="d-price">${{ number_format(($request->fare['total'] ?? 0) * 0.9, 2) }}
-                                    </div>
-                                    <div class="d-text">PAY CASH</div>
-                                    <div class="d-sub">10% Off</div>
-                                </div>
-                                <div class="discount-box">
-                                    <div class="d-price">${{ number_format($request->fare['total'] ?? 0, 2) }}</div>
-                                    <div class="d-text">PAY CARD</div>
-                                    <div class="d-sub">Full Price</div>
-                                </div>
-                            </div>
-
+                        <div class="sidebar-header">
+                            <h3 class="sidebar-title">Booking Details</h3>
+                            {{-- <a href="{{ route('home') }}" class="btn-change">Change</a> --}}
                         </div>
+
+                        <table class="summary-table">
+                            <tr>
+                                <td>Service</td>
+                                <td>:</td>
+                                <td>
+                                    @if (($request->trip_type ?? '') == 'fromAirport')
+                                        Ride From Airport
+                                    @elseif(($request->trip_type ?? '') == 'toAirport')
+                                        Ride To Airport
+                                    @else
+                                        Door to Door
+                                    @endif
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Date</td>
+                                <td>:</td>
+                                <td>{{ $request->date }}</td>
+                            </tr>
+                            <tr>
+                                <td>Time</td>
+                                <td>:</td>
+                                <td>{{ $request->time }}</td>
+                            </tr>
+                            <tr>
+                                <td>Pick up</td>
+                                <td>:</td>
+                                <td>{{ $request->pickup ?? $request->pickup_formatted ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <td>Drop off</td>
+                                <td>:</td>
+                                <td>{{ $request->dropoff ?? $request->dropoff_formatted ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <td>Passengers</td>
+                                <td>:</td>
+                                <td>{{ (int) $request->adults + (int) $request->seats_dummy }} ({{ $request->adults }}
+                                    Adults + {{ $request->seats_dummy }} Children)</td>
+                            </tr>
+                            <tr>
+                                <td>Luggage</td>
+                                <td>:</td>
+                                <td>{{ $request->luggage }} (4 Bags Free + {{ max(0, (int) $request->luggage - 4) }}
+                                    Extra)</td>
+                            </tr>
+                        </table>
+
+                        <div class="sidebar-header price-section">
+                            <h3 class="sidebar-title">Vehicle & Price</h3>
+                            {{-- <a href="{{ route('step2', $request->all()) }}" class="btn-change">Change</a> --}}
+                        </div>
+
+                        <table class="summary-table">
+                            <tr>
+                                <td>Vehicle</td>
+                                <td>:</td>
+                                <td>{{ $request->vehicle_display_name ?? 'Luxury Van' }}</td>
+                            </tr>
+                            <tr>
+                                <td>Distance</td>
+                                <td>:</td>
+                                <td>{{ number_format($request->distance_miles, 2) }} Miles</td>
+                            </tr>
+                            <tr>
+                                <td>Base Fare</td>
+                                <td>:</td>
+                                <td>${{ number_format($request->fare['estimatedFare'] ?? $request->fare['base_fare'] ?? 0, 2) }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Gratuity (20%)</td>
+                                <td>:</td>
+                                <td>${{ number_format($request->fare['gratuity'] ?? 0, 2) }}</td>
+                            </tr>
+
+                            {{-- TAXES --}}
+                            @if (($request->fare['pickup_tax'] ?? 0) > 0)
+                                <tr>
+                                    <td>Pickup Tax</td>
+                                    <td>:</td>
+                                    <td>${{ number_format($request->fare['pickup_tax'], 2) }}</td>
+                                </tr>
+                            @endif
+
+                            @if (($request->fare['dropoff_tax'] ?? 0) > 0)
+                                <tr>
+                                    <td>Dropoff Tax</td>
+                                    <td>:</td>
+                                    <td>${{ number_format($request->fare['dropoff_tax'], 2) }}</td>
+                                </tr>
+                            @endif
+
+                             @if (($request->fare['toll_fee'] ?? 0) > 0)
+                                <tr>
+                                    <td>Toll Fee</td>
+                                    <td>:</td>
+                                    <td>${{ number_format($request->fare['toll_fee'], 2) }}</td>
+                                </tr>
+                            @endif
+
+                            {{-- EXTRA CHARGES LOOP --}}
+                            @if (isset($request->extra_charge_details) && is_array($request->extra_charge_details))
+                                @foreach ($request->extra_charge_details as $charge)
+                                    <tr>
+                                        <td>{{ $charge['name'] ?? 'Extra' }}</td>
+                                        <td>:</td>
+                                        <td>${{ number_format($charge['amount'] ?? $charge['price'] ?? 0, 2) }}</td>
+                                    </tr>
+                                @endforeach
+                            @endif
+
+                            {{-- SURCHARGES LOOP --}}
+                            @if (isset($request->surcharge_details) && is_array($request->surcharge_details))
+                                @foreach ($request->surcharge_details as $surcharge)
+                                    <tr>
+                                        <td>{{ $surcharge['name'] ?? 'Surcharge' }}</td>
+                                        <td>:</td>
+                                        <td>${{ number_format($surcharge['amount'] ?? 0, 2) }}</td>
+                                    </tr>
+                                @endforeach
+                            @endif
+
+                            @if (($request->fare['extra_luggage_fee'] ?? 0) > 0)
+                                <tr>
+                                    <td>Extra Luggage</td>
+                                    <td>:</td>
+                                    <td>${{ number_format($request->fare['extra_luggage_fee'], 2) }}</td>
+                                </tr>
+                            @endif
+
+                            <tr>
+                                <td style="color:#222; font-size:1.1rem; padding-top:15px;">Total Payable</td>
+                                <td style="padding-top:15px;">:</td>
+                                <td style="color:#222; font-weight:800; font-size:1.1rem; padding-top:15px;">
+                                    ${{ number_format($request->fare['total'] ?? 0, 2) }}
+                                </td>
+                            </tr>
+                        </table>
+
+                        {{-- Cash vs Card Discount Box --}}
+                        <div class="discount-container">
+                            <div class="discount-badge">%</div>
+                            <div class="discount-box">
+                                <div class="d-price">${{ number_format(($request->fare['total'] ?? 0), 2) }}
+                                </div>
+                                <div class="d-text">PAY CASH</div>
+                                <div class="d-sub">$1 reservation fee</div>
+                            </div>
+                            <div class="discount-box">
+                                <div class="d-price">${{ number_format($request->fare['total'] ?? 0, 2) }}</div>
+                                <div class="d-text">PAY CARD</div>
+                                <div class="d-sub">Full Price</div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>

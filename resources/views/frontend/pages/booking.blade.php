@@ -1,3 +1,5 @@
+@@dd($prefilledData)
+
 <style>
     .hero-section {
         margin-top: 25px;
@@ -6,9 +8,9 @@
     /* --- Mobile Date Input Fix CSS --- */
     .date-input-placeholder {
         position: relative;
-        height: 34%; /* Matches other inputs */
+        height: 34px; /* Matches other inputs height */
         padding: 10px;
-
+        color: #000;
     }
 
     /* Hide default 'mm/dd/yyyy' when empty */
@@ -25,7 +27,7 @@
         transform: translateY(-50%);
 
         pointer-events: none;
-        font-size: 15px;
+        font-size: 14px;
     }
 
     /* Show date when focused or valid */
@@ -99,7 +101,7 @@
                                 <span class="mini-label">Adults (8+)</span>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-users"></i></span>
-                                    <select name="adults" class="form-select" required>
+                                    <select name="adults" id="adults" class="form-select" required>
                                         <option value="">Select</option>
                                         @for ($i = 1; $i <= 14; $i++)
                                             <option value="{{ $i }}">{{ $i }}</option>
@@ -111,7 +113,7 @@
                                 <span class="mini-label">Children (<7)</span>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-child"></i></span>
-                                    <select name="children" class="form-select">
+                                    <select name="children" id="children" class="form-select">
                                         <option value="">Select</option>
                                         @for ($i = 1; $i <= 4; $i++)
                                             <option value="{{ $i }}">{{ $i }}</option>
@@ -126,7 +128,7 @@
                                 <span class="mini-label">Luggage</span>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-suitcase"></i></span>
-                                    <select name="luggage" class="form-select" required>
+                                    <select name="luggage" id="luggage" class="form-select" required>
                                         <option value="">Select</option>
                                         @for ($i = 0; $i <= 12; $i++)
                                             <option value="{{ $i }}">{{ $i }}</option>
@@ -236,14 +238,60 @@
 document.addEventListener("DOMContentLoaded", () => {
     console.log("Document ready");
 
+    // ==========================================
+    // 1. Dynamic Luggage Capacity via AJAX
+    // ==========================================
+    const adultsSelect = document.getElementById('adults');
+    const childrenSelect = document.getElementById('children');
+    const luggageSelect = document.getElementById('luggage');
+
+    function updateLuggageOption() {
+        // Calculate Total Passengers
+        const valAdults = parseInt(adultsSelect.value) || 0;
+        const valChildren = parseInt(childrenSelect.value) || 0;
+        const totalPax = valAdults + valChildren;
+
+        if (totalPax === 0) return;
+
+        // AJAX Request to fetch capacity
+        $.ajax({
+            url: "/capacity-luggage", // Your defined route
+            type: "GET",
+            data: { passenger: totalPax },
+            dataType: "json",
+            success: function(response) {
+                // Get capacity from response (Default to 12 if null/error)
+                const maxLuggage = (response && response.capacity_luggage) ? parseInt(response.capacity_luggage) : 12;
+
+                // Re-populate Luggage Dropdown (Clear old options first)
+                let html = '<option value="">Select</option>';
+                for (let i = 0; i <= maxLuggage; i++) {
+                    html += `<option value="${i}">${i}</option>`;
+                }
+                luggageSelect.innerHTML = html;
+            },
+            error: function(xhr, status, error) {
+                console.error("Luggage capacity fetch error:", error);
+                // Fallback loop if error
+                let html = '<option value="">Select</option>';
+                for (let i = 0; i <= 12; i++) { html += `<option value="${i}">${i}</option>`; }
+                luggageSelect.innerHTML = html;
+            }
+        });
+    }
+
+    // Trigger update on change
+    if (adultsSelect) adultsSelect.addEventListener('change', updateLuggageOption);
+    if (childrenSelect) childrenSelect.addEventListener('change', updateLuggageOption);
+
+
+    // ==========================================
+    // 2. Existing Logic (Airports, Maps, etc)
+    // ==========================================
     const fromLoc = document.getElementById("fromLocation");
     const toLoc = document.getElementById("toLocation");
 
-    // ---------------------------
-    // 1. Load airports via AJAX
-    // ---------------------------
     let airports = [];
-
     function loadAirports(callback) {
         $.ajax({
             url: "/airports",
@@ -260,9 +308,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ---------------------------
-    // 2. Helper: Build airport dropdown HTML
-    // ---------------------------
     function buildAirportSelect(name) {
         let html = `<select name="${name}" class="form-select" required><option value="">Select Airport</option>`;
         airports.forEach(airport => {
@@ -272,9 +317,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return html;
     }
 
-    // ---------------------------
-    // 3. Helper: Google Maps Autocomplete
-    // ---------------------------
     function initAutocomplete(id) {
         if (!document.getElementById(id)) return;
         const input = document.getElementById(id);
@@ -284,24 +326,18 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ---------------------------
-    // 4. Trip Type Logic
-    // ---------------------------
     function updateTrip() {
         const t = document.querySelector('input[name="tripType"]:checked').value;
-
         if (t === 'fromAirport') {
             fromLoc.innerHTML = buildAirportSelect("from_airport");
             toLoc.innerHTML = `<input type="text" name="to_address" id="toAddress" class="form-control" placeholder="Drop Off Address" required>`;
             initAutocomplete("toAddress");
             attachAirportSelectEvent("from_airport", "fromAddress");
-
         } else if (t === 'toAirport') {
             fromLoc.innerHTML = `<input type="text" name="from_address" id="fromAddress" class="form-control" placeholder="Pick Up Address" required>`;
             toLoc.innerHTML = buildAirportSelect("to_airport");
             initAutocomplete("fromAddress");
             attachAirportSelectEvent("to_airport", "toAddress");
-
         } else { // Door to Door
             fromLoc.innerHTML = `<input type="text" name="from_address" id="fromAddress" class="form-control" placeholder="Pick Up Address" required>`;
             toLoc.innerHTML = `<input type="text" name="to_address" id="toAddress" class="form-control" placeholder="Drop Off Address" required>`;
@@ -310,16 +346,12 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // ---------------------------
-    // 5. Airport select -> hidden address fill
-    // ---------------------------
     function attachAirportSelectEvent(selectName, inputId) {
         const sel = document.querySelector(`select[name="${selectName}"]`);
         if (!sel) return;
         sel.addEventListener("change", () => {
             const selectedOption = sel.options[sel.selectedIndex];
             const address = selectedOption.getAttribute("data-address") || "";
-
             if (!document.getElementById(inputId)) {
                 const input = document.createElement("input");
                 input.type = "hidden";
@@ -333,17 +365,12 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ---------------------------
-    // 6. Initialize Logic
-    // ---------------------------
     loadAirports(() => {
         updateTrip();
         document.querySelectorAll('input[name="tripType"]').forEach(r => r.addEventListener('change', updateTrip));
     });
 
-    // ---------------------------
-    // 7. Date & Time Setup
-    // ---------------------------
+    // Date & Time Setup
     const dateInput = document.getElementById("date");
     const today = new Date();
     const yyyy = today.getFullYear();
@@ -362,13 +389,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // ---------------------------
-    // 8. Extras & Pricing Logic
-    // ---------------------------
+    // Extras & Pricing Logic
     const toggleBtn = document.getElementById("toggleExtrasBtn");
     const section = document.getElementById("extrasSection");
 
-    // Manual Click Toggle
     if (toggleBtn) {
         toggleBtn.addEventListener("click", () => {
             section.classList.toggle("open");
@@ -376,13 +400,11 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // --- NEW: Auto Open Extras on Child Seat Selection ---
+    // Auto-Open Extras on Child Seat Selection
     const childTrigger = document.getElementById("childSeatsTrigger");
     if (childTrigger) {
         childTrigger.addEventListener("change", function() {
-            // If user selects something other than "Select" (value 0)
             if (this.value !== "0") {
-                // If section is closed, open it
                 if (!section.classList.contains("open")) {
                     section.classList.add("open");
                     toggleBtn.classList.add("active");
@@ -430,13 +452,11 @@ document.addEventListener("DOMContentLoaded", () => {
         // --- A. Missing Fields Check ---
         let missing = false;
         const requiredFields = ["date", "time", "adults", "luggage"];
-
         requiredFields.forEach(name => {
             const el = document.querySelector(`[name="${name}"]`);
             if (!el || !el.value) missing = true;
         });
 
-        // Dynamic address check
         const fromVal = document.querySelector('[name="from_airport"]')?.value || document.querySelector('[name="from_address"]')?.value;
         const toVal = document.querySelector('[name="to_airport"]')?.value || document.querySelector('[name="to_address"]')?.value;
 
@@ -446,80 +466,63 @@ document.addEventListener("DOMContentLoaded", () => {
             Swal.fire({
                 icon: 'warning',
                 title: 'Missing Details',
-                text: 'Please fill in all required fields (Date, Time, Locations, Adult, Luggage).',
+                text: 'Please fill in all required fields.',
                 confirmButtonColor: '#d33'
             });
             return;
         }
 
-        // ==========================================
-        // B. NEW: Max Passenger Check (Adults + Children <= 14)
-        // ==========================================
-        const valAdults = parseInt(document.querySelector('[name="adults"]').value) || 0;
-        const valChildren = parseInt(document.querySelector('[name="children"]').value) || 0;
+        // --- B. Max Passenger Check (Total <= 14) ---
+        const valAdults = parseInt(adultsSelect.value) || 0;
+        const valChildren = parseInt(childrenSelect.value) || 0;
         const totalPax = valAdults + valChildren;
 
         if (totalPax > 14) {
              Swal.fire({
                 icon: 'warning',
                 title: 'Capacity Exceeded',
-                html: `Total passengers (Adults + Children) cannot exceed <b>14</b>.<br>You selected total: <b>${totalPax}</b>.`,
+                html: `Total passengers (Adults + Children) cannot exceed <b>14</b>.<br>You selected: <b>${totalPax}</b>.`,
                 confirmButtonColor: '#d33'
             });
             return;
         }
-        // ==========================================
 
-        // ==========================================
-        // C. NEW: Extras Count Check (Child Seats Mismatch)
-        // ==========================================
-        const requiredSeats = parseInt(document.getElementById("childSeatsTrigger").value) || 0;
+        // --- C. Extras Count Check (Child Seat Mismatch) ---
+        // You asked to sum ALL dropdowns (Stopover/Pets + Infant + Front + Booster)
+        const requiredSeats = parseInt(childTrigger.value) || 0;
 
-        // Items values
         const vStopover = parseInt(document.getElementById("stopover").value) || 0;
         const vInfant = parseInt(document.getElementById("infantSeat").value) || 0;
         const vFront = parseInt(document.getElementById("frontSeat").value) || 0;
         const vBooster = parseInt(document.getElementById("boosterSeat").value) || 0;
 
-        // Sum of all dropdowns
         const totalSelectedExtras = vStopover + vInfant + vFront + vBooster;
 
         if (requiredSeats > 0 && requiredSeats !== totalSelectedExtras) {
              Swal.fire({
-                icon: 'warning',
+                icon: 'error',
                 title: 'Selection Mismatch',
                 html: `You selected <b>${requiredSeats}</b> in "Child Seats" dropdown.<br>But selected total <b>${totalSelectedExtras}</b> items below (Stopover + Seats).<br>Please make them equal.`,
                 confirmButtonColor: '#d33'
             });
             return;
         }
-        // ==========================================
 
         // --- D. Time Validation ---
         const dateVal = document.getElementById("date").value;
         const timeVal = document.getElementById("time").value;
-
         const selectedDateTime = new Date(dateVal + "T" + timeVal);
         const now = new Date();
 
+        // Past Date Check
         if (selectedDateTime < now) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Invalid Time',
-                text: 'You cannot select a past date or time.',
-                confirmButtonColor: '#d33'
-            });
+            Swal.fire({ icon: 'error', title: 'Invalid Time', text: 'You cannot select a past date or time.', confirmButtonColor: '#d33' });
             return;
         }
-
+        // 2 Hour Buffer
         const minBookingTime = new Date(now.getTime() + 2 * 60 * 60 * 1000);
         if (selectedDateTime < minBookingTime) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Reservation Time Restriction',
-                text: 'We cannot process a reservation within 2 Hours of departure. For urgent bookings please call: +18573319544',
-                confirmButtonColor: '#d33'
-            });
+            Swal.fire({ icon: 'warning', title: 'Reservation Time Restriction', text: 'We cannot process a reservation within 2 Hours of departure.', confirmButtonColor: '#d33' });
             return;
         }
 

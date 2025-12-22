@@ -69,7 +69,7 @@
 
             <div class="contact-item">
                 <i class="far fa-envelope"></i>
-                <span>Email: Booking@Bostonloganairporttaxi.Com</span>
+                <span>Email: blairporttaxicab@gmail.com</span>
             </div>
 
             <div class="contact-item">
