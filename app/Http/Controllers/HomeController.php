@@ -37,7 +37,6 @@ class HomeController extends Controller
     }
     public function home(Request $request)
     {
-        dd($request->all());
         $blogs = BlogPost::where("is_published", true)
                             ->orderBy("published_at", "desc")
                             ->take(3)
