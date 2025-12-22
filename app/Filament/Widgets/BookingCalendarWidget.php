@@ -77,12 +77,12 @@ class BookingCalendarWidget extends CalendarWidget
                         ->getStateUsing(fn(Booking $record) => Carbon::parse($record->pickup_date->format('Y-m-d') . ' ' . $record->pickup_time)->format('M d, Y h:i A')),
 
                     TextEntry::make('trip_type')->label('Trip Type'),
-
-                    TextEntry::make('pickup_address')->label('From')->columnSpanFull(),
-                    TextEntry::make('dropoff_address')->label('To')->columnSpanFull(),
+                    TextEntry::make('pickup_address')->label('From/Pickup Address'),
+                    TextEntry::make('dropoff_address')->label('To/Dropoff Address'),
 
                     TextEntry::make('vehicle_type')->label('Vehicle'),
                     TextEntry::make('total_fare')->prefix('$')->label('Total Fare'),
+                     TextEntry::make('flight_number')->label('Flight Number'),
                 ])
         ]);
     }

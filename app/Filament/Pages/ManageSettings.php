@@ -49,7 +49,8 @@ class ManageSettings extends Page
             'gratuity_percent' => $settings->gratuity_percent,
             'tax_percent' => $settings->tax_percent,
             'credit_card_fee' => $settings->credit_card_fee,
-            'child_seat_fee' => $settings->child_seat_fee,
+            'child_seat_fee' => $settings->child_seat_fee, //infant seat
+            'regular_Seat_rules' => $settings->regular_Seat_rules,
             'booster_seat_fee' => $settings->booster_seat_fee,
             'stopover_fee' => $settings->stopover_fee,
             'luggage_fee' => $settings->luggage_fee,
@@ -145,6 +146,11 @@ class ManageSettings extends Page
 
                                     TextInput::make('child_seat_fee')
                                         ->label('Infant Seat Charge')
+                                        ->numeric()
+                                        ->prefix('$'),
+
+                                    TextInput::make('regular_Seat_rules')
+                                        ->label('Regular Seat Charge')
                                         ->numeric()
                                         ->prefix('$'),
 
@@ -306,8 +312,8 @@ class ManageSettings extends Page
         $settings->credit_card_fee = $data['credit_card_fee'] ?? 0;
 
         // --- Fixed Charges ---
-        $settings->child_seat_fee = $data['child_seat_fee'] ?? 0;
-        $settings->booster_seat_fee = $data['booster_seat_fee'] ?? 0;
+        $settings->child_seat_fee = $data['child_seat_fee'] ?? 0; //infant seat
+        $settings->regular_Seat_rules = $data['regular_Seat_rules'] ?? 0;        $settings->booster_seat_fee = $data['booster_seat_fee'] ?? 0;
         $settings->stopover_fee = $data['stopover_fee'] ?? 0;
         $settings->luggage_fee = $data['luggage_fee'] ?? 0;
 

@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Bookings\Schemas;
 
 use App\Models\Airport;
+use App\Models\Booking;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -22,21 +23,32 @@ class BookingForm
                 Section::make('Trip Information')
                     ->schema([
                         TextInput::make('booking_no')
-                        ->default(fn() => 'BK-' . strtoupper(uniqid()))
-                        ->disabled()
-                        ->dehydrated(),
+                            ->default(function () {
+                                $lastBookingNo = Booking::max('booking_no');
+
+                                if (!$lastBookingNo) {
+                                    return 'BLAT-1001';
+                                }
+                                $number = (int) str_replace('BLAT-', '', $lastBookingNo);
+
+                                return 'BLAT-' . ($number + 1);
+                            })
+                            ->disabled()
+                            ->dehydrated()
+                            ->required()
+                            ->unique(Booking::class, 'booking_no', ignoreRecord: true),
                         Select::make('trip_type')
                             ->options([
                                 'fromAirport' => 'From Airport',
                                 'toAirport' => 'To Airport',
-                                'point-to-point' => 'Point to Point',
+                                'door-to-door' => 'Door to Door',
                             ])->required()
                             ->live(),
 
                         DatePicker::make('pickup_date')
-                        ->required()
-                        ->native(false)
-                        ->minDate(now()),
+                            ->required()
+                            ->native(false)
+                            ->minDate(now()),
                         TimePicker::make('pickup_time')->required(),
 
                         Select::make('pickup_address')
@@ -68,6 +80,7 @@ class BookingForm
 
                         TextInput::make('distance')->numeric()->suffix('miles'),
                         TextInput::make('vehicle_type'),
+                        TextInput::make('flight_number'),
 
                     ])->columns(2)
                     ->columnSpanFull(),

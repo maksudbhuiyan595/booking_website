@@ -20,6 +20,7 @@ class GeneralSettings extends Settings
 
     // Fixed Add-on Charges
     public float $child_seat_fee;
+    public $regular_Seat_rules;
     public float $booster_seat_fee;
     public float $stopover_fee;
     public float $luggage_fee;
