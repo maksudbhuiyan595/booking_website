@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-site-verification" content="86x_Pxdx_MMID1zG3q322wIJHpeZOXtFCRYeghepuOc" />
-    <link rel="canonical" href="{{ url()->current() }}" />
+    <link rel="canonical" href="{{ rtrim(request()->url(), '/') . '/' }}">
+
     @if (isset($seo))
         <title>{{ $seo->meta_title }}</title>
         <meta name="description" content="{{ $seo->meta_description }}">

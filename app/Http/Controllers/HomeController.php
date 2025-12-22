@@ -6,6 +6,7 @@ use App\Models\Airport;
 use App\Models\BlogPost;
 use App\Models\City;
 use App\Models\ExtraCharge;
+use App\Models\Surcharge;
 use App\Models\Vehicle;
 use App\Settings\GeneralSettings;
 use Carbon\Carbon;
@@ -25,83 +26,89 @@ class HomeController extends Controller
         $area_services = ExtraCharge::where('is_active',true)->get();
         return response()->json($area_services);
     }
-    public function home()
+    public function capacityLuggage(Request $request)
     {
-       $blogs = BlogPost::where("is_published", true)
-                         ->orderBy("published_at", "desc")
-                         ->take(3)
-                         ->get();
-         $cities = City::orderBy('name', 'asc')->paginate(12);
-         $settings = app(GeneralSettings::class);
-        return view("frontend.app",compact("blogs","cities","settings"));
+        $vehicle = Vehicle::where('is_active', true)
+                        ->where('capacity_passenger', $request->passenger)
+                        ->select('capacity_luggage')
+                        ->first();
+        $limit = $vehicle ? $vehicle->capacity_luggage : 12;
+        return response()->json(['capacity_luggage' => $limit]);
+    }
+    public function home(Request $request)
+    {
+        dd($request->all());
+        $blogs = BlogPost::where("is_published", true)
+                            ->orderBy("published_at", "desc")
+                            ->take(3)
+                            ->get();
+        $cities = City::orderBy('name', 'asc')->paginate(12);
+        $settings = app(GeneralSettings::class);
+        $prefilledData = $request->all();
+        return view("frontend.app", compact("blogs", "cities", "settings", "prefilledData"));
     }
     public function step2(Request $request)
     {
-
         $settings = app(GeneralSettings::class);
         $now = Carbon::now();
 
+        // ---------------------------------------------------
+        // 1. BOOKING STATUS & SCHEDULE CHECK
+        // ---------------------------------------------------
         if ($settings->booking_status === 'closed') {
-            return redirect()->back()->with('notify', [
-                'type' => 'error',
-                'message' => $settings->closing_message ?? 'Booking is currently closed'
-            ]);
+            return redirect()->back()->with('notify', ['type' => 'error', 'message' => $settings->closing_message ?? 'Booking is currently closed']);
         }
 
         if ($settings->booking_status === 'scheduled') {
-
+            // Daily Schedule
             if ($settings->schedule_type === 'daily') {
                 $start = Carbon::createFromFormat('H:i', $settings->daily_start_time);
                 $end   = Carbon::createFromFormat('H:i', $settings->daily_end_time);
-
                 if (!$now->between($start, $end)) {
-                    return redirect()->back()->with('notify', [
-                        'type' => 'error',
-                        'message' => $settings->closing_message ?? 'Booking is closed for now'
-                    ]);
+                    return redirect()->back()->with('notify', ['type' => 'error', 'message' => $settings->closing_message ?? 'Booking is closed for now']);
                 }
             }
-
+            // Weekly Schedule
             if ($settings->schedule_type === 'weekly') {
                 $today = $now->format('l');
-
                 if (in_array($today, $settings->weekly_off_days ?? [])) {
-                    return redirect()->back()->with('notify', [
-                        'type' => 'error',
-                        'message' => $settings->closing_message ?? 'Booking is closed today'
-                    ]);
+                    return redirect()->back()->with('notify', ['type' => 'error', 'message' => $settings->closing_message ?? 'Booking is closed today']);
                 }
             }
-
+            // Specific Date Schedule
             if ($settings->schedule_type === 'specific_date') {
                 $startDate = Carbon::parse($settings->closed_start_date);
                 $endDate   = Carbon::parse($settings->closed_end_date);
-
                 if ($now->between($startDate, $endDate)) {
-                    return redirect()->back()->with('notify', [
-                        'type' => 'error',
-                        'message' => $settings->closing_message ?? 'Booking is temporarily unavailable'
-                    ]);
+                    return redirect()->back()->with('notify', ['type' => 'error', 'message' => $settings->closing_message ?? 'Booking is temporarily unavailable']);
                 }
             }
         }
 
-        // ---------------- VALIDATION ----------------
+        // ---------------------------------------------------
+        // 2. VALIDATION
+        // ---------------------------------------------------
         $request->validate([
             'tripType'     => 'required|in:fromAirport,toAirport,doorToDoor',
             'from_airport' => 'nullable|exists:airports,id',
             'to_airport'   => 'nullable|exists:airports,id',
             'from_address' => 'nullable|string',
             'to_address'   => 'nullable|string',
-            'adults'       => 'required|integer|min:1|max:12',
+            'date'         => 'required|date',
+            'time'         => 'required',
+            'adults'       => 'required|integer|min:1|max:14',
             'luggage'      => 'nullable|integer|min:0',
-            'childen'      => 'nullable|integer|min:0',
+            'children'     => 'nullable|integer|min:0',
             'booster_seat' => 'nullable|integer|min:0',
             'stopover'     => 'nullable|integer|min:0',
             'front_seat'   => 'nullable|integer|min:0',
+            'infant_seat'  => 'nullable|integer|min:0',
         ]);
-        try{
-            // ---------------- ORIGIN & DESTINATION ----------------
+
+        try {
+            // ---------------------------------------------------
+            // 3. DEFINE ORIGIN & DESTINATION
+            // ---------------------------------------------------
             if ($request->tripType === 'fromAirport') {
                 $airport = Airport::findOrFail($request->from_airport);
                 $origin = $airport->address;
@@ -117,46 +124,32 @@ class HomeController extends Controller
             }
 
             if (!$origin || !$destination) {
-                return redirect()->back()->with('notify', [
-                'type' => 'error',
-                'message' => 'Invalid origin or destination'
-            ]);
+                return redirect()->back()->with('notify', ['type' => 'error', 'message' => 'Invalid origin or destination']);
             }
 
-            // ---------------- DISTANCE (MILES) ----------------
-            $response = Http::get(
-                'https://maps.googleapis.com/maps/api/distancematrix/json',
-                [
-                    'origins'      => $origin,
-                    'destinations' => $destination,
-                    'units'        => 'imperial',
-                    'key'          => config('services.google_maps.key'),
-                ]
-            );
+            // ---------------------------------------------------
+            // 4. GOOGLE MAPS DISTANCE CALCULATION
+            // ---------------------------------------------------
+            $response = Http::get('https://maps.googleapis.com/maps/api/distancematrix/json', [
+                'origins'      => $origin,
+                'destinations' => $destination,
+                'units'        => 'imperial',
+                'key'          => config('services.google_maps.key'),
+            ]);
 
             $data = $response->json();
 
-            if (
-                ($data['status'] ?? null) !== 'OK' ||
-                ($data['rows'][0]['elements'][0]['status'] ?? null) !== 'OK'
-            ) {
-                return redirect()->back()->with('notify', [
-                    'type' => 'error',
-                    'message' => 'Distance area not found'
-                ]);
+            if (($data['status'] ?? null) !== 'OK' || ($data['rows'][0]['elements'][0]['status'] ?? null) !== 'OK') {
+                return redirect()->back()->with('notify', ['type' => 'error', 'message' => 'Distance calculation failed. Please check address.']);
             }
 
-            $distanceMiles = round(
-                $data['rows'][0]['elements'][0]['distance']['value'] * 0.000621371,
-                2
-            );
+            $distanceMiles = round($data['rows'][0]['elements'][0]['distance']['value'] * 0.000621371, 2);
 
-            // ---------------- VEHICLE SELECTION ----------------
-            $vehicles = Vehicle::where('is_active', true)
-                ->orderBy('capacity_passenger', 'desc')
-                ->get();
-
-            $remaining = $request->adults;
+            // ---------------------------------------------------
+            // 5. VEHICLE SELECTION LOGIC
+            // ---------------------------------------------------
+            $vehicles = Vehicle::where('is_active', true)->orderBy('capacity_passenger', 'desc')->get();
+            $remaining = $request->adults + ($request->children ?? 0);
             $selectedVehicles = [];
 
             foreach ($vehicles as $vehicle) {
@@ -170,13 +163,18 @@ class HomeController extends Controller
                 $selectedVehicles[] = $vehicles->last();
             }
 
-            // ---------------- FARE CALCULATION ----------------
+            // ---------------------------------------------------
+            // 6. BASE FARE & DISTANCE SLABS CALCULATION
+            // ---------------------------------------------------
             $distanceFare = 0;
             $baseFare = 0;
+            $capacity_passenger = 0;
+            $capacity_luggage = 0;
 
             foreach ($selectedVehicles as $vehicle) {
                 $baseFare += $vehicle->base_fare;
-
+                $capacity_luggage += $vehicle->capacity_luggage;
+                $capacity_passenger += $vehicle->capacity_passenger;
                 foreach ($vehicle->slabs ?? [] as $slab) {
                     if ($distanceMiles >= $slab['start_mile'] && $distanceMiles <= $slab['end_mile']) {
                         $distanceFare += $distanceMiles * $slab['price'];
@@ -184,17 +182,18 @@ class HomeController extends Controller
                     }
                 }
             }
+            $estimatedFare = $distanceFare + $baseFare; // Total Ride Cost (Before Extras)
 
-            // ---------------- EXTRA FEES ----------------
-            $settings = app(GeneralSettings::class);
-
-            $estimatedFare = $distanceFare + $baseFare;
+            // ---------------------------------------------------
+            // 7. STANDARD EXTRA FEES
+            // ---------------------------------------------------
             $gratuityFee = ($estimatedFare * ($settings->gratuity_percent ?? 0)) / 100;
 
-            $extraLuggage = max(0, ($request->luggage ?? 0) - $request->adults);
-            $extraLuggageFee = ($settings->luggage_fee ?? 0) * $extraLuggage;
+            // Luggage calculation (assuming vehicle cap is handled elsewhere or simplified here)
+            $extraLuggage = max(0, ($request->luggage ?? 0) - ($request->adults + $request->children ?? 0));
+            $extraLuggageFee = ($settings->luggage_fee ?? 0) * $extraLuggage; // Or your specific logic
 
-            $childSeatFee   = ($settings->child_seat_fee ?? 0) * ($request->childen ?? 0);
+            $childSeatFee   = ($settings->child_seat_fee ?? 0) * ($request->infant_seat ?? 0);
             $boosterSeatFee = ($settings->booster_seat_fee ?? 0) * ($request->booster_seat ?? 0);
             $stopoverFee    = ($settings->stopover_fee ?? 0) * ($request->stopover ?? 0);
             $frontSeatFee   = ($settings->front_seat_fee ?? 0) * ($request->front_seat ?? 0);
@@ -203,12 +202,13 @@ class HomeController extends Controller
             $dropoffTax = $request->tripType === 'toAirport' ? ($airport->dropoff_tax_fee ?? 0) : 0;
             $parkingFee = ($request->tripType === 'fromAirport' || $request->tripType === 'toAirport') ? ($airport->parking_fee ?? 0) : 0;
 
-            // ---------------- EXTRA CHARGES (ZIP BASED) ----------------
+            // ---------------------------------------------------
+            // 8. ZIP CODE EXTRA CHARGES
+            // ---------------------------------------------------
             $extractZip = function($address) {
                 preg_match('/\b\d{5}\b/', $address, $matches);
                 return $matches[0] ?? null;
             };
-
             $originZip = $extractZip($origin);
             $destinationZip = $extractZip($destination);
 
@@ -218,7 +218,6 @@ class HomeController extends Controller
 
             if ($originZip || $destinationZip) {
                 $extraCharges = ExtraCharge::where('is_active', true)->get();
-
                 foreach ($extraCharges as $charge) {
                     $zipCodes = is_array($charge->zip_codes) ? $charge->zip_codes : json_decode($charge->zip_codes, true);
                     if (!$zipCodes) continue;
@@ -235,10 +234,70 @@ class HomeController extends Controller
                 }
             }
 
-            // ---------------- TOTAL ----------------
+            // ---------------------------------------------------
+            // 9. SURCHARGES CALCULATION (NEW)
+            // ---------------------------------------------------
+            $bookingTimeStr = Carbon::parse($request->time)->format('H:i:s');
+            $bookingDateStr = Carbon::parse($request->date)->format('Y-m-d');
+
+            $surcharges = Surcharge::where('is_active', 1)->get();
+            $surchargeTotal = 0;
+            $appliedSurcharges = [];
+
+            foreach ($surcharges as $surcharge) {
+                $isApplicable = false;
+
+                // A. Time Based Check
+                if ($surcharge->type === 'time' && $surcharge->start_time && $surcharge->end_time) {
+                    $sStart = $surcharge->start_time;
+                    $sEnd   = $surcharge->end_time;
+
+                    if ($sStart > $sEnd) {
+                        // Overnight (e.g., 22:00 to 06:00)
+                        if ($bookingTimeStr >= $sStart || $bookingTimeStr <= $sEnd) {
+                            $isApplicable = true;
+                        }
+                    } else {
+                        // Standard Day (e.g., 10:00 to 16:00)
+                        if ($bookingTimeStr >= $sStart && $bookingTimeStr <= $sEnd) {
+                            $isApplicable = true;
+                        }
+                    }
+                }
+
+                // B. Date/Holiday Based Check
+                elseif ($surcharge->type === 'date' && $surcharge->start_date && $surcharge->end_date) {
+                    if ($bookingDateStr >= $surcharge->start_date && $bookingDateStr <= $surcharge->end_date) {
+                        $isApplicable = true;
+                    }
+                }
+
+                // C. Calculate Amount
+                if ($isApplicable) {
+                    $amountToAdd = 0;
+                    $priceValue = floatval($surcharge->price);
+
+                    if ($surcharge->is_percentage == 1) {
+                        // Percentage of (Base Fare + Distance Fare)
+                        $amountToAdd = ($estimatedFare * $priceValue) / 100;
+                    } else {
+                        // Fixed Price
+                        $amountToAdd = $priceValue;
+                    }
+
+                    $surchargeTotal += $amountToAdd;
+                    $appliedSurcharges[] = [
+                        'name' => $surcharge->name,
+                        'amount' => round($amountToAdd, 2)
+                    ];
+                }
+            }
+
+            // ---------------------------------------------------
+            // 10. FINAL TOTAL
+            // ---------------------------------------------------
             $totalFare =
-                $distanceFare +
-                $baseFare +
+                $estimatedFare +      // Base + Distance
                 $gratuityFee +
                 $pickupTax +
                 $dropoffTax +
@@ -249,7 +308,8 @@ class HomeController extends Controller
                 $frontSeatFee +
                 $extraLuggageFee +
                 $extraChargeTotal +
-                $tollFeeTotal;
+                $tollFeeTotal +
+                $surchargeTotal;      // Added Surcharge
 
             return view('frontend.pages.step2', [
                 'trip_type' => $request->tripType,
@@ -258,29 +318,34 @@ class HomeController extends Controller
                 'pickup' => $origin,
                 'dropoff' => $destination,
                 'fare' => [
-                    'base_fare'        => round($baseFare, 2),
-                    'distance_fare'    => round($distanceFare, 2),
-                    'gratuity'         => round($gratuityFee, 2),
-                    'pickup_tax'       => $pickupTax,
-                    'dropoff_tax'      => $dropoffTax,
-                    'parking_fee'      => $parkingFee,
-                    'child_seat_fee'   => $childSeatFee,
-                    'booster_seat_fee' => $boosterSeatFee,
-                    'stopover_fee'     => $stopoverFee,
-                    'front_seat_fee'   => $frontSeatFee,
-                    'extra_luggage_fee'=> $extraLuggageFee,
-                    'extra_charges'    => $extraChargeTotal,
-                    'toll_fee'         => $tollFeeTotal,
-                    'total'            => round($totalFare, 2),
+                    // 'base_fare'       => round($baseFare, 2),
+                    // 'distance_fare'   => round($distanceFare, 2),
+                    'capacity_luggage'       => $capacity_luggage,
+                    'capacity_passenger'   => $capacity_passenger,
+                    'estimatedFare'   => round($estimatedFare, 2),
+                    'gratuity'        => round($gratuityFee, 2),
+                    'pickup_tax'      => $pickupTax,
+                    'dropoff_tax'     => $dropoffTax,
+                    'parking_fee'     => $parkingFee,
+                    'child_seat_fee'  => $childSeatFee,
+                    'booster_seat_fee'=> $boosterSeatFee,
+                    'stopover_fee'    => $stopoverFee,
+                    'front_seat_fee'  => $frontSeatFee,
+                    'extra_luggage_fee' => $extraLuggageFee,
+                    'extra_charges'   => $extraChargeTotal,
+                    'toll_fee'        => $tollFeeTotal,
+                    'surcharge_fee'   => round($surchargeTotal, 2),
+                    'total'           => round($totalFare, 2),
                 ],
                 'request' => $request->all(),
                 'extra_charge_details' => $appliedExtraCharges,
+                'surcharge_details'    => $appliedSurcharges,
             ]);
 
         } catch (\Exception $e) {
-        return redirect()->back()->with('notify', [
+            return redirect()->back()->with('notify', [
                 'type' => 'error',
-                'message' => 'Something went wrong. Please try again.'
+                'message' => 'Something went wrong. ' . $e->getMessage()
             ]);
         }
     }
@@ -291,7 +356,6 @@ class HomeController extends Controller
     }
     public function step4(Request $request)
     {
-        // dd($request->all());
         return view("frontend.pages.step4",compact("request"));
     }
     public function about(Request $request)
