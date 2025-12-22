@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Settings\GeneralSettings;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Actions\Action;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\DateTimePicker;
@@ -27,6 +28,7 @@ use Illuminate\Support\Facades\Storage;
 
 class ManageSettings extends Page
 {
+    use HasPageShield;
 
     protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-cog-6-tooth';
     protected static string | \UnitEnum | null $navigationGroup = 'Settings';
