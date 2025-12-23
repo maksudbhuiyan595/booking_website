@@ -36,6 +36,7 @@
                                         name="date"
                                         class="form-control flatpickr-input"
                                         placeholder="Date"
+                                        readonly="readonly"
                                         required
                                     >
                                 </div>
