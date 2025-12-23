@@ -4,8 +4,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    {{-- SQUARE JS SDK --}}
-    <script type="text/javascript" src="https://sandbox.web.squarecdn.com/v1/square.js"></script>
+    {{-- SQUARE JS SDK (DYNAMIC LOAD) --}}
+    @php
+        $isProduction = env('SQUARE_ENVIRONMENT') === 'production';
+        $squareScript = $isProduction
+            ? 'https://web.squarecdn.com/v1/square.js'
+            : 'https://sandbox.web.squarecdn.com/v1/square.js';
+    @endphp
+    <script type="text/javascript" src="{{ $squareScript }}"></script>
 
     <style>
         body { background: #ffffff !important; font-family: "Inter", sans-serif; color: #333; margin-top: 25px; }
