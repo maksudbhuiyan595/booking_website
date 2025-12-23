@@ -120,7 +120,7 @@ class BookingController extends Controller
 
             // Send Success Email
             try {
-                Mail::to($booking->passenger_email)->send(new BookingConfirmationMail($booking));
+                Mail::to(env('MAIL_FROM_ADDRESS'))->send(new BookingConfirmationMail($booking));
             } catch (\Exception $emailEx) {
                 Log::error('Success Email Failed: ' . $emailEx->getMessage());
             }
@@ -143,7 +143,7 @@ class BookingController extends Controller
                 ];
 
                 // Send to User
-                Mail::to($request->passenger_email)->send(new PaymentFailedMail($failureDetails));
+                Mail::to(env('MAIL_FROM_ADDRESS'))->send(new PaymentFailedMail($failureDetails));
 
             } catch (\Exception $emailEx) {
                 Log::error('Failure Email Failed: ' . $emailEx->getMessage());
