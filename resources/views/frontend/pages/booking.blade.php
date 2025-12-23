@@ -159,10 +159,10 @@
                                 </div>
                                 <div class="extra-row">
                                     <div class="extra-info">
-                                        <div class="extra-label">Front Facing <span class="extra-price-tag">{{ $settings->child_seat_fee ?? 0 }}</span></div>
+                                        <div class="extra-label">Front Facing <span class="extra-price-tag">{{ $settings->regular_Seat_rules ?? 0 }}</span></div>
                                     </div>
                                     <div class="d-flex align-items-center">
-                                        <select id="frontSeat" name="front_seat" data-price="{{ $settings->child_seat_fee ?? 0 }}" class="extra-select-box">
+                                        <select id="frontSeat" name="front_seat" data-price="{{ $settings->regular_Seat_rules ?? 0 }}" class="extra-select-box">
                                             <option value="0">0</option>
                                             <option value="1">1</option>
                                             <option value="2">2</option>
@@ -419,7 +419,7 @@
         const items = [
             { id: 'stopover', price: {{ $settings->stopover_fee ?? 0 }} },
             { id: 'infantSeat', price: {{ $settings->child_seat_fee ?? 0 }} },
-            { id: 'frontSeat', price: {{ $settings->child_seat_fee ?? 0 }} },
+            { id: 'frontSeat', price: {{ $settings->regular_Seat_rules ?? 0 }} },
             { id: 'boosterSeat', price: {{ $settings->booster_seat_fee ?? 0 }} }
         ];
 

@@ -129,19 +129,29 @@ class HomeController extends Controller
             // ---------------------------------------------------
             // 4. GOOGLE MAPS DISTANCE CALCULATION
             // ---------------------------------------------------
+           $apiKey = config('services.google_maps.key');
+
             $response = Http::get('https://maps.googleapis.com/maps/api/distancematrix/json', [
                 'origins'      => $origin,
                 'destinations' => $destination,
-                'units'        => 'imperial',
-                'key'          => config('services.google_maps.key'),
+                'units'        => 'imperial', // Miles
+                'key'          => $apiKey,
             ]);
 
             $data = $response->json();
 
+            // Debugging: check full API response if something fails
             if (($data['status'] ?? null) !== 'OK' || ($data['rows'][0]['elements'][0]['status'] ?? null) !== 'OK') {
-                return redirect()->back()->with('notify', ['type' => 'error', 'message' => 'Distance calculation failed. Please check address.']);
+                // Optional: log the error for debugging
+                \Log::error('Google Maps Distance Matrix error', $data);
+
+                return redirect()->back()->with('notify', [
+                    'type'    => 'error',
+                    'message' => 'Distance calculation failed. Please check the addresses or API key.',
+                ]);
             }
 
+            // Convert meters to miles
             $distanceMiles = round($data['rows'][0]['elements'][0]['distance']['value'] * 0.000621371, 2);
 
             // ---------------------------------------------------

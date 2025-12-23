@@ -29,16 +29,18 @@ class BookingController extends Controller
         $amountCharged = (float) $request->amount_charged;
 
         try {
-            // 1. Square Client Setup
+            // =========================================================
+            // 1. Square Client Setup (Using Safe Config)
+            // =========================================================
             $client = new SquareClient(
-                accessToken: env('SQUARE_ACCESS_TOKEN'),
-                environment: env('SQUARE_ENVIRONMENT') === 'production'
+                accessToken: config('services.square.access_token'),
+                environment: config('services.square.environment') === 'production'
                     ? Environment::PRODUCTION
                     : Environment::SANDBOX
             );
 
             $money = new Money();
-            $money->setAmount((int) round($amountCharged * 100));
+            $money->setAmount((int) round($amountCharged * 100)); // Convert to cents
             $money->setCurrency('USD');
 
             $paymentRequest = new CreatePaymentRequest(
@@ -61,36 +63,32 @@ class BookingController extends Controller
             $payment       = $response->getResult()->getPayment();
             $transactionId = $payment->getId();
 
-            // ---------------------------------------------------------
-            // 3. GENERATE SEQUENTIAL BOOKING NO (BLAT-0001)
-            // ---------------------------------------------------------
+            // =========================================================
+            // 3. GENERATE BOOKING NO (BLAT-XXXX)
+            // =========================================================
             $lastBooking = Booking::orderBy('id', 'desc')->first();
 
             if ($lastBooking && preg_match('/BLAT-(\d+)/', $lastBooking->booking_no, $matches)) {
-                // If last booking exists, increment number
                 $newNumber = intval($matches[1]) + 1;
             } else {
-                // If no booking exists, start from 1
                 $newNumber = 1;
             }
-
-            // Format: BLAT-0001, BLAT-0002 ...
             $bookingNo = 'BLAT-' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
-            // ---------------------------------------------------------
 
-
-            // 4. Save Booking
+            // =========================================================
+            // 4. Save Booking Data
+            // =========================================================
             $totalFare = isset($request->fare['total']) ? (float) $request->fare['total'] : 0;
 
             $booking = new Booking();
-            $booking->booking_no = $bookingNo; // New Sequential ID
+            $booking->booking_no = $bookingNo;
 
-            // Passenger
+            // Passenger Info
             $booking->passenger_name  = $request->passenger_name;
             $booking->passenger_email = $request->passenger_email;
             $booking->passenger_phone = $request->phone_number;
 
-            // Trip
+            // Trip Info
             $booking->trip_type       = $request->trip_type;
             $booking->pickup_address  = $request->pickup_formatted ?? $request->fromAddress;
             $booking->dropoff_address = $request->dropoff_formatted ?? $request->to_address;
@@ -99,13 +97,13 @@ class BookingController extends Controller
             $booking->distance        = $request->distance_miles ?? 0;
             $booking->vehicle_type    = $request->vehicle_display_name;
 
-            // Extra
+            // Extra Info
             $booking->airline_name    = $request->airline_name;
             $booking->flight_number   = $request->flight_number;
             $booking->luggage_count   = $request->luggage ?? 0;
             $booking->passenger_count = ((int) $request->adults) + ((int) $request->seats_dummy);
 
-            // Payment
+            // Payment Info
             $booking->total_fare     = $totalFare;
             $booking->paid_amount    = $amountCharged;
             $booking->due_amount     = max(0, $totalFare - $amountCharged);
@@ -129,22 +127,18 @@ class BookingController extends Controller
                 ->with('notify', ['type' => 'success', 'message' => 'Booking confirmed successfully!']);
 
         } catch (\Throwable $e) {
-
-            // ---------------------------------------------------------
-            // 5. SEND FAILURE EMAIL WITH USER DETAILS
-            // ---------------------------------------------------------
+            // =========================================================
+            // 5. Handle Failure
+            // =========================================================
             try {
                 $failureDetails = [
                     'name'          => $request->passenger_name,
-                    'email'         => $request->passenger_email, // Added
-                    'phone'         => $request->phone_number,    // Added
+                    'email'         => $request->passenger_email,
+                    'phone'         => $request->phone_number,
                     'error_message' => $e->getMessage(),
                     'date'          => now()->toDateTimeString()
                 ];
-
-                // Send to User
                 Mail::to(env('MAIL_FROM_ADDRESS'))->send(new PaymentFailedMail($failureDetails));
-
             } catch (\Exception $emailEx) {
                 Log::error('Failure Email Failed: ' . $emailEx->getMessage());
             }
