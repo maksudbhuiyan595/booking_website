@@ -306,21 +306,23 @@
             });
         </script>
     @endif
-    <script>
-        const Notify = (type, message) => {
-            Swal.fire({
-                toast: true,
-                position: 'top-center',
-                icon: type,
-                title: message,
-                showConfirmButton: true,
-                confirmButtonText: 'OK',
-                timer: null,
-                timerProgressBar: false,
-                allowOutsideClick: false,
-            });
-        };
-    </script>
+    @if (session()->has('notify'))
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        Swal.fire({
+            toast: true,
+            position: 'top-center',
+            icon: "{{ session('notify.type') }}", // success, error, warning, info
+            title: "{{ session('notify.message') }}",
+            showConfirmButton: false, // hide OK button
+            timer: 3000, // auto-close after 3 seconds
+            timerProgressBar: true, // show progress bar
+            allowOutsideClick: true, // allow click outside
+        });
+    });
+</script>
+@endif
+
     @if (session('notify'))
         <div class="alert alert-{{ session('notify.type') }} alert-dismissible fade show" role="alert">
             {{ session('notify.message') }}

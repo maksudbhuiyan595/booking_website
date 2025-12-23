@@ -4,14 +4,18 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    {{-- SQUARE JS SDK (DYNAMIC LOAD) --}}
+    {{--
+        =========================================================
+        FIXED: Dynamic Square SDK Loader & Config Usage
+        =========================================================
+    --}}
     @php
-        $isProduction = env('SQUARE_ENVIRONMENT') === 'production';
-        $squareScript = $isProduction
+        $isProduction = config('services.square.environment') === 'production';
+        $squareSdkUrl = $isProduction
             ? 'https://web.squarecdn.com/v1/square.js'
             : 'https://sandbox.web.squarecdn.com/v1/square.js';
     @endphp
-    <script type="text/javascript" src="{{ $squareScript }}"></script>
+    <script type="text/javascript" src="{{ $squareSdkUrl }}"></script>
 
     <style>
         body { background: #ffffff !important; font-family: "Inter", sans-serif; color: #333; margin-top: 25px; }
@@ -67,15 +71,6 @@
         .d-price { color: #ff0000; font-weight: 800; font-size: 1.1rem; }
         .d-text { font-size: 0.7rem; color: #333; font-weight: 600; margin-top: 2px; }
         .d-sub { font-size: 0.65rem; color: #777; }
-
-        /* Developer Data View Styles */
-        .data-view-box { background: #212529; color: #fff; border-radius: 8px; padding: 20px; margin-top: 50px; border: 2px solid #dc3545; }
-        .data-view-box h4 { border-bottom: 1px solid #555; padding-bottom: 10px; margin-bottom: 20px; color: #dc3545; }
-        .data-table { width: 100%; border-collapse: collapse; font-family: monospace; font-size: 13px; }
-        .data-table th, .data-table td { border: 1px solid #444; padding: 8px; text-align: left; }
-        .data-table th { background: #333; color: #ffd700; }
-        .data-table td { background: #2c3034; color: #00ff41; vertical-align: top; }
-        .array-pre { margin: 0; color: #0dcaf0; }
 
         @media(max-width: 768px) {
             .payment-toggles { gap: 6px; }
@@ -191,199 +186,93 @@
                 {{-- RIGHT COLUMN: Sidebar Summary --}}
                 <div class="col-lg-4">
                     <div class="sidebar-yellow">
-
-                        {{--
-                            ============================================
-                            SECTION 1: PASSENGER DETAILS (PERSONAL INFO)
-                            This section shows fields ONLY if they exist
-                            ============================================
-                        --}}
                         <div class="sidebar-header" style="border-bottom:1px solid #ddd; padding-bottom:10px; margin-bottom:15px;">
                             <h3 class="sidebar-title">Passenger Details</h3>
                         </div>
                         <table class="summary-table">
-                            {{-- Name --}}
                             @if($request->passenger_name)
-                            <tr>
-                                <td>Name</td>
-                                <td>:</td>
-                                <td>{{ $request->passenger_name }}</td>
-                            </tr>
+                            <tr><td>Name</td><td>:</td><td>{{ $request->passenger_name }}</td></tr>
                             @endif
 
-                            {{-- Email --}}
                             @if($request->passenger_email)
-                            <tr>
-                                <td>Email</td>
-                                <td>:</td>
-                                <td>{{ $request->passenger_email }}</td>
-                            </tr>
+                            <tr><td>Email</td><td>:</td><td>{{ $request->passenger_email }}</td></tr>
                             @endif
 
-                            {{-- Phone (Combine Country Code + Number) --}}
                             @if($request->phone_number)
-                            <tr>
-                                <td>Phone</td>
-                                <td>:</td>
-                                <td>{{ $request->phone_country_code }} {{ $request->phone_number }}</td>
-                            </tr>
+                            <tr><td>Phone</td><td>:</td><td>{{ $request->phone_country_code }} {{ $request->phone_number }}</td></tr>
                             @endif
 
-                            {{-- Alternate Phone --}}
                             @if($request->alternate_phone)
-                            <tr>
-                                <td>Alt. Phone</td>
-                                <td>:</td>
-                                <td>{{ $request->alternate_phone }}</td>
-                            </tr>
+                            <tr><td>Alt. Phone</td><td>:</td><td>{{ $request->alternate_phone }}</td></tr>
                             @endif
 
-                            {{-- Airline --}}
                             @if($request->airline_name)
-                            <tr>
-                                <td>Airline</td>
-                                <td>:</td>
-                                <td>{{ $request->airline_name }}</td>
-                            </tr>
+                            <tr><td>Airline</td><td>:</td><td>{{ $request->airline_name }}</td></tr>
                             @endif
 
-                            {{-- Flight No --}}
                             @if($request->flight_number)
-                            <tr>
-                                <td>Flight No</td>
-                                <td>:</td>
-                                <td>{{ $request->flight_number }}</td>
-                            </tr>
+                            <tr><td>Flight No</td><td>:</td><td>{{ $request->flight_number }}</td></tr>
                             @endif
 
-                            {{-- Mailing Address --}}
                             @if($request->mailing_address)
-                            <tr>
-                                <td>Address</td>
-                                <td>:</td>
-                                <td>{{ $request->mailing_address }}</td>
-                            </tr>
+                            <tr><td>Address</td><td>:</td><td>{{ $request->mailing_address }}</td></tr>
                             @endif
 
-                            {{-- Special Needs --}}
                             @if($request->special_needs)
-                            <tr>
-                                <td class="text-danger">Notes</td>
-                                <td>:</td>
-                                <td class="text-danger">{{ $request->special_needs }}</td>
-                            </tr>
+                            <tr><td class="text-danger">Notes</td><td>:</td><td class="text-danger">{{ $request->special_needs }}</td></tr>
                             @endif
                         </table>
 
-                        {{-- SECTION 2: BOOKING DETAILS --}}
                         <div class="sidebar-header" style="margin-top:20px; border-top:1px solid #ddd; padding-top:15px;">
                             <h3 class="sidebar-title">Booking Details</h3>
-                            {{-- <a href="{{ route('home') }}" class="btn-change">Change</a> --}}
                         </div>
 
                         <table class="summary-table">
                             <tr>
-                                <td>Service</td>
-                                <td>:</td>
+                                <td>Service</td><td>:</td>
                                 <td>
-                                    @if(($request->trip_type ?? '') == 'fromAirport')
-                                        Ride From Airport
-                                    @elseif(($request->trip_type ?? '') == 'toAirport')
-                                        Ride To Airport
-                                    @else
-                                        Door to Door
+                                    @if(($request->trip_type ?? '') == 'fromAirport') Ride From Airport
+                                    @elseif(($request->trip_type ?? '') == 'toAirport') Ride To Airport
+                                    @else Door to Door
                                     @endif
                                 </td>
                             </tr>
+                            <tr><td>Date</td><td>:</td><td>{{ \Carbon\Carbon::parse($request->date)->format('Y-m-d') }}</td></tr>
+                            <tr><td>Time</td><td>:</td><td>{{ $request->time }}</td></tr>
+                            <tr><td>Pick up</td><td>:</td><td>{{ $request->pickup ?? $request->pickup_formatted ?? $request->from_address }}</td></tr>
+                            <tr><td>Drop off</td><td>:</td><td>{{ $request->dropoff ?? $request->dropoff_formatted ?? $request->to_address }}</td></tr>
                             <tr>
-                                <td>Date</td>
-                                <td>:</td>
-                                <td>{{ \Carbon\Carbon::parse($request->date)->format('Y-m-d') }}</td>
+                                <td>Passengers</td><td>:</td>
+                                <td>{{ (int)($request->adults ?? 0) + (int)($request->children ?? 0) }} ({{ $request->adults ?? 0 }} Adults + {{ $request->children ?? 0 }} Children)</td>
                             </tr>
                             <tr>
-                                <td>Time</td>
-                                <td>:</td>
-                                <td>{{ $request->time }}</td>
-                            </tr>
-                            <tr>
-                                <td>Pick up</td>
-                                <td>:</td>
-                                <td>{{ $request->pickup ?? $request->pickup_formatted ?? $request->from_address }}</td>
-                            </tr>
-                            <tr>
-                                <td>Drop off</td>
-                                <td>:</td>
-                                <td>{{ $request->dropoff ?? $request->dropoff_formatted ?? $request->to_address }}</td>
-                            </tr>
-                            <tr>
-                                <td>Passengers</td>
-                                <td>:</td>
-                                <td>
-                                    {{ (int)($request->adults ?? 0) + (int)($request->children ?? 0) }}
-                                    ({{ $request->adults ?? 0 }} Adults + {{ $request->children ?? 0 }} Children)
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Luggage</td>
-                                <td>:</td>
-                                <td>
-                                    {{ $request->luggage }}
-                                    (4 Bags Free + {{ max(0, (int)$request->luggage - 4) }} Extra)
-                                </td>
+                                <td>Luggage</td><td>:</td>
+                                <td>{{ $request->luggage }} (4 Bags Free + {{ max(0, (int)$request->luggage - 4) }} Extra)</td>
                             </tr>
                         </table>
 
-                        {{-- SECTION 3: VEHICLE & PRICE --}}
                         <div class="sidebar-header price-section" style="margin-top:20px; border-top:1px solid #ddd; padding-top:15px;">
                             <h3 class="sidebar-title">Vehicle & Price</h3>
-                            {{-- <a href="{{ route('step2', $request->all()) }}" class="btn-change">Change</a> --}}
                         </div>
 
                         <table class="summary-table">
-                            <tr>
-                                <td>Vehicle</td>
-                                <td>:</td>
-                                <td>{{ $request->vehicle_display_name ?? 'Luxury Van' }}</td>
-                            </tr>
-                            <tr>
-                                <td>Distance</td>
-                                <td>:</td>
-                                <td>{{ number_format((float)($request->distance_miles ?? 0), 2) }} Miles</td>
-                            </tr>
-                            <tr>
-                                <td>Base Fare</td>
-                                <td>:</td>
-                                <td>${{ number_format((float)($request->fare['estimatedFare'] ?? $request->fare['base_fare'] ?? 0), 2) }}</td>
-                            </tr>
-                            <tr>
-                                <td>Gratuity (20%)</td>
-                                <td>:</td>
-                                <td>${{ number_format((float)($request->fare['gratuity'] ?? 0), 2) }}</td>
-                            </tr>
+                            <tr><td>Vehicle</td><td>:</td><td>{{ $request->vehicle_display_name ?? 'Luxury Van' }}</td></tr>
+                            <tr><td>Distance</td><td>:</td><td>{{ number_format((float)($request->distance_miles ?? 0), 2) }} Miles</td></tr>
+                            <tr><td>Base Fare</td><td>:</td><td>${{ number_format((float)($request->fare['estimatedFare'] ?? $request->fare['base_fare'] ?? 0), 2) }}</td></tr>
+                            <tr><td>Gratuity (20%)</td><td>:</td><td>${{ number_format((float)($request->fare['gratuity'] ?? 0), 2) }}</td></tr>
 
-                            {{-- DYNAMIC SURCHARGES LOOP --}}
                             @if(isset($request->surcharge_details) && is_array($request->surcharge_details))
                                 @foreach($request->surcharge_details as $surcharge)
-                                    <tr>
-                                        <td>{{ $surcharge['name'] ?? 'Surcharge' }}</td>
-                                        <td>:</td>
-                                        <td>${{ number_format((float)($surcharge['amount'] ?? 0), 2) }}</td>
-                                    </tr>
+                                    <tr><td>{{ $surcharge['name'] ?? 'Surcharge' }}</td><td>:</td><td>${{ number_format((float)($surcharge['amount'] ?? 0), 2) }}</td></tr>
                                 @endforeach
                             @endif
 
-                            {{-- EXTRA CHARGES LOOP --}}
                             @if(isset($request->extra_charge_details) && is_array($request->extra_charge_details))
                                 @foreach($request->extra_charge_details as $charge)
-                                    <tr>
-                                        <td>{{ $charge['name'] ?? 'Extra' }}</td>
-                                        <td>:</td>
-                                        <td>${{ number_format((float)($charge['amount'] ?? 0), 2) }}</td>
-                                    </tr>
+                                    <tr><td>{{ $charge['name'] ?? 'Extra' }}</td><td>:</td><td>${{ number_format((float)($charge['amount'] ?? 0), 2) }}</td></tr>
                                 @endforeach
                             @endif
 
-                            {{-- TAXES & FEES --}}
                             @if (($request->fare['pickup_tax'] ?? 0) > 0)
                                 <tr><td>Pickup Tax</td><td>:</td><td>${{ number_format($request->fare['pickup_tax'], 2) }}</td></tr>
                             @endif
@@ -396,14 +285,8 @@
                             @if (($request->fare['toll_fee'] ?? 0) > 0)
                                 <tr><td>Toll Fee</td><td>:</td><td>${{ number_format($request->fare['toll_fee'], 2) }}</td></tr>
                             @endif
-
-                            {{-- Extra Luggage Fee --}}
                             @if(($request->fare['extra_luggage_fee'] ?? 0) > 0)
-                                <tr>
-                                    <td>Extra Luggage</td>
-                                    <td>:</td>
-                                    <td>${{ number_format((float)$request->fare['extra_luggage_fee'], 2) }}</td>
-                                </tr>
+                                <tr><td>Extra Luggage</td><td>:</td><td>${{ number_format((float)$request->fare['extra_luggage_fee'], 2) }}</td></tr>
                             @endif
 
                             <tr>
@@ -415,7 +298,6 @@
                             </tr>
                         </table>
 
-                        {{-- Cash vs Card Discount Box --}}
                         <div class="discount-container">
                             <div class="discount-badge">%</div>
                             <div class="discount-box">
@@ -434,17 +316,24 @@
                 </div>
             </div>
         </form>
-
     </div>
 
     {{-- JS SCRIPTS (Square & SweetAlert) --}}
     <script>
-        const appId = '{{ env('SQUARE_APPLICATION_ID') }}';
-        const locationId = '{{ env('SQUARE_LOCATION_ID') }}';
+        // Using config variables passed via Blade
+        const appId = '{{ config('services.square.app_id') }}';
+        const locationId = '{{ config('services.square.location_id') }}';
         const baseTotal = parseFloat("{{ $request->fare['total'] }}");
         const cardTotal = (baseTotal * 1.04).toFixed(2);
 
         async function initializeSquare() {
+            // Square library automatically loaded via DYNAMIC SCRIPT above
+            if (typeof Square === 'undefined') {
+                console.error('Square SDK not loaded');
+                alert('Payment system failed to load. Please refresh.');
+                return;
+            }
+
             const payments = Square.payments(appId, locationId);
             const card = await payments.card();
             await card.attach('#card-container');
