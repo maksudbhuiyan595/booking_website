@@ -1,45 +1,14 @@
-
-
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <style>
     .hero-section {
         margin-top: 25px;
     }
-
-    /* --- Mobile Date Input Fix CSS --- */
-    .date-input-placeholder {
-        position: relative;
-        height: 34px; /* Matches other inputs height */
-        padding: 10px;
-        color: #000;
+    .flatpickr-input {
+        background-color: white !important;
     }
-
-    /* Hide default 'mm/dd/yyyy' when empty */
-    .date-input-placeholder:invalid::-webkit-datetime-edit {
-        color: transparent;
-    }
-
-    /* Show custom 'Date' placeholder */
-    .date-input-placeholder:invalid::before {
-        content: attr(placeholder);
-        position: absolute;
-        left: 12px;
-        top: 50%;
-        transform: translateY(-50%);
-
-        pointer-events: none;
-        font-size: 14px;
-    }
-
-    /* Show date when focused or valid */
-    .date-input-placeholder:focus::-webkit-datetime-edit,
-    .date-input-placeholder:valid::-webkit-datetime-edit {
-        color: black;
-    }
-
-    /* Hide placeholder when focused or valid */
-    .date-input-placeholder:focus::before,
-    .date-input-placeholder:valid::before {
-        display: none;
+     #date::placeholder {
+        color: #333;
+        opacity: 1;
     }
 </style>
 
@@ -57,20 +26,25 @@
                         <input type="hidden" name="extras_total" id="extrasTotalInput" value="0">
 
                         <div class="row g-1 mb-1">
+                            {{-- DATE FIELD WITH ICON --}}
                             <div class="col-6">
                                 <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
                                     <input
-                                        type="date"
+                                        type="text"
                                         id="date"
                                         name="date"
-                                        class="form-control date-input-placeholder"
+                                        class="form-control flatpickr-input"
                                         placeholder="Date"
                                         required
                                     >
                                 </div>
                             </div>
+
+                            {{-- TIME FIELD WITH ICON --}}
                             <div class="col-6">
                                 <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-clock"></i></span>
                                     <select id="time" name="time" class="form-select" required>
                                         <option value="">Time</option>
                                     </select>
@@ -115,7 +89,7 @@
                                     <span class="input-group-text"><i class="fas fa-child"></i></span>
                                     <select name="children" id="children" class="form-select">
                                         <option value="">Select</option>
-                                        @for ($i = 1; $i <= 4; $i++)
+                                        @for ($i = 0; $i <= 4; $i++)
                                             <option value="{{ $i }}">{{ $i }}</option>
                                         @endfor
                                     </select>
@@ -142,6 +116,7 @@
                                     <span class="input-group-text"><i class="fas fa-chair"></i></span>
                                     <select name="seats_dummy" id="childSeatsTrigger" class="form-select">
                                         <option value="0">Select</option>
+                                        <option value="0">0</option>
                                         <option value="1">1</option>
                                         <option value="2">2</option>
                                         <option value="3">3</option>
@@ -231,312 +206,318 @@
 </section>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB8jlhc5ZRDUU1SHHpxuwFh4dM0Ggq4n2Q&libraries=places"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+<script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB8jlhc5ZRDUU1SHHpxuwFh4dM0Ggq4n2Q&libraries=places&loading=async&callback=initMap"
+    async
+    defer>
+</script>
+
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-    console.log("Document ready");
+    // 1. Google Maps Callback Logic
+    let mapInitialized = false;
 
-    // ==========================================
-    // 1. Dynamic Luggage Capacity via AJAX
-    // ==========================================
-    const adultsSelect = document.getElementById('adults');
-    const childrenSelect = document.getElementById('children');
-    const luggageSelect = document.getElementById('luggage');
-
-    function updateLuggageOption() {
-        // Calculate Total Passengers
-        const valAdults = parseInt(adultsSelect.value) || 0;
-        const valChildren = parseInt(childrenSelect.value) || 0;
-        const totalPax = valAdults + valChildren;
-
-        if (totalPax === 0) return;
-
-        // AJAX Request to fetch capacity
-        $.ajax({
-            url: "/capacity-luggage", // Your defined route
-            type: "GET",
-            data: { passenger: totalPax },
-            dataType: "json",
-            success: function(response) {
-                // Get capacity from response (Default to 12 if null/error)
-                const maxLuggage = (response && response.capacity_luggage) ? parseInt(response.capacity_luggage) : 12;
-
-                // Re-populate Luggage Dropdown (Clear old options first)
-                let html = '<option value="">Select</option>';
-                for (let i = 0; i <= maxLuggage; i++) {
-                    html += `<option value="${i}">${i}</option>`;
-                }
-                luggageSelect.innerHTML = html;
-            },
-            error: function(xhr, status, error) {
-                console.error("Luggage capacity fetch error:", error);
-                // Fallback loop if error
-                let html = '<option value="">Select</option>';
-                for (let i = 0; i <= 12; i++) { html += `<option value="${i}">${i}</option>`; }
-                luggageSelect.innerHTML = html;
-            }
-        });
+    function initMap() {
+        console.log("Google Maps API Loaded");
+        mapInitialized = true;
+        // Re-trigger trip update to attach autocomplete if needed
+        if(typeof window.updateTrip === 'function') {
+            window.updateTrip();
+        }
     }
 
-    // Trigger update on change
-    if (adultsSelect) adultsSelect.addEventListener('change', updateLuggageOption);
-    if (childrenSelect) childrenSelect.addEventListener('change', updateLuggageOption);
+    document.addEventListener("DOMContentLoaded", () => {
+        console.log("Document ready");
+
+        // ==========================================
+        // 2. FLAT PICKER SETUP (Fixes Mobile "Set" Button)
+        // ==========================================
+        flatpickr("#date", {
+            minDate: "today",       // Can't select past dates
+            dateFormat: "Y-m-d",    // Format sent to server
+            disableMobile: true,    // CRITICAL: Disables native mobile picker (removes 'Set' button)
+            theme: "light",
+            allowInput: true        // Allows typing if needed, but calendar pops up on click
+        });
+
+        // ==========================================
+        // 3. Dynamic Luggage Capacity via AJAX
+        // ==========================================
+        const adultsSelect = document.getElementById('adults');
+        const childrenSelect = document.getElementById('children');
+        const luggageSelect = document.getElementById('luggage');
+
+        function updateLuggageOption() {
+            const valAdults = parseInt(adultsSelect.value) || 0;
+            const valChildren = parseInt(childrenSelect.value) || 0;
+            const totalPax = valAdults + valChildren;
+
+            if (totalPax === 0) return;
+
+            $.ajax({
+                url: "/capacity-luggage",
+                type: "GET",
+                data: { passenger: totalPax },
+                dataType: "json",
+                success: function(response) {
+                    const maxLuggage = (response && response.capacity_luggage) ? parseInt(response.capacity_luggage) : 12;
+                    let html = '<option value="">Select</option>';
+                    for (let i = 0; i <= maxLuggage; i++) {
+                        html += `<option value="${i}">${i}</option>`;
+                    }
+                    luggageSelect.innerHTML = html;
+                },
+                error: function(xhr, status, error) {
+                    let html = '<option value="">Select</option>';
+                    for (let i = 0; i <= 12; i++) { html += `<option value="${i}">${i}</option>`; }
+                    luggageSelect.innerHTML = html;
+                }
+            });
+        }
+
+        if (adultsSelect) adultsSelect.addEventListener('change', updateLuggageOption);
+        if (childrenSelect) childrenSelect.addEventListener('change', updateLuggageOption);
 
 
-    // ==========================================
-    // 2. Existing Logic (Airports, Maps, etc)
-    // ==========================================
-    const fromLoc = document.getElementById("fromLocation");
-    const toLoc = document.getElementById("toLocation");
+        // ==========================================
+        // 4. Trip Type, Airports & Autocomplete Logic
+        // ==========================================
+        const fromLoc = document.getElementById("fromLocation");
+        const toLoc = document.getElementById("toLocation");
+        let airports = [];
 
-    let airports = [];
-    function loadAirports(callback) {
+        // Load airports
         $.ajax({
             url: "/airports",
             type: "GET",
             dataType: "json",
             success: function(data) {
                 airports = data;
-                callback(data);
+                window.updateTrip(); // Initialize fields
             },
             error: function(xhr, status, error) {
                 console.error("Failed to load airports:", error);
-                callback([]);
             }
         });
-    }
 
-    function buildAirportSelect(name) {
-        let html = `<select name="${name}" class="form-select" required><option value="">Select Airport</option>`;
-        airports.forEach(airport => {
-            html += `<option value="${airport.id}" data-address="${airport.address}">${airport.name}</option>`;
-        });
-        html += `</select>`;
-        return html;
-    }
-
-    function initAutocomplete(id) {
-        if (!document.getElementById(id)) return;
-        const input = document.getElementById(id);
-        const autocomplete = new google.maps.places.Autocomplete(input, {
-            types: ["geocode"],
-            componentRestrictions: { country: "us" }
-        });
-    }
-
-    function updateTrip() {
-        const t = document.querySelector('input[name="tripType"]:checked').value;
-        if (t === 'fromAirport') {
-            fromLoc.innerHTML = buildAirportSelect("from_airport");
-            toLoc.innerHTML = `<input type="text" name="to_address" id="toAddress" class="form-control" placeholder="Drop Off Address" required>`;
-            initAutocomplete("toAddress");
-            attachAirportSelectEvent("from_airport", "fromAddress");
-        } else if (t === 'toAirport') {
-            fromLoc.innerHTML = `<input type="text" name="from_address" id="fromAddress" class="form-control" placeholder="Pick Up Address" required>`;
-            toLoc.innerHTML = buildAirportSelect("to_airport");
-            initAutocomplete("fromAddress");
-            attachAirportSelectEvent("to_airport", "toAddress");
-        } else { // Door to Door
-            fromLoc.innerHTML = `<input type="text" name="from_address" id="fromAddress" class="form-control" placeholder="Pick Up Address" required>`;
-            toLoc.innerHTML = `<input type="text" name="to_address" id="toAddress" class="form-control" placeholder="Drop Off Address" required>`;
-            initAutocomplete("fromAddress");
-            initAutocomplete("toAddress");
+        function buildAirportSelect(name) {
+            let html = `<select name="${name}" class="form-select" required><option value="">Select Airport</option>`;
+            if(Array.isArray(airports)){
+                airports.forEach(airport => {
+                    html += `<option value="${airport.id}" data-address="${airport.address}">${airport.name}</option>`;
+                });
+            }
+            html += `</select>`;
+            return html;
         }
-    }
 
-    function attachAirportSelectEvent(selectName, inputId) {
-        const sel = document.querySelector(`select[name="${selectName}"]`);
-        if (!sel) return;
-        sel.addEventListener("change", () => {
-            const selectedOption = sel.options[sel.selectedIndex];
-            const address = selectedOption.getAttribute("data-address") || "";
-            if (!document.getElementById(inputId)) {
-                const input = document.createElement("input");
-                input.type = "hidden";
-                input.id = inputId;
-                input.name = inputId;
-                input.value = address;
-                sel.parentElement.appendChild(input);
-            } else {
-                document.getElementById(inputId).value = address;
+        // Updated Autocomplete
+        function initAutocomplete(id) {
+            // Wait for Google Maps to be ready
+            if (!mapInitialized || !window.google || !window.google.maps || !window.google.maps.places) {
+                setTimeout(() => initAutocomplete(id), 500);
+                return;
             }
-        });
-    }
-
-    loadAirports(() => {
-        updateTrip();
-        document.querySelectorAll('input[name="tripType"]').forEach(r => r.addEventListener('change', updateTrip));
-    });
-
-    // Date & Time Setup
-    const dateInput = document.getElementById("date");
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0');
-    const dd = String(today.getDate()).padStart(2, '0');
-    dateInput.min = `${yyyy}-${mm}-${dd}`;
-
-    const timeSelect = document.getElementById("time");
-    for (let h = 0; h < 24; h++) {
-        for (let m = 0; m < 60; m += 15) {
-            let hh = String(h).padStart(2, '0');
-            let mmStr = String(m).padStart(2, '0');
-            let ampm = h < 12 ? 'AM' : 'PM';
-            let dH = h % 12 || 12;
-            timeSelect.innerHTML += `<option value="${hh}:${mmStr}">${dH}:${mmStr} ${ampm}</option>`;
-        }
-    }
-
-    // Extras & Pricing Logic
-    const toggleBtn = document.getElementById("toggleExtrasBtn");
-    const section = document.getElementById("extrasSection");
-
-    if (toggleBtn) {
-        toggleBtn.addEventListener("click", () => {
-            section.classList.toggle("open");
-            toggleBtn.classList.toggle("active");
-        });
-    }
-
-    // Auto-Open Extras on Child Seat Selection
-    const childTrigger = document.getElementById("childSeatsTrigger");
-    if (childTrigger) {
-        childTrigger.addEventListener("change", function() {
-            if (this.value !== "0") {
-                if (!section.classList.contains("open")) {
-                    section.classList.add("open");
-                    toggleBtn.classList.add("active");
-                }
-            }
-        });
-    }
-
-    const items = [
-        { id: 'stopover', price: {{ $settings->stopover_fee ?? 0 }} },
-        { id: 'infantSeat', price: {{ $settings->child_seat_fee ?? 0 }} },
-        { id: 'frontSeat', price: {{ $settings->child_seat_fee ?? 0 }} },
-        { id: 'boosterSeat', price: {{ $settings->booster_seat_fee ?? 0 }} }
-    ];
-
-    items.forEach(item => {
-        const el = document.getElementById(item.id);
-        if (el) {
-            el.addEventListener("change", () => {
-                const total = el.value * item.price;
-                const displayEl = document.getElementById(item.id + "Display");
-                if (displayEl) displayEl.innerText = "$" + total;
-                calculateTotalExtras();
+            const input = document.getElementById(id);
+            if (!input) return;
+            const autocomplete = new google.maps.places.Autocomplete(input, {
+                types: ["geocode"],
+                componentRestrictions: { country: "us" }
+            });
+            // Prevent Enter key form submission
+            input.addEventListener('keydown', function(e) {
+                if (e.key === "Enter") e.preventDefault();
             });
         }
-    });
 
-    function calculateTotalExtras() {
-        let total = 0;
+        // Exposed function for Trip Update
+        window.updateTrip = function() {
+            const tEl = document.querySelector('input[name="tripType"]:checked');
+            if(!tEl) return;
+            const t = tEl.value;
+
+            if (t === 'fromAirport') {
+                fromLoc.innerHTML = buildAirportSelect("from_airport");
+                toLoc.innerHTML = `<input type="text" name="to_address" id="toAddress" class="form-control" placeholder="Drop Off Address" required>`;
+                initAutocomplete("toAddress");
+                attachAirportSelectEvent("from_airport", "fromAddress");
+            } else if (t === 'toAirport') {
+                fromLoc.innerHTML = `<input type="text" name="from_address" id="fromAddress" class="form-control" placeholder="Pick Up Address" required>`;
+                toLoc.innerHTML = buildAirportSelect("to_airport");
+                initAutocomplete("fromAddress");
+                attachAirportSelectEvent("to_airport", "toAddress");
+            } else { // Door to Door
+                fromLoc.innerHTML = `<input type="text" name="from_address" id="fromAddress" class="form-control" placeholder="Pick Up Address" required>`;
+                toLoc.innerHTML = `<input type="text" name="to_address" id="toAddress" class="form-control" placeholder="Drop Off Address" required>`;
+                initAutocomplete("fromAddress");
+                initAutocomplete("toAddress");
+            }
+        }
+
+        function attachAirportSelectEvent(selectName, inputId) {
+            const sel = document.querySelector(`select[name="${selectName}"]`);
+            if (!sel) return;
+            sel.addEventListener("change", () => {
+                const selectedOption = sel.options[sel.selectedIndex];
+                const address = selectedOption.getAttribute("data-address") || "";
+                let input = document.getElementById(inputId);
+                if (!input) {
+                    input = document.createElement("input");
+                    input.type = "hidden";
+                    input.id = inputId;
+                    input.name = inputId;
+                    sel.parentElement.appendChild(input);
+                }
+                input.value = address;
+            });
+        }
+
+        document.querySelectorAll('input[name="tripType"]').forEach(r => r.addEventListener('change', window.updateTrip));
+
+
+        // ==========================================
+        // 5. Time Setup
+        // ==========================================
+        const timeSelect = document.getElementById("time");
+        for (let h = 0; h < 24; h++) {
+            for (let m = 0; m < 60; m += 15) {
+                let hh = String(h).padStart(2, '0');
+                let mmStr = String(m).padStart(2, '0');
+                let ampm = h < 12 ? 'AM' : 'PM';
+                let dH = h % 12 || 12;
+                timeSelect.innerHTML += `<option value="${hh}:${mmStr}">${dH}:${mmStr} ${ampm}</option>`;
+            }
+        }
+
+        // ==========================================
+        // 6. Extras & Pricing Logic
+        // ==========================================
+        const toggleBtn = document.getElementById("toggleExtrasBtn");
+        const section = document.getElementById("extrasSection");
+
+        if (toggleBtn) {
+            toggleBtn.addEventListener("click", () => {
+                section.classList.toggle("open");
+                toggleBtn.classList.toggle("active");
+            });
+        }
+
+        const childTrigger = document.getElementById("childSeatsTrigger");
+        if (childTrigger) {
+            childTrigger.addEventListener("change", function() {
+                if (this.value !== "0") {
+                    if (!section.classList.contains("open")) {
+                        section.classList.add("open");
+                        toggleBtn.classList.add("active");
+                    }
+                }
+            });
+        }
+
+        const items = [
+            { id: 'stopover', price: {{ $settings->stopover_fee ?? 0 }} },
+            { id: 'infantSeat', price: {{ $settings->child_seat_fee ?? 0 }} },
+            { id: 'frontSeat', price: {{ $settings->child_seat_fee ?? 0 }} },
+            { id: 'boosterSeat', price: {{ $settings->booster_seat_fee ?? 0 }} }
+        ];
+
         items.forEach(item => {
             const el = document.getElementById(item.id);
-            if (el) total += (parseInt(el.value) || 0) * item.price;
-        });
-        document.getElementById("extrasTotalInput").value = total;
-    }
-
-    // ==========================================
-    // 9. FINAL VALIDATION LOGIC
-    // ==========================================
-    const form = document.getElementById("reservationForm");
-
-    form.addEventListener("submit", function(e) {
-        e.preventDefault();
-
-        // --- A. Missing Fields Check ---
-        let missing = false;
-        const requiredFields = ["date", "time", "adults", "luggage"];
-        requiredFields.forEach(name => {
-            const el = document.querySelector(`[name="${name}"]`);
-            if (!el || !el.value) missing = true;
-        });
-
-        const fromVal = document.querySelector('[name="from_airport"]')?.value || document.querySelector('[name="from_address"]')?.value;
-        const toVal = document.querySelector('[name="to_airport"]')?.value || document.querySelector('[name="to_address"]')?.value;
-
-        if (!fromVal || !toVal) missing = true;
-
-        if (missing) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Missing Details',
-                text: 'Please fill in all required fields.',
-                confirmButtonColor: '#d33'
-            });
-            return;
-        }
-
-        // --- B. Max Passenger Check (Total <= 14) ---
-        const valAdults = parseInt(adultsSelect.value) || 0;
-        const valChildren = parseInt(childrenSelect.value) || 0;
-        const totalPax = valAdults + valChildren;
-
-        if (totalPax > 14) {
-             Swal.fire({
-                icon: 'warning',
-                title: 'Capacity Exceeded',
-                html: `Total passengers (Adults + Children) cannot exceed <b>14</b>.<br>You selected: <b>${totalPax}</b>.`,
-                confirmButtonColor: '#d33'
-            });
-            return;
-        }
-
-        // --- C. Extras Count Check (Child Seat Mismatch) ---
-        // You asked to sum ALL dropdowns (Stopover/Pets + Infant + Front + Booster)
-        const requiredSeats = parseInt(childTrigger.value) || 0;
-
-        const vStopover = parseInt(document.getElementById("stopover").value) || 0;
-        const vInfant = parseInt(document.getElementById("infantSeat").value) || 0;
-        const vFront = parseInt(document.getElementById("frontSeat").value) || 0;
-        const vBooster = parseInt(document.getElementById("boosterSeat").value) || 0;
-
-        const totalSelectedExtras = vStopover + vInfant + vFront + vBooster;
-
-        if (requiredSeats > 0 && requiredSeats !== totalSelectedExtras) {
-             Swal.fire({
-                icon: 'error',
-                title: 'Selection Mismatch',
-                html: `You selected <b>${requiredSeats}</b> in "Child Seats" dropdown.<br>But selected total <b>${totalSelectedExtras}</b> items below (Stopover + Seats).<br>Please make them equal.`,
-                confirmButtonColor: '#d33'
-            });
-            return;
-        }
-
-        // --- D. Time Validation ---
-        const dateVal = document.getElementById("date").value;
-        const timeVal = document.getElementById("time").value;
-        const selectedDateTime = new Date(dateVal + "T" + timeVal);
-        const now = new Date();
-
-        // Past Date Check
-        if (selectedDateTime < now) {
-            Swal.fire({ icon: 'error', title: 'Invalid Time', text: 'You cannot select a past date or time.', confirmButtonColor: '#d33' });
-            return;
-        }
-        // 2 Hour Buffer
-        const minBookingTime = new Date(now.getTime() + 2 * 60 * 60 * 1000);
-        if (selectedDateTime < minBookingTime) {
-            Swal.fire({ icon: 'warning', title: 'Reservation Time Restriction', text: 'We cannot process a reservation within 2 Hours of departure.', confirmButtonColor: '#d33' });
-            return;
-        }
-
-        // --- E. Success ---
-        Swal.fire({
-            title: 'Processing...',
-            text: 'Checking availability',
-            icon: 'success',
-            timer: 1000,
-            showConfirmButton: false,
-            willClose: () => {
-                form.submit();
+            if (el) {
+                el.addEventListener("change", () => {
+                    const total = el.value * item.price;
+                    const displayEl = document.getElementById(item.id + "Display");
+                    if (displayEl) displayEl.innerText = "$" + total;
+                    calculateTotalExtras();
+                });
             }
         });
+
+        function calculateTotalExtras() {
+            let total = 0;
+            items.forEach(item => {
+                const el = document.getElementById(item.id);
+                if (el) total += (parseInt(el.value) || 0) * item.price;
+            });
+            document.getElementById("extrasTotalInput").value = total;
+        }
+
+        // ==========================================
+        // 7. FINAL VALIDATION LOGIC
+        // ==========================================
+        const form = document.getElementById("reservationForm");
+
+        form.addEventListener("submit", function(e) {
+            e.preventDefault();
+
+            let missing = false;
+            const requiredFields = ["date", "time", "adults", "luggage"];
+            requiredFields.forEach(name => {
+                const el = document.querySelector(`[name="${name}"]`);
+                if (!el || !el.value) missing = true;
+            });
+
+            const fromVal = document.querySelector('[name="from_airport"]')?.value || document.querySelector('[name="from_address"]')?.value;
+            const toVal = document.querySelector('[name="to_airport"]')?.value || document.querySelector('[name="to_address"]')?.value;
+
+            if (!fromVal || !toVal) missing = true;
+
+            if (missing) {
+                Swal.fire({ icon: 'warning', title: 'Missing Details', text: 'Please fill in all required fields.', confirmButtonColor: '#d33' });
+                return;
+            }
+
+            // Max Passenger
+            const valAdults = parseInt(adultsSelect.value) || 0;
+            const valChildren = parseInt(childrenSelect.value) || 0;
+            const totalPax = valAdults + valChildren;
+
+            if (totalPax > 14) {
+                 Swal.fire({ icon: 'warning', title: 'Capacity Exceeded', html: `Total passengers cannot exceed 14.`, confirmButtonColor: '#d33' });
+                return;
+            }
+
+            // Extras Count
+            const requiredSeats = parseInt(childTrigger.value) || 0;
+            const vStopover = parseInt(document.getElementById("stopover").value) || 0;
+            const vInfant = parseInt(document.getElementById("infantSeat").value) || 0;
+            const vFront = parseInt(document.getElementById("frontSeat").value) || 0;
+            const vBooster = parseInt(document.getElementById("boosterSeat").value) || 0;
+            const totalSelectedExtras = vStopover + vInfant + vFront + vBooster;
+
+            if (requiredSeats > 0 && requiredSeats !== totalSelectedExtras) {
+                 Swal.fire({ icon: 'error', title: 'Selection Mismatch', html: `Selected Child Seats (${requiredSeats}) does not match specific seats below.`, confirmButtonColor: '#d33' });
+                return;
+            }
+
+            // Time Validation
+            const dateVal = document.getElementById("date").value;
+            const timeVal = document.getElementById("time").value;
+            const selectedDateTime = new Date(dateVal + "T" + timeVal);
+            const now = new Date();
+
+            if (selectedDateTime < now) {
+                Swal.fire({ icon: 'error', title: 'Invalid Time', text: 'You cannot select a past date or time.', confirmButtonColor: '#d33' });
+                return;
+            }
+            const minBookingTime = new Date(now.getTime() + 2 * 60 * 60 * 1000);
+            if (selectedDateTime < minBookingTime) {
+                Swal.fire({ icon: 'warning', title: 'Reservation Time Restriction', text: 'We cannot process a reservation within 2 Hours of departure.', confirmButtonColor: '#d33' });
+                return;
+            }
+
+            Swal.fire({
+                title: 'Processing...',
+                text: 'Checking availability',
+                icon: 'success',
+                timer: 1000,
+                showConfirmButton: false,
+                willClose: () => {
+                    form.submit();
+                }
+            });
+        });
     });
-});
 </script>
