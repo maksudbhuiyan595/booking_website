@@ -116,14 +116,14 @@
                     {{-- Payment Options --}}
                     <div class="payment-toggles">
                         <div class="toggle-card active" onclick="selectPayment('cash')" id="box-cash">
-                            <div class="t-price">${{ number_format($request->fare['total'] , 2) }}</div>
-                            <div class="t-desc">1$ For Reservation</div>
+                            <h6>1$ for reservation</h6>
+                             <div class="t-desc">Pay Cash</div>
                             <div class="visual-btn btn-cash">Pay Cash</div>
                         </div>
                         <div class="toggle-card" onclick="selectPayment('deposit')" id="box-deposit">
-                            <div class="t-price">${{ number_format($request->fare['total'], 2) }}</div>
-                            <div class="t-desc">Full reservation</div>
-                            <div class="visual-btn btn-deposit">Pay Card</div>
+                            <div class="t-price">${{ number_format($request->fare['total'] * 0.9, 2) }}</div>
+                            <div class="t-desc">1$ for reservation</div>
+                            <div class="visual-btn btn-deposit">Pay Cash</div>
                         </div>
                         <div class="toggle-card" onclick="selectPayment('card')" id="box-card">
                             @php $fullCard = $request->fare['total']; @endphp
@@ -301,7 +301,7 @@
                         <div class="discount-container">
                             <div class="discount-badge">%</div>
                             <div class="discount-box">
-                                <div class="d-price">${{ number_format((float)($request->fare['total'] ?? 0), 2) }}</div>
+                                <div class="d-price">${{ number_format((float)($request->fare['total'] * 0.9 ?? 0) , 2) }}</div>
                                 <div class="d-text">PAY CASH</div>
                                 <div class="d-sub">$1 reservation fee</div>
                             </div>
@@ -386,7 +386,7 @@
                 agreeLabel.innerText = `I allow you to charge my card $1.00 for the reservation.`;
                 amountInput.value = "1.00";
             } else {
-                alertBox.innerHTML = `Pay <strong>$${cardTotal}</strong> Full Reservation Fee Now. The remaining balance is payable by card.`;
+                alertBox.innerHTML = `Pay <strong>$1.00</strong> Reservation Fee Now. Balance is payable by cash/card when you avail the service.`;
                 agreeLabel.innerText = `I allow you to charge my card $1.00 for the reservation.`;
                 amountInput.value = "1.00";
             }

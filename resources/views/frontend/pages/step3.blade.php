@@ -526,7 +526,7 @@
                         <div class="discount-container">
                             <div class="discount-badge">%</div>
                             <div class="discount-box">
-                                <div class="d-price">${{ number_format(($request->fare['total'] ?? 0), 2) }}
+                                <div class="d-price">${{ number_format(($request->fare['total'] * 0.9 ?? 0), 2) }}
                                 </div>
                                 <div class="d-text">PAY CASH</div>
                                 <div class="d-sub">$1 reservation fee</div>
