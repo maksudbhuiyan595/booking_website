@@ -165,8 +165,28 @@
     }
     .oc-price { font-size: 1.5rem; font-weight: 800; color: var(--primary-green); }
 
+    /* =========================================
+       RESPONSIVE FIX FOR MOBILE (SIDE BY SIDE)
+       ========================================= */
     @media (max-width: 768px) {
-        .oc-action-container { flex-direction: column-reverse; gap: 15px; align-items: flex-start; }
+        .oc-action-container {
+            flex-direction: row; /* পাশাপাশি দেখানোর জন্য row সেট করা হলো */
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* মোবাইলে বাটন ও ফন্ট সাইজ একটু ছোট করা হলো যাতে সুন্দর দেখায় */
+        .btn-book-outline {
+            padding: 8px 12px;
+            font-size: 0.85rem;
+        }
+        .oc-price {
+            font-size: 1.2rem;
+        }
+        .oc-total-label {
+            font-size: 0.8rem;
+        }
     }
 </style>
 
@@ -510,7 +530,6 @@
 </div>
 
 <script>
-    // জাভাস্ক্রিপ্টে নাম্বার ফরম্যাট করার জন্য ফাংশন
     function formatMoney(amount) {
         return Number(amount).toLocaleString('en-US', {
             minimumFractionDigits: 2,
@@ -530,7 +549,7 @@
             clickedCard.classList.add('d-none-custom');
         }
 
-        // 3. Update Hidden Inputs (এইগুলো raw ভ্যালু থাকবে ডাটাবেসের জন্য)
+        // 3. Update Hidden Inputs
         document.getElementById('inp_vehicle_id').value = data.vehicle_id;
         document.getElementById('inp_cap_pass').value = data.capacity_passenger;
         document.getElementById('inp_cap_lug').value = data.capacity_luggage;
@@ -550,21 +569,21 @@
             });
         }
 
-        // 4. Update Visuals (এখানে formatMoney ফাংশন ব্যবহার করা হয়েছে)
+        // 4. Update Visuals
         document.getElementById('disp_image').src = data.image;
         document.getElementById('disp_pax_cap').innerText = data.capacity_passenger;
         document.getElementById('disp_name').innerText = data.name;
         document.getElementById('disp_lug_cap').innerText = data.capacity_luggage;
-        document.getElementById('disp_pay_cash').innerText = formatMoney(data.pay_cash); // Formatted
-        document.getElementById('disp_pay_card').innerText = formatMoney(data.total_fare); // Formatted
+        document.getElementById('disp_pay_cash').innerText = formatMoney(data.pay_cash);
+        document.getElementById('disp_pay_card').innerText = formatMoney(data.total_fare);
 
-        document.getElementById('tbl_est_fare').innerText = formatMoney(data.estimated_fare); // Formatted
-        document.getElementById('tbl_gratuity').innerText = formatMoney(data.gratuity_fee); // Formatted
+        document.getElementById('tbl_est_fare').innerText = formatMoney(data.estimated_fare);
+        document.getElementById('tbl_gratuity').innerText = formatMoney(data.gratuity_fee);
 
         const rowSur = document.getElementById('row_surcharge');
         if(data.surcharge_fee > 0) {
             rowSur.style.display = 'table-row';
-            document.getElementById('tbl_surcharge').innerText = formatMoney(data.surcharge_fee); // Formatted
+            document.getElementById('tbl_surcharge').innerText = formatMoney(data.surcharge_fee);
         } else {
             rowSur.style.display = 'none';
         }
@@ -573,26 +592,26 @@
         const boxExLug = document.getElementById('box_ex_lug');
         if(data.extra_luggage_fee > 0) {
             boxExLug.style.display = 'flex';
-            document.getElementById('txt_ex_lug_total').innerText = formatMoney(data.extra_luggage_fee); // Formatted
+            document.getElementById('txt_ex_lug_total').innerText = formatMoney(data.extra_luggage_fee);
 
             // Calculate Rate
             let rate = 0;
             if(data.extra_luggage_count > 0) {
                 rate = (data.extra_luggage_fee / data.extra_luggage_count).toFixed(2);
             }
-            document.getElementById('txt_ex_lug_rate').innerText = rate; // toFixed already returns string with 2 decimals
+            document.getElementById('txt_ex_lug_rate').innerText = rate;
 
         } else {
             boxExLug.style.display = 'none';
         }
 
-        document.getElementById('tbl_total').innerText = formatMoney(data.total_fare); // Formatted
+        document.getElementById('tbl_total').innerText = formatMoney(data.total_fare);
 
         // Update Summary Fields
         document.getElementById('sum_name').innerText = data.name;
         document.getElementById('sum_pax').innerText = data.capacity_passenger;
         document.getElementById('sum_lug').innerText = data.capacity_luggage;
-        document.getElementById('sum_total').innerText = formatMoney(data.total_fare); // Formatted
+        document.getElementById('sum_total').innerText = formatMoney(data.total_fare);
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
