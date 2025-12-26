@@ -28,7 +28,7 @@ class BookingController extends Controller
         $nonce         = $request->square_nonce;
         $amountCharged = (float) $request->amount_charged;
 
-        // try {
+        try {
        $environment = config('services.square.environment') === 'production' ? 'production' : 'sandbox';
 
             $client = new SquareClient([
@@ -116,31 +116,31 @@ class BookingController extends Controller
             return redirect()->route('home', ['id' => $booking->booking_no])
                 ->with('notify', ['type' => 'success', 'message' => 'Booking confirmed successfully!']);
 
-        // } catch (\Throwable $e) {
-        //     // =========================================================
-        //     // 6. Handle Failure
-        //     // =========================================================
+        } catch (\Throwable $e) {
+            // =========================================================
+            // 6. Handle Failure
+            // =========================================================
 
-        //     // ফেইল করলে লগ রাখা ভালো
-        //     Log::error('Payment Error: ' . $e->getMessage());
+            // ফেইল করলে লগ রাখা ভালো
+            Log::error('Payment Error: ' . $e->getMessage());
 
-        //     try {
-        //         $failureDetails = [
-        //             'name'          => $request->passenger_name,
-        //             'email'         => $request->passenger_email,
-        //             'phone'         => $request->phone_number,
-        //             'error_message' => $e->getMessage(),
-        //             'date'          => now()->toDateTimeString()
-        //         ];
-        //         Mail::to(config('mail.from.address'))->send(new PaymentFailedMail($failureDetails));
-        //     } catch (\Exception $emailEx) {
-        //         Log::error('Failure Email Failed: ' . $emailEx->getMessage());
-        //     }
+            try {
+                $failureDetails = [
+                    'name'          => $request->passenger_name,
+                    'email'         => $request->passenger_email,
+                    'phone'         => $request->phone_number,
+                    'error_message' => $e->getMessage(),
+                    'date'          => now()->toDateTimeString()
+                ];
+                Mail::to(config('mail.from.address'))->send(new PaymentFailedMail($failureDetails));
+            } catch (\Exception $emailEx) {
+                Log::error('Failure Email Failed: ' . $emailEx->getMessage());
+            }
 
-        //     return back()->with('notify', [
-        //         'type'    => 'error',
-        //         'message' => 'Payment failed: ' . $e->getMessage()
-        //     ])->withInput();
-        // }
+            return back()->with('notify', [
+                'type'    => 'error',
+                'message' => 'Payment failed: ' . $e->getMessage()
+            ])->withInput();
+        }
     }
 }
