@@ -30,7 +30,6 @@ class BlogPostForm
                             ->afterStateUpdated(fn(Set $set, ?string $state) => $set('slug', Str::slug($state))),
 
                         TextInput::make('slug')
-                            ->disabled()
                             ->dehydrated()
                             ->required()
                             ->unique(BlogPost::class, 'slug', ignoreRecord: true),
