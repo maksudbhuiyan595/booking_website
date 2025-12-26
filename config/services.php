@@ -37,11 +37,16 @@ return [
     'google_maps' => [
         'key' => env('GOOGLE_MAPS_API_KEY'),
     ],
-   'square' => [
-        'app_id' => env('SQUARE_APPLICATION_ID'),
-        'access_token' => env('SQUARE_ACCESS_TOKEN'),
-        'location_id' => env('SQUARE_LOCATION_ID'),
-        'environment' => env('SQUARE_ENVIRONMENT', 'sandbox'),
+
+    'stripe' => [
+        'key'    => env('STRIPE_KEY'),
+        'secret' => env('STRIPE_SECRET'),
     ],
+//    'square' => [
+//         'app_id' => env('SQUARE_APPLICATION_ID'),
+//         'access_token' => env('SQUARE_ACCESS_TOKEN'),
+//         'location_id' => env('SQUARE_LOCATION_ID'),
+//         'environment' => env('SQUARE_ENVIRONMENT', 'sandbox'),
+//     ],
 
 ];

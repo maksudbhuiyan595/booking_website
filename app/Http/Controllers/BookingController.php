@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use App\Models\Booking;
 use App\Mail\BookingConfirmationMail;
 use App\Mail\PaymentFailedMail;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use Square\SquareClient;
-use Square\Types\Money;
-use Square\Payments\Requests\CreatePaymentRequest;
-use Square\Environment;
+use Stripe\Stripe;
+use Stripe\PaymentIntent;
+use Carbon\Carbon;
 
 class BookingController extends Controller
 {
@@ -19,128 +19,174 @@ class BookingController extends Controller
     {
         // 1. Validation
         $request->validate([
-            'square_nonce'   => 'required|string',
+            'stripe_token'   => 'required|string',
             'amount_charged' => 'required|numeric|min:1',
             'passenger_name' => 'required|string',
             'passenger_email'=> 'required|email',
         ]);
 
-        $nonce         = $request->square_nonce;
+        $token         = $request->stripe_token;
         $amountCharged = (float) $request->amount_charged;
 
         try {
-       $environment = config('services.square.environment') === 'production' ? 'production' : 'sandbox';
+            // ---------------------------------------------------
+            // 2. Stripe Payment Processing
+            // ---------------------------------------------------
+            Stripe::setApiKey(config('services.stripe.secret'));
 
-            $client = new SquareClient([
-                'accessToken' => config('services.square.access_token'),
-                'environment' => $environment,
+            $paymentIntent = PaymentIntent::create([
+                'amount' => (int) round($amountCharged * 100), // USD Cents
+                'currency' => 'usd',
+                'payment_method_data' => [
+                    'type' => 'card',
+                    'card' => ['token' => $token],
+                ],
+                'confirmation_method' => 'manual',
+                'confirm' => true,
+                'description' => 'Booking: ' . $request->passenger_name,
+                'receipt_email' => $request->passenger_email,
+                'return_url' => route('home'),
+                'metadata' => [
+                    'phone' => $request->phone_number,
+                    'type' => $request->trip_type
+                ]
             ]);
 
-            $money = new Money();
-            $money->setCurrency('USD');
-            $money->setAmount((int) round($amountCharged * 100));
-            $paymentRequest = new CreatePaymentRequest([
-            'sourceId' => 'cnon:card-nonce-ok',
-            'idempotencyKey' => uniqid(),
-            'amountMoney' => $money,
-            'note' => 'Taxi Booking Payment',
-            ]);
-            $paymentRequest->setNote('Booking for: ' . $request->passenger_name);
-
-            // 3. Execute Payment
-            $response  = $client->payments->create($paymentRequest);
-
-             $payment       = $response->getPayment();
-            $transactionId = $payment->getId();
-
-            // =========================================================
-            // 4. GENERATE BOOKING NO (BLAT-XXXX)
-            // =========================================================
-            $lastBooking = Booking::orderBy('id', 'desc')->first();
-
-            if ($lastBooking && preg_match('/BLAT-(\d+)/', $lastBooking->booking_no, $matches)) {
-                $newNumber = intval($matches[1]) + 1;
-            } else {
-                $newNumber = 1;
+            // কার্ডের তথ্য সংগ্রহ
+            $cardBrand = null;
+            $cardLast4 = null;
+            if (isset($paymentIntent->charges->data[0])) {
+                $charge = $paymentIntent->charges->data[0];
+                $cardBrand = $charge->payment_method_details->card->brand ?? null;
+                $cardLast4 = $charge->payment_method_details->card->last4 ?? null;
             }
+
+            $transactionId = $paymentIntent->id;
+
+            // ---------------------------------------------------
+            // 3. Generate Booking No
+            // ---------------------------------------------------
+            $lastBooking = Booking::orderBy('id', 'desc')->first();
+            $newNumber = ($lastBooking && preg_match('/BLAT-(\d+)/', $lastBooking->booking_no, $matches))
+                ? intval($matches[1]) + 1
+                : 1;
             $bookingNo = 'BLAT-' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
 
-            // =========================================================
-            // 5. Save Booking Data
-            // =========================================================
-            $totalFare = isset($request->fare['total']) ? (float) $request->fare['total'] : 0;
+            // ---------------------------------------------------
+            // 4. Save Data to Database
+            // ---------------------------------------------------
+            $fare = $request->fare ?? [];
 
             $booking = new Booking();
             $booking->booking_no = $bookingNo;
 
             // Passenger Info
-            $booking->passenger_name  = $request->passenger_name;
-            $booking->passenger_email = $request->passenger_email;
-            $booking->passenger_phone = $request->phone_number;
+            $booking->passenger_name     = $request->passenger_name;
+            $booking->passenger_email    = $request->passenger_email;
+            $booking->passenger_phone    = $request->phone_number;
+            $booking->phone_country_code = $request->phone_country_code;
+            $booking->alternate_phone    = $request->alternate_phone;
+            $booking->mailing_address    = $request->mailing_address;
+            $booking->special_needs      = $request->special_needs;
 
             // Trip Info
             $booking->trip_type       = $request->trip_type;
-            $booking->pickup_address  = $request->pickup_formatted ?? $request->fromAddress;
-            $booking->dropoff_address = $request->dropoff_formatted ?? $request->to_address;
-            $booking->pickup_date     = $request->date;
+            $booking->pickup_date     = Carbon::parse($request->date)->format('Y-m-d');
             $booking->pickup_time     = $request->time;
-            $booking->distance        = $request->distance_miles ?? 0;
-            $booking->vehicle_type    = $request->vehicle_display_name;
+            $booking->pickup_address  = $request->pickup ?? $request->fromAddress;
+            $booking->dropoff_address = $request->dropoff ?? $request->to_address;
+            $booking->distance_miles  = $request->distance_miles ?? 0;
 
-            // Extra Info
+            // Flight & Vehicle
             $booking->airline_name    = $request->airline_name;
             $booking->flight_number   = $request->flight_number;
-            $booking->luggage_count   = $request->luggage ?? 0;
-            $booking->passenger_count = ((int) $request->adults) + ((int) $request->seats_dummy);
+            $booking->vehicle_id      = $request->vehicle_id;
+            $booking->vehicle_type    = $fare['name'] ?? 'Unknown';
+            $booking->vehicles_used   = $request->vehicles_used ?? 1;
 
-            // Payment Info
-            $booking->total_fare   = $totalFare;
-            $booking->paid_amount  = $amountCharged;
-            $booking->due_amount   = max(0, $totalFare - $amountCharged);
-            $booking->payment_method = 'square';
+            // Counts
+            $booking->adults           = $request->adults ?? 0;
+            $booking->children         = $request->children ?? 0;
+            $booking->total_passengers = ((int)$request->adults + (int)$request->seats_dummy);
+            $booking->luggage          = $request->luggage ?? 0;
+
+            // Extras
+            $booking->booster_seat_count = $request->booster_seat ?? 0;
+            $booking->infant_seat_count  = $request->infant_seat ?? 0;
+            $booking->front_seat_count   = $request->front_seat ?? 0;
+            $booking->stopover_count     = $request->stopover ?? 0;
+
+            // Billing
+            $booking->card_holder_name = $request->card_holder_name;
+            $booking->billing_phone    = $request->billing_phone;
+            $booking->billing_address  = $request->billing_address;
+            $booking->billing_city     = $request->billing_city;
+            $booking->billing_state    = $request->billing_state;
+            $booking->billing_zip      = $request->billing_zip;
+
+            // Fare Breakdown
+            $booking->estimated_fare    = $fare['estimatedFare'] ?? 0;
+            $booking->gratuity          = $fare['gratuity'] ?? 0;
+            $booking->pickup_tax        = $fare['pickup_tax'] ?? 0;
+            $booking->dropoff_tax       = $fare['dropoff_tax'] ?? 0;
+            $booking->parking_fee       = $fare['parking_fee'] ?? 0;
+            $booking->toll_fee          = $fare['toll_fee'] ?? 0;
+            $booking->surcharge_fee     = $fare['surcharge_fee'] ?? 0;
+            $booking->extra_luggage_fee = $fare['extra_luggage_fee'] ?? 0;
+            $booking->extras_total      = $request->extras_total ?? 0;
+            $booking->child_seat_fee    = $fare['child_seat_fee'] ?? 0;
+            $booking->booster_seat_fee  = $fare['booster_seat_fee'] ?? 0;
+            $booking->front_seat_fee    = $fare['front_seat_fee'] ?? 0;
+            $booking->stopover_fee      = $fare['stopover_fee'] ?? 0;
+
+            // Payment Totals
+            $booking->total_fare  = isset($fare['total']) ? (float) $fare['total'] : 0;
+            $booking->paid_amount = $amountCharged;
+            $booking->due_amount  = max(0, $booking->total_fare - $amountCharged);
+
+            // Payment Meta
+            $booking->payment_method = 'stripe';
             $booking->transaction_id = $transactionId;
-
-            // Status
             $booking->payment_status = ($booking->due_amount <= 0.01) ? 'paid' : 'partial';
             $booking->status         = 'confirmed';
+            $booking->card_brand     = $cardBrand;
+            $booking->card_last_four = $cardLast4;
+
+            // ✅ JSON Arrays (মডেলে casts থাকার কারণে এটি অটোমেটিক কাজ করবে)
+            $booking->surcharge_details = $request->surcharge_details ?? [];
+            $booking->extra_charge_details = $request->extra_charge_details ?? [];
 
             $booking->save();
 
-            // Send Success Email
+            // 5. Send Email
             try {
                 Mail::to(config('mail.from.address'))->send(new BookingConfirmationMail($booking));
-            } catch (\Exception $emailEx) {
-                Log::error('Success Email Failed: ' . $emailEx->getMessage());
+            } catch (\Exception $e) {
+                Log::error('Mail Error: ' . $e->getMessage());
             }
 
-            return redirect()->route('home', ['id' => $booking->booking_no])
-                ->with('notify', ['type' => 'success', 'message' => 'Booking confirmed successfully!']);
+            return redirect()->route('home')
+                ->with('notify', ['type' => 'success', 'message' => 'Booking Confirmed Successfully!']);
 
         } catch (\Throwable $e) {
-            // =========================================================
-            // 6. Handle Failure
-            // =========================================================
-
-            // ফেইল করলে লগ রাখা ভালো
-            Log::error('Payment Error: ' . $e->getMessage());
+            Log::error('Stripe Error: ' . $e->getMessage());
 
             try {
-                $failureDetails = [
-                    'name'          => $request->passenger_name,
-                    'email'         => $request->passenger_email,
-                    'phone'         => $request->phone_number,
+                $failData = [
+                    'name' => $request->passenger_name,
+                    'email' => $request->passenger_email,
+                    'phone' => $request->phone_number,
                     'error_message' => $e->getMessage(),
-                    'date'          => now()->toDateTimeString()
+                    'date' => now()->toDateTimeString()
                 ];
-                Mail::to(config('mail.from.address'))->send(new PaymentFailedMail($failureDetails));
-            } catch (\Exception $emailEx) {
-                Log::error('Failure Email Failed: ' . $emailEx->getMessage());
-            }
+                Mail::to(config('mail.from.address'))->send(new PaymentFailedMail($failData));
+            } catch (\Exception $ex) {}
 
             return back()->with('notify', [
-                'type'    => 'error',
-                'message' => 'Payment failed: ' . $e->getMessage()
+                'type' => 'error',
+                'message' => 'Payment Failed, Please try again.'
             ])->withInput();
         }
     }
+
 }
