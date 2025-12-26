@@ -226,18 +226,6 @@
             color: #777;
         }
 
-        /* Debug Section Style */
-        .debug-area {
-            background: #222;
-            color: #0f0;
-            padding: 20px;
-            margin-top: 50px;
-            border-radius: 5px;
-            font-family: monospace;
-            font-size: 12px;
-            overflow-x: auto;
-        }
-
         @media(max-width: 768px) {
             .traveler-bar {
                 flex-direction: column;
@@ -439,7 +427,7 @@
                             <tr>
                                 <td>Vehicle</td>
                                 <td>:</td>
-                                <td>{{ $request->vehicle_display_name ?? 'Luxury Van' }}</td>
+                                <td>{{ $request->fare['name'] ?? $request->vehicle_display_name ?? 'Luxury Van' }}</td>
                             </tr>
                             <tr>
                                 <td>Distance</td>

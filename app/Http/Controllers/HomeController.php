@@ -323,7 +323,6 @@ class HomeController extends Controller
 
     public function step3(Request $request)
     {
-        // dd($request->all());
         return view("frontend.pages.step3",compact("request"));
     }
     public function step4(Request $request)
