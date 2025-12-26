@@ -182,7 +182,7 @@
 
     <form id="bookingForm" action="{{ route('step3') }}" method="GET">
 
-        {{-- HIDDEN INPUTS --}}
+        {{-- HIDDEN INPUTS (Keeping raw numbers for Backend processing) --}}
         @foreach($request as $key => $value)
             @if(!is_array($value) && $key != 'fare')
                 <input type="hidden" name="{{ $key }}" value="{{ $value }}">
@@ -270,11 +270,11 @@
                     <div class="discount-badge">%</div>
                     <div class="d-flex">
                         <div class="pay-col left-col w-50">
-                            <div class="fw-bold">Pay Cash : <span class="price-red">$<span id="disp_pay_cash">{{ $defaultVehicle['pay_cash'] }}</span></span></div>
+                            <div class="fw-bold">Pay Cash : <span class="price-red">$<span id="disp_pay_cash">{{ number_format($defaultVehicle['pay_cash'], 2) }}</span></span></div>
                             <div class="pay-sub">$1 Reservation Fee</div>
                         </div>
                         <div class="pay-col w-50">
-                            <div class="fw-bold">Pay By Card : <span class="price-black">$<span id="disp_pay_card">{{ $defaultVehicle['total_fare'] }}</span></span></div>
+                            <div class="fw-bold">Pay By Card : <span class="price-black">$<span id="disp_pay_card">{{ number_format($defaultVehicle['total_fare'], 2) }}</span></span></div>
                             <div class="pay-sub">Pay full online</div>
                         </div>
                     </div>
@@ -290,27 +290,27 @@
 
                 <table class="pricing-table">
                     <tr><td>Distance Covered</td><td>:</td><td>{{ number_format($distance_miles, 2) }} Miles</td></tr>
-                    <tr><td>Estimated Fare</td><td>:</td><td>$<span id="tbl_est_fare">{{ $defaultVehicle['estimated_fare'] }}</span></td></tr>
-                    <tr><td>Gratuity(20% fee)</td><td>:</td><td>$<span id="tbl_gratuity">{{ $defaultVehicle['gratuity_fee'] }}</span></td></tr>
+                    <tr><td>Estimated Fare</td><td>:</td><td>$<span id="tbl_est_fare">{{ number_format($defaultVehicle['estimated_fare'], 2) }}</span></td></tr>
+                    <tr><td>Gratuity(20% fee)</td><td>:</td><td>$<span id="tbl_gratuity">{{ number_format($defaultVehicle['gratuity_fee'], 2) }}</span></td></tr>
 
-                    @if($defaultVehicle['pickup_tax'] > 0) <tr><td>Airport Pickup Tax</td><td>:</td><td>${{ $defaultVehicle['pickup_tax'] }}</td></tr> @endif
-                    @if($defaultVehicle['dropoff_tax'] > 0) <tr><td>Airport Dropoff Tax</td><td>:</td><td>${{ $defaultVehicle['dropoff_tax'] }}</td></tr> @endif
-                    @if($defaultVehicle['parking_fee'] > 0) <tr><td>Parking Fee</td><td>:</td><td>${{ $defaultVehicle['parking_fee'] }}</td></tr> @endif
-                    @if($defaultVehicle['stopover_fee'] > 0) <tr><td>Stopover Fee</td><td>:</td><td>${{ $defaultVehicle['stopover_fee'] }}</td></tr> @endif
-                    @if($defaultVehicle['child_seat_fee'] > 0) <tr><td>Infant Seat Fee</td><td>:</td><td>${{ $defaultVehicle['child_seat_fee'] }}</td></tr> @endif
-                    @if($defaultVehicle['booster_seat_fee'] > 0) <tr><td>Booster Seat Fee</td><td>:</td><td>${{ $defaultVehicle['booster_seat_fee'] }}</td></tr> @endif
-                    @if($defaultVehicle['front_seat_fee'] > 0) <tr><td>Front Seat Fee</td><td>:</td><td>${{ $defaultVehicle['front_seat_fee'] }}</td></tr> @endif
-                    @if($defaultVehicle['toll_fee'] > 0) <tr><td>Toll Fee</td><td>:</td><td>${{ $defaultVehicle['toll_fee'] }}</td></tr> @endif
-                    @if($defaultVehicle['extra_charges'] > 0) <tr><td>Zip Extra Charges</td><td>:</td><td>${{ $defaultVehicle['extra_charges'] }}</td></tr> @endif
+                    @if($defaultVehicle['pickup_tax'] > 0) <tr><td>Airport Pickup Tax</td><td>:</td><td>${{ number_format($defaultVehicle['pickup_tax'], 2) }}</td></tr> @endif
+                    @if($defaultVehicle['dropoff_tax'] > 0) <tr><td>Airport Dropoff Tax</td><td>:</td><td>${{ number_format($defaultVehicle['dropoff_tax'], 2) }}</td></tr> @endif
+                    @if($defaultVehicle['parking_fee'] > 0) <tr><td>Parking Fee</td><td>:</td><td>${{ number_format($defaultVehicle['parking_fee'], 2) }}</td></tr> @endif
+                    @if($defaultVehicle['stopover_fee'] > 0) <tr><td>Stopover Fee</td><td>:</td><td>${{ number_format($defaultVehicle['stopover_fee'], 2) }}</td></tr> @endif
+                    @if($defaultVehicle['child_seat_fee'] > 0) <tr><td>Infant Seat Fee</td><td>:</td><td>${{ number_format($defaultVehicle['child_seat_fee'], 2) }}</td></tr> @endif
+                    @if($defaultVehicle['booster_seat_fee'] > 0) <tr><td>Booster Seat Fee</td><td>:</td><td>${{ number_format($defaultVehicle['booster_seat_fee'], 2) }}</td></tr> @endif
+                    @if($defaultVehicle['front_seat_fee'] > 0) <tr><td>Front Seat Fee</td><td>:</td><td>${{ number_format($defaultVehicle['front_seat_fee'], 2) }}</td></tr> @endif
+                    @if($defaultVehicle['toll_fee'] > 0) <tr><td>Toll Fee</td><td>:</td><td>${{ number_format($defaultVehicle['toll_fee'], 2) }}</td></tr> @endif
+                    @if($defaultVehicle['extra_charges'] > 0) <tr><td>Zip Extra Charges</td><td>:</td><td>${{ number_format($defaultVehicle['extra_charges'], 2) }}</td></tr> @endif
 
                     <tr id="row_surcharge" style="{{ $defaultVehicle['surcharge_fee'] > 0 ? '' : 'display:none;' }}">
-                        <td>Surcharge / Night Fee</td><td>:</td><td>$<span id="tbl_surcharge">{{ $defaultVehicle['surcharge_fee'] }}</span></td>
+                        <td>Surcharge / Night Fee</td><td>:</td><td>$<span id="tbl_surcharge">{{ number_format($defaultVehicle['surcharge_fee'], 2) }}</span></td>
                     </tr>
 
                     <tr>
                         <td class="pt-3" style="border-top: 1px solid #ddd;">Total Payable</td>
                         <td class="pt-3" style="border-top: 1px solid #ddd;">:</td>
-                        <td class="pt-3" style="border-top: 1px solid #ddd;">$<span id="tbl_total">{{ $defaultVehicle['total_fare'] }}</span></td>
+                        <td class="pt-3" style="border-top: 1px solid #ddd;">$<span id="tbl_total">{{ number_format($defaultVehicle['total_fare'], 2) }}</span></td>
                     </tr>
                 </table>
 
@@ -318,7 +318,7 @@
                 <div id="box_ex_lug" class="extra-luggage-card" style="{{ $defaultVehicle['extra_luggage_fee'] > 0 ? '' : 'display:none;' }}">
                     <div class="el-title">Extra Luggage Fee</div>
                     <div class="text-end">
-                        <div class="el-total">$<span id="txt_ex_lug_total">{{ $defaultVehicle['extra_luggage_fee'] }}</span></div>
+                        <div class="el-total">$<span id="txt_ex_lug_total">{{ number_format($defaultVehicle['extra_luggage_fee'], 2) }}</span></div>
                         <div class="el-per">
                             ($<span id="txt_ex_lug_rate">{{
                                 $defaultVehicle['extra_luggage_count'] > 0
@@ -450,7 +450,7 @@
                             <td style="font-weight:700;">Total</td>
                             <td style="font-weight:700;">:</td>
                             <td class="fw-bold" style="font-size: 1.1rem; color: #000;">
-                                $<span id="sum_total">{{ number_format($defaultVehicle['total_fare']) }}</span>
+                                $<span id="sum_total">{{ number_format($defaultVehicle['total_fare'], 2) }}</span>
                             </td>
                         </tr>
                     </table>
@@ -487,9 +487,9 @@
                                 <i class="fas fa-car"></i> {{ $vOpt['features'][0] ?? 'Luxury' }}
                             </div>
                             <div class="oc-breakdown">
-                                Estimated: ${{ $vOpt['estimated_fare'] }}, Gratuity: ${{ $vOpt['gratuity_fee'] }}
-                                @if($vOpt['surcharge_fee'] > 0) , Surcharge: ${{ $vOpt['surcharge_fee'] }} @endif
-                                @if($vOpt['extra_luggage_fee'] > 0) , Extra Luggage: ${{ $vOpt['extra_luggage_fee'] }} @endif
+                                Estimated: ${{ number_format($vOpt['estimated_fare'], 2) }}, Gratuity: ${{ number_format($vOpt['gratuity_fee'], 2) }}
+                                @if($vOpt['surcharge_fee'] > 0) , Surcharge: ${{ number_format($vOpt['surcharge_fee'], 2) }} @endif
+                                @if($vOpt['extra_luggage_fee'] > 0) , Extra Luggage: ${{ number_format($vOpt['extra_luggage_fee'], 2) }} @endif
                             </div>
 
                             <div class="oc-action-container">
@@ -498,7 +498,7 @@
                                 </button>
                                 <div>
                                     <span class="oc-total-label">Total Fare :</span>
-                                    <span class="oc-price">${{ number_format($vOpt['total_fare'],2)}}</span>
+                                    <span class="oc-price">${{ number_format($vOpt['total_fare'], 2)}}</span>
                                 </div>
                             </div>
                         </div>
@@ -510,6 +510,14 @@
 </div>
 
 <script>
+    // জাভাস্ক্রিপ্টে নাম্বার ফরম্যাট করার জন্য ফাংশন
+    function formatMoney(amount) {
+        return Number(amount).toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }
+
     function selectVehicle(data) {
         // 1. SHOW ALL cards first
         document.querySelectorAll('.option-card').forEach(el => {
@@ -522,7 +530,7 @@
             clickedCard.classList.add('d-none-custom');
         }
 
-        // 3. Update Hidden Inputs
+        // 3. Update Hidden Inputs (এইগুলো raw ভ্যালু থাকবে ডাটাবেসের জন্য)
         document.getElementById('inp_vehicle_id').value = data.vehicle_id;
         document.getElementById('inp_cap_pass').value = data.capacity_passenger;
         document.getElementById('inp_cap_lug').value = data.capacity_luggage;
@@ -542,21 +550,21 @@
             });
         }
 
-        // 4. Update Visuals
+        // 4. Update Visuals (এখানে formatMoney ফাংশন ব্যবহার করা হয়েছে)
         document.getElementById('disp_image').src = data.image;
         document.getElementById('disp_pax_cap').innerText = data.capacity_passenger;
         document.getElementById('disp_name').innerText = data.name;
         document.getElementById('disp_lug_cap').innerText = data.capacity_luggage;
-        document.getElementById('disp_pay_cash').innerText = data.pay_cash;
-        document.getElementById('disp_pay_card').innerText = data.total_fare;
+        document.getElementById('disp_pay_cash').innerText = formatMoney(data.pay_cash); // Formatted
+        document.getElementById('disp_pay_card').innerText = formatMoney(data.total_fare); // Formatted
 
-        document.getElementById('tbl_est_fare').innerText = data.estimated_fare;
-        document.getElementById('tbl_gratuity').innerText = data.gratuity_fee;
+        document.getElementById('tbl_est_fare').innerText = formatMoney(data.estimated_fare); // Formatted
+        document.getElementById('tbl_gratuity').innerText = formatMoney(data.gratuity_fee); // Formatted
 
         const rowSur = document.getElementById('row_surcharge');
         if(data.surcharge_fee > 0) {
             rowSur.style.display = 'table-row';
-            document.getElementById('tbl_surcharge').innerText = data.surcharge_fee;
+            document.getElementById('tbl_surcharge').innerText = formatMoney(data.surcharge_fee); // Formatted
         } else {
             rowSur.style.display = 'none';
         }
@@ -565,26 +573,26 @@
         const boxExLug = document.getElementById('box_ex_lug');
         if(data.extra_luggage_fee > 0) {
             boxExLug.style.display = 'flex';
-            document.getElementById('txt_ex_lug_total').innerText = data.extra_luggage_fee;
+            document.getElementById('txt_ex_lug_total').innerText = formatMoney(data.extra_luggage_fee); // Formatted
 
             // Calculate Rate
             let rate = 0;
             if(data.extra_luggage_count > 0) {
                 rate = (data.extra_luggage_fee / data.extra_luggage_count).toFixed(2);
             }
-            document.getElementById('txt_ex_lug_rate').innerText = rate;
+            document.getElementById('txt_ex_lug_rate').innerText = rate; // toFixed already returns string with 2 decimals
 
         } else {
             boxExLug.style.display = 'none';
         }
 
-        document.getElementById('tbl_total').innerText = data.total_fare;
+        document.getElementById('tbl_total').innerText = formatMoney(data.total_fare); // Formatted
 
         // Update Summary Fields
         document.getElementById('sum_name').innerText = data.name;
         document.getElementById('sum_pax').innerText = data.capacity_passenger;
         document.getElementById('sum_lug').innerText = data.capacity_luggage;
-        document.getElementById('sum_total').innerText = data.total_fare;
+        document.getElementById('sum_total').innerText = formatMoney(data.total_fare); // Formatted
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
