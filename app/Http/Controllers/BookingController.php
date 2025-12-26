@@ -6,18 +6,18 @@ use App\Models\Booking;
 use App\Mail\BookingConfirmationMail;
 use App\Mail\PaymentFailedMail;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
 use Square\SquareClient;
+use Square\Types\Money;
+use Square\Payments\Requests\CreatePaymentRequest;
 use Square\Environment;
-use Square\Models\CreatePaymentRequest;
-use Square\Models\Money;
 
 class BookingController extends Controller
 {
     public function confirmBooking(Request $request)
     {
+        // 1. Validation
         $request->validate([
             'square_nonce'   => 'required|string',
             'amount_charged' => 'required|numeric|min:1',
@@ -28,43 +28,33 @@ class BookingController extends Controller
         $nonce         = $request->square_nonce;
         $amountCharged = (float) $request->amount_charged;
 
-        try {
-            // =========================================================
-            // 1. Square Client Setup (Using Safe Config)
-            // =========================================================
-            $client = new SquareClient(
-                accessToken: config('services.square.access_token'),
-                environment: config('services.square.environment') === 'production'
-                    ? Environment::PRODUCTION
-                    : Environment::SANDBOX
-            );
+        // try {
+       $environment = config('services.square.environment') === 'production' ? 'production' : 'sandbox';
+
+            $client = new SquareClient([
+                'accessToken' => config('services.square.access_token'),
+                'environment' => $environment,
+            ]);
 
             $money = new Money();
-            $money->setAmount((int) round($amountCharged * 100)); // Convert to cents
             $money->setCurrency('USD');
-
-            $paymentRequest = new CreatePaymentRequest(
-                sourceId: $nonce,
-                idempotencyKey: (string) Str::uuid(),
-                amountMoney: $money
-            );
+            $money->setAmount((int) round($amountCharged * 100));
+            $paymentRequest = new CreatePaymentRequest([
+            'sourceId' => 'cnon:card-nonce-ok',
+            'idempotencyKey' => uniqid(),
+            'amountMoney' => $money,
+            'note' => 'Taxi Booking Payment',
+            ]);
             $paymentRequest->setNote('Booking for: ' . $request->passenger_name);
 
-            // 2. Execute Payment
-            $paymentsApi = $client->getPaymentsApi();
-            $response    = $paymentsApi->createPayment($paymentRequest);
+            // 3. Execute Payment
+            $response  = $client->payments->create($paymentRequest);
 
-            if (!$response->isSuccess()) {
-                $errors = $response->getErrors();
-                $msg = $errors[0]->getDetail() ?? 'Square payment failed';
-                throw new \Exception($msg);
-            }
-
-            $payment       = $response->getResult()->getPayment();
+             $payment       = $response->getPayment();
             $transactionId = $payment->getId();
 
             // =========================================================
-            // 3. GENERATE BOOKING NO (BLAT-XXXX)
+            // 4. GENERATE BOOKING NO (BLAT-XXXX)
             // =========================================================
             $lastBooking = Booking::orderBy('id', 'desc')->first();
 
@@ -76,7 +66,7 @@ class BookingController extends Controller
             $bookingNo = 'BLAT-' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
 
             // =========================================================
-            // 4. Save Booking Data
+            // 5. Save Booking Data
             // =========================================================
             $totalFare = isset($request->fare['total']) ? (float) $request->fare['total'] : 0;
 
@@ -104,9 +94,9 @@ class BookingController extends Controller
             $booking->passenger_count = ((int) $request->adults) + ((int) $request->seats_dummy);
 
             // Payment Info
-            $booking->total_fare     = $totalFare;
-            $booking->paid_amount    = $amountCharged;
-            $booking->due_amount     = max(0, $totalFare - $amountCharged);
+            $booking->total_fare   = $totalFare;
+            $booking->paid_amount  = $amountCharged;
+            $booking->due_amount   = max(0, $totalFare - $amountCharged);
             $booking->payment_method = 'square';
             $booking->transaction_id = $transactionId;
 
@@ -126,27 +116,31 @@ class BookingController extends Controller
             return redirect()->route('home', ['id' => $booking->booking_no])
                 ->with('notify', ['type' => 'success', 'message' => 'Booking confirmed successfully!']);
 
-        } catch (\Throwable $e) {
-            // =========================================================
-            // 5. Handle Failure
-            // =========================================================
-            try {
-                $failureDetails = [
-                    'name'          => $request->passenger_name,
-                    'email'         => $request->passenger_email,
-                    'phone'         => $request->phone_number,
-                    'error_message' => $e->getMessage(),
-                    'date'          => now()->toDateTimeString()
-                ];
-                Mail::to(config('mail.from.address'))->send(new PaymentFailedMail($failureDetails));
-            } catch (\Exception $emailEx) {
-                Log::error('Failure Email Failed: ' . $emailEx->getMessage());
-            }
+        // } catch (\Throwable $e) {
+        //     // =========================================================
+        //     // 6. Handle Failure
+        //     // =========================================================
 
-            return back()->with('notify', [
-                'type'    => 'error',
-                'message' => 'Payment failed: ' . $e->getMessage()
-            ]);
-        }
+        //     // ফেইল করলে লগ রাখা ভালো
+        //     Log::error('Payment Error: ' . $e->getMessage());
+
+        //     try {
+        //         $failureDetails = [
+        //             'name'          => $request->passenger_name,
+        //             'email'         => $request->passenger_email,
+        //             'phone'         => $request->phone_number,
+        //             'error_message' => $e->getMessage(),
+        //             'date'          => now()->toDateTimeString()
+        //         ];
+        //         Mail::to(config('mail.from.address'))->send(new PaymentFailedMail($failureDetails));
+        //     } catch (\Exception $emailEx) {
+        //         Log::error('Failure Email Failed: ' . $emailEx->getMessage());
+        //     }
+
+        //     return back()->with('notify', [
+        //         'type'    => 'error',
+        //         'message' => 'Payment failed: ' . $e->getMessage()
+        //     ])->withInput();
+        // }
     }
 }

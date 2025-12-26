@@ -238,9 +238,9 @@
         flatpickr("#date", {
             minDate: "today",       // Can't select past dates
             dateFormat: "Y-m-d",    // Format sent to server
-            disableMobile: true,    // CRITICAL: Disables native mobile picker (removes 'Set' button)
+            disableMobile: true,    // CRITICAL: Disables native mobile picker
             theme: "light",
-            allowInput: true        // Allows typing if needed, but calendar pops up on click
+            allowInput: true
         });
 
         // ==========================================
@@ -305,18 +305,19 @@
 
         function buildAirportSelect(name) {
             let html = `<select name="${name}" class="form-select" required><option value="">Select Airport</option>`;
+            const targetAirport = "Boston Logan International Airport"; // Default select
+
             if(Array.isArray(airports)){
                 airports.forEach(airport => {
-                    html += `<option value="${airport.id}" data-address="${airport.address}">${airport.name}</option>`;
+                    let isSelected = (airport.name.trim() === targetAirport) ? "selected" : "";
+                    html += `<option value="${airport.id}" data-address="${airport.address}" ${isSelected}>${airport.name}</option>`;
                 });
             }
             html += `</select>`;
             return html;
         }
 
-        // Updated Autocomplete
         function initAutocomplete(id) {
-            // Wait for Google Maps to be ready
             if (!mapInitialized || !window.google || !window.google.maps || !window.google.maps.places) {
                 setTimeout(() => initAutocomplete(id), 500);
                 return;
@@ -327,13 +328,11 @@
                 types: ["geocode"],
                 componentRestrictions: { country: "us" }
             });
-            // Prevent Enter key form submission
             input.addEventListener('keydown', function(e) {
                 if (e.key === "Enter") e.preventDefault();
             });
         }
 
-        // Exposed function for Trip Update
         window.updateTrip = function() {
             const tEl = document.querySelector('input[name="tripType"]:checked');
             if(!tEl) return;
@@ -360,9 +359,12 @@
         function attachAirportSelectEvent(selectName, inputId) {
             const sel = document.querySelector(`select[name="${selectName}"]`);
             if (!sel) return;
-            sel.addEventListener("change", () => {
+
+            const updateHiddenAddress = () => {
                 const selectedOption = sel.options[sel.selectedIndex];
+                if (!selectedOption || !selectedOption.value) return;
                 const address = selectedOption.getAttribute("data-address") || "";
+
                 let input = document.getElementById(inputId);
                 if (!input) {
                     input = document.createElement("input");
@@ -372,7 +374,12 @@
                     sel.parentElement.appendChild(input);
                 }
                 input.value = address;
-            });
+            };
+
+            sel.addEventListener("change", updateHiddenAddress);
+            if (sel.value) {
+                updateHiddenAddress();
+            }
         }
 
         document.querySelectorAll('input[name="tripType"]').forEach(r => r.addEventListener('change', window.updateTrip));
@@ -499,15 +506,44 @@
             const selectedDateTime = new Date(dateVal + "T" + timeVal);
             const now = new Date();
 
+            // 1. Past Date/Time Check
             if (selectedDateTime < now) {
                 Swal.fire({ icon: 'error', title: 'Invalid Time', text: 'You cannot select a past date or time.', confirmButtonColor: '#d33' });
                 return;
             }
+
+            // 2. 2-Hour Notice Check
             const minBookingTime = new Date(now.getTime() + 2 * 60 * 60 * 1000);
             if (selectedDateTime < minBookingTime) {
-                Swal.fire({ icon: 'warning', title: 'Reservation Time Restriction', text: 'We cannot process a reservation within 2 Hours of departure.', confirmButtonColor: '#d33' });
+                Swal.fire({ icon: 'warning', title: 'Reservation Time Restriction', text: 'Reservations must be made at least 2 hours prior to departure. For last-minute bookings call +1 (857) 331-9544', confirmButtonColor: '#d33' });
                 return;
             }
+
+            // ============================================================
+            // 3. NEW VALIDATION: BLOCK TODAY 10 PM TO TOMORROW 6 AM
+            // ============================================================
+
+            // আজকের রাত ১০টা (Today 10:00 PM)
+            let restrictedStart = new Date();
+            restrictedStart.setHours(22, 0, 0, 0);
+
+            // আগামীকাল ভোর ৬টা (Tomorrow 06:00 AM)
+            let restrictedEnd = new Date();
+            restrictedEnd.setDate(restrictedEnd.getDate() + 1); // ১ দিন যোগ করলাম
+            restrictedEnd.setHours(6, 0, 0, 0);
+
+            // চেক: যদি সিলেক্ট করা সময় আজকের রাত ১০টা থেকে কাল ভোর ৬টার মধ্যে হয়
+            if (selectedDateTime >= restrictedStart && selectedDateTime <= restrictedEnd) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Service Offline',
+                    text: 'Reservations cannot be processed between 10:00 PM and 6:00 AM. For urgent or same-day bookings, please contact us at +1 (857) 331-9544',
+                    confirmButtonColor: '#d33'
+                });
+                return;
+            }
+            // ============================================================
+
 
             Swal.fire({
                 title: 'Processing...',
