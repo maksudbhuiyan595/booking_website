@@ -9,7 +9,11 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages\Dashboard;
+// use Filament\Pages\Dashboard;
+use App\Filament\Pages\Dashboard;
+use App\Filament\Resources\BlogPosts\BlogPostResource;
+use App\Filament\Resources\Bookings\BookingResource;
+use Filament\Facades\Filament;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -20,6 +24,7 @@ use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
@@ -38,14 +43,16 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->font('Outfit')
-            ->brandName(fn (GeneralSettings $settings) => $settings->site_name ?? 'Boston Logan')
-            ->brandLogo(fn (GeneralSettings $settings) => $settings->site_logo
-                ? Storage::url($settings->site_logo)
-                : null
+            ->brandName(fn(GeneralSettings $settings) => $settings->site_name ?? 'Boston Logan')
+            ->brandLogo(
+                fn(GeneralSettings $settings) => $settings->site_logo
+                    ? Storage::url($settings->site_logo)
+                    : null
             )
-            ->darkModeBrandLogo(fn (GeneralSettings $settings) => $settings->site_logo
-                ? Storage::url($settings->site_logo)
-                : null
+            ->darkModeBrandLogo(
+                fn(GeneralSettings $settings) => $settings->site_logo
+                    ? Storage::url($settings->site_logo)
+                    : null
             )
             ->brandLogoHeight('3rem')
             ->sidebarCollapsibleOnDesktop()
@@ -81,5 +88,21 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ]);
+    }
+
+    public function boot(): void
+    {
+        Filament::serving(function () {
+            if (Auth::check() && !Auth::user()->hasRole('super_admin')) {
+                $currentUrl = request()->url();
+                $targetUrl = BlogPostResource::getUrl('index');
+                if ($currentUrl !== $targetUrl && !request()->routeIs('filament.admin.auth.*')) {
+                    config(['filament.home_url' => $targetUrl]);
+                    if (request()->path() === 'admin') {
+                        redirect()->to($targetUrl)->send();
+                    }
+                }
+            }
+        });
     }
 }
