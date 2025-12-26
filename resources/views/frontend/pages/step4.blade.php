@@ -116,9 +116,7 @@
                     {{-- Payment Options --}}
                     <div class="payment-toggles">
                         <div class="toggle-card active" onclick="selectPayment('cash')" id="box-cash">
-                            <h6>1$ for reservation</h6>
-                             <div class="t-desc">Pay Cash</div>
-                            <div class="visual-btn btn-cash">Pay Cash</div>
+                            <div class="t-price">1$ for reservation</div>
                         </div>
                         <div class="toggle-card" onclick="selectPayment('deposit')" id="box-deposit">
                             <div class="t-price">${{ number_format($request->fare['total'] * 0.9, 2) }}</div>

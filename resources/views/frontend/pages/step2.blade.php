@@ -1,7 +1,6 @@
 @extends('frontend.pages.master')
 
 @section('content')
-
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <style>
@@ -12,37 +11,28 @@
         margin-top: 25px;
     }
 
-    /* --- Breadcrumbs --- */
+    /* --- THEME COLORS (Green/Clean) --- */
+    :root {
+        --primary-green: #006644;
+        --primary-hover: #004d33;
+    }
+
+    /* Breadcrumbs */
     .breadcrumb-nav {
         font-size: 0.85rem;
         color: #0FA96D;
         margin-bottom: 20px;
         padding-top: 20px;
     }
-    .breadcrumb-nav a {
-        color: #666;
-        text-decoration: none;
-    }
-    .breadcrumb-nav span {
-        margin: 0 5px;
-        color: #999;
-    }
+    .breadcrumb-nav a { color: #666; text-decoration: none; }
+    .breadcrumb-nav span { margin: 0 5px; color: #999; }
 
-    /* --- Page Headers --- */
-    .page-title {
-        font-weight: 800;
-        color: #222;
-        margin-bottom: 5px;
-    }
-    .step-text {
-        color: #999;
-        font-weight: 500;
-        margin-bottom: 30px;
-    }
+    .page-title { font-weight: 800; color: #222; margin-bottom: 5px; }
+    .step-text { color: #999; font-weight: 500; margin-bottom: 30px; }
 
-    /* --- LEFT COLUMN: Vehicle Card --- */
+    /* LEFT COLUMN: Active Vehicle Card */
     .vehicle-card-dark {
-        background: #2c3e50; /* Dark Slate Color */
+        background: #2c3e50;
         border-radius: 8px;
         padding: 20px;
         text-align: center;
@@ -54,215 +44,130 @@
         flex-direction: column;
         justify-content: space-between;
     }
-
-    /* Simulate the city background graphic */
     .vehicle-card-dark::before {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 100px;
-        background: linear-gradient(to top, rgba(0,0,0,0.3), transparent);
-        z-index: 0;
+        content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 100px;
+        background: linear-gradient(to top, rgba(0,0,0,0.3), transparent); z-index: 0;
     }
-
-    .info-icon-top {
-        position: absolute;
-        top: 10px;
-        right: 15px;
-        background: #fff;
-        color: #333;
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        font-size: 0.8rem;
-        line-height: 20px;
-        cursor: pointer;
-    }
-
-    .v-img-container {
-        position: relative;
-        z-index: 1;
-        margin-bottom: 10px;
-    }
-
-    .v-img {
-        width: 100%;
-        max-width: 250px;
-        filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3));
-    }
+    .v-img-container { position: relative; z-index: 1; margin-bottom: 10px; }
+    .v-img { width: 100%; max-width: 250px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3)); }
 
     .v-name {
-        font-size: 1.1rem;
-        font-weight: 700;
-        margin-bottom: 25px;
-        position: relative;
-        z-index: 1;
+        font-size: 1.1rem; font-weight: 700; margin-bottom: 25px; position: relative; z-index: 1;
+        color: #fff;
     }
-
     .v-icons-row {
-        display: flex;
-        justify-content: space-around;
-        position: relative;
-        z-index: 1;
-        border-top: 1px solid rgba(255,255,255,0.1);
-        padding-top: 15px;
+        display: flex; justify-content: space-around; position: relative; z-index: 1;
+        border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;
     }
+    .v-icon-box i { font-size: 1.8rem; margin-bottom: 5px; display: block; color: #fff; }
+    .v-icon-box span { font-size: 0.8rem; opacity: 0.9; }
 
-    .v-icon-box i {
-        font-size: 1.8rem;
-        margin-bottom: 5px;
-        display: block;
-    }
-    .v-icon-box span {
-        font-size: 0.8rem;
-        opacity: 0.9;
-    }
-
-    /* --- LEFT COLUMN: Payment Box --- */
+    /* Payment Box */
     .payment-options-box {
         background: #f9f9f9;
         border: 1px solid #eee;
-        margin-top: 20px;
-        position: relative;
+        margin-top: 20px; position: relative;
     }
     .discount-badge {
-        position: absolute;
-        top: -10px;
-        left: -10px;
-        background: #ff0000;
-        color: #fff;
-        width: 35px;
-        height: 35px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        font-size: 1rem;
+        position: absolute; top: -10px; left: -10px;
+        background: #ff0000; color: #fff;
+        width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;
     }
-    .pay-col {
-        padding: 15px;
-        text-align: center;
-    }
-    .pay-col.left-col {
-        border-right: 1px solid #ddd;
-    }
+    .pay-col { padding: 15px; text-align: center; }
+    .pay-col.left-col { border-right: 1px solid #ddd; }
     .price-red { color: #ff0000; font-weight: 700; font-size: 1.2rem; }
     .price-black { color: #333; font-weight: 700; font-size: 1.2rem; }
     .pay-sub { font-size: 0.8rem; color: #555; margin-top: 4px; }
-    .pay-note {
-        font-size: 0.75rem;
-        color: #555;
-        margin-top: 10px;
-        line-height: 1.4;
-    }
+    .pay-note { font-size: 0.75rem; color: #555; margin-top: 10px; line-height: 1.4; }
 
-    /* --- MIDDLE COLUMN: Pricing --- */
-    .details-title {
-        font-size: 1.2rem;
-        font-weight: 700;
-        color: #444;
-        margin-bottom: 20px;
-    }
-    .pricing-table {
-        width: 100%;
-        font-size: 0.95rem;
-        color: #444;
-    }
-    .pricing-table td {
-        padding: 8px 0;
-        vertical-align: top;
-    }
-    .pricing-table td:first-child {
-        font-weight: 600;
-        width: 60%;
-    }
-    .pricing-table td:nth-child(2) {
-        text-align: center;
-        width: 10px;
-    }
-    .pricing-table td:last-child {
-        text-align: right;
-        font-weight: 700;
-    }
+    /* Middle Column Table */
+    .details-title { font-size: 1.2rem; font-weight: 700; color: #444; margin-bottom: 20px; }
+    .pricing-table { width: 100%; font-size: 0.95rem; color: #444; }
+    .pricing-table td { padding: 8px 0; vertical-align: top; }
+    .pricing-table td:first-child { font-weight: 600; width: 60%; }
+    .pricing-table td:nth-child(2) { text-align: center; width: 10px; }
+    .pricing-table td:last-child { text-align: right; font-weight: 700; }
 
+    /* Extra Luggage Card */
     .extra-luggage-card {
         background: #fff;
         border: 1px solid #e0e0e0;
         border-radius: 6px;
-        padding: 15px;
+        padding: 20px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin: 20px 0;
+        margin: 25px 0;
         box-shadow: 0 2px 5px rgba(0,0,0,0.02);
     }
-    .el-price {
-        text-align: right;
-    }
-    .el-total { font-weight: 700; font-size: 1.1rem; color: #333; }
-    .el-per { font-size: 0.75rem; color: #666; }
+    .el-title { font-weight: 700; color: #333; font-size: 1rem; }
+    .el-total { font-weight: 700; font-size: 1.2rem; color: #333; }
+    .el-per { font-size: 0.8rem; color: #666; margin-top: 2px; }
 
-    /* --- RIGHT COLUMN: Summary & Button --- */
+    /* Summary & Button */
     .btn-book-green {
-        background-color: #006644; /* Dark Green */
+        background-color: var(--primary-green);
         color: #fff;
-        font-weight: 600;
-        width: 100%;
-        padding: 12px;
-        border-radius: 5px;
-        border: none;
-        font-size: 1rem;
+        font-weight: 600; width: 100%;
+        padding: 12px; border-radius: 5px; border: none; font-size: 1rem;
         box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transition: 0.3s;
     }
-    .btn-book-green:hover { background-color: #004d33; color: #fff; }
+    .btn-book-green:hover { background-color: var(--primary-hover); }
 
     .summary-yellow-box {
-        background-color: #fffbeb; /* Light Beige/Yellow */
-        border: 1px solid #f3eacb;
-        padding: 20px;
-        margin-top: 25px;
-        border-radius: 4px;
+        background-color: #fffbeb; border: 1px solid #f3eacb; padding: 20px; margin-top: 25px; border-radius: 4px;
     }
-    .summary-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 15px;
+    .summary-list td { padding: 6px 0; font-size: 0.9rem; color: #333; }
+    .summary-list td:first-child { font-weight: 600; width: 100px; }
+
+    /* Vehicle Details Section in Summary */
+    .vehicle-det-header {
+        font-weight: 700; color: #333; margin-top: 10px; margin-bottom: 5px; font-size: 1rem;
     }
-    .summary-title { font-size: 1.1rem; font-weight: 700; color: #555; }
-    .btn-change {
-        background: #888;
+
+    /* MORE VEHICLE OPTIONS STYLES */
+    .more-options-wrapper {
+        margin-top: 50px; padding-top: 30px; border-top: 1px solid #eee; background-color: #fff;
+    }
+    .mo-header { text-align: center; margin-bottom: 30px; }
+    .mo-title { font-size: 1.5rem; font-weight: 700; color: #444; margin-bottom: 5px; }
+    .mo-subtitle { font-size: 0.9rem; color: #777; }
+
+    .option-card {
+        background: #fff; border-bottom: 1px solid #eee; padding: 30px 0; transition: all 0.2s ease; cursor: default;
+    }
+    .option-card:hover { background-color: #fafafa; }
+
+    .d-none-custom { display: none !important; }
+
+    .oc-img-box { display: flex; align-items: center; justify-content: center; padding: 10px; }
+    .oc-img { max-width: 220px; width: 100%; height: auto; object-fit: contain; }
+    .oc-title { font-size: 1.25rem; font-weight: 700; color: #2c3e50; margin-bottom: 10px; }
+    .oc-features { font-size: 0.9rem; color: #333; margin-bottom: 12px; font-weight: 500; }
+    .oc-features i { margin-right: 6px; color: #000; }
+    .oc-divider { margin: 0 12px; color: #ccc; }
+    .oc-breakdown { font-size: 0.8rem; color: #666; line-height: 1.6; }
+
+    .btn-book-outline {
+        border: 2px solid var(--primary-green);
+        color: var(--primary-green);
+        background: transparent;
+        padding: 8px 25px; font-weight: 700; font-size: 0.95rem; border-radius: 4px;
+        transition: 0.3s; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-book-outline:hover {
+        background: var(--primary-green);
         color: #fff;
-        font-size: 0.75rem;
-        padding: 3px 10px;
-        border-radius: 3px;
-        text-decoration: none;
-        font-weight: 600;
     }
-    .btn-change:hover { color: #fff; background: #666; }
+    .oc-action-container {
+        display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding-top: 10px; border-top: 1px dashed #eee;
+    }
+    .oc-price { font-size: 1.5rem; font-weight: 800; color: var(--primary-green); }
 
-    .summary-list td {
-        padding: 6px 0;
-        font-size: 0.9rem;
-        vertical-align: top;
-        color: #333;
+    @media (max-width: 768px) {
+        .oc-action-container { flex-direction: column-reverse; gap: 15px; align-items: flex-start; }
     }
-    .summary-list td:first-child {
-        font-weight: 600;
-        width: 100px;
-    }
-    .summary-list td:nth-child(2) { width: 15px; }
-
-    .vehicle-details-section {
-        margin-top: 20px;
-        border-top: 1px solid #eaddbc;
-        padding-top: 15px;
-    }
-    .v-det-title { font-size: 1.1rem; font-weight: 700; color: #555; margin-bottom: 10px; }
-
 </style>
 
 <div class="container mb-5">
@@ -275,69 +180,76 @@
     <h2 class="page-title">Select Vehicle & Confirm Ride Details</h2>
     <div class="step-text">Your Current Selection ( Step 2 of 4 )</div>
 
-    <form action="{{ route('step3') }}" method="GET">
+    <form id="bookingForm" action="{{ route('step3') }}" method="GET">
 
-        {{-- ======================================================= --}}
-        {{-- HIDDEN INPUTS: Passing Data to Step 3 --}}
-        {{-- ======================================================= --}}
-
-        {{-- 1. Pass Main Request Data (including arrays if any) --}}
+        {{-- HIDDEN INPUTS --}}
         @foreach($request as $key => $value)
-            @if(is_array($value))
-                @foreach($value as $subKey => $subValue)
-                    <input type="hidden" name="{{ $key }}[{{ $subKey }}]" value="{{ $subValue }}">
-                @endforeach
-            @else
+            @if(!is_array($value) && $key != 'fare')
                 <input type="hidden" name="{{ $key }}" value="{{ $value }}">
             @endif
         @endforeach
 
-        {{-- 2. Pass Root Controller Variables --}}
         <input type="hidden" name="trip_type" value="{{ $trip_type }}">
         <input type="hidden" name="distance_miles" value="{{ $distance_miles }}">
-        <input type="hidden" name="vehicles_used" value="{{ $vehicles_used }}">
         <input type="hidden" name="pickup" value="{{ $pickup }}">
         <input type="hidden" name="dropoff" value="{{ $dropoff }}">
+        <input type="hidden" name="vehicles_used" value="{{ $vehicles_used ?? 1 }}">
 
-        {{-- 3. Pass Nested Fare Array (Flattened) --}}
-        @foreach($fare as $fareKey => $fareValue)
-            <input type="hidden" name="fare[{{ $fareKey }}]" value="{{ $fareValue }}">
-        @endforeach
-
-        {{-- 4. Pass Extra Charge Details --}}
         @if(isset($extra_charge_details) && is_array($extra_charge_details))
             @foreach($extra_charge_details as $index => $charge)
                 <input type="hidden" name="extra_charge_details[{{ $index }}][name]" value="{{ $charge['name'] ?? '' }}">
-                <input type="hidden" name="extra_charge_details[{{ $index }}][amount]" value="{{ $charge['amount'] ?? $charge['price'] ?? 0 }}">
+                <input type="hidden" name="extra_charge_details[{{ $index }}][amount]" value="{{ $charge['amount'] ?? 0 }}">
             @endforeach
         @endif
 
-        {{-- 5. Pass Surcharge Details --}}
-        @if(isset($surcharge_details) && is_array($surcharge_details))
-            @foreach($surcharge_details as $index => $surcharge)
-                <input type="hidden" name="surcharge_details[{{ $index }}][name]" value="{{ $surcharge['name'] ?? '' }}">
-                <input type="hidden" name="surcharge_details[{{ $index }}][amount]" value="{{ $surcharge['amount'] ?? 0 }}">
+        {{-- DYNAMIC HIDDEN INPUTS --}}
+        <input type="hidden" name="vehicle_id" id="inp_vehicle_id" value="{{ $defaultVehicle['vehicle_id'] }}">
+        <input type="hidden" name="fare[capacity_passenger]" id="inp_cap_pass" value="{{ $defaultVehicle['capacity_passenger'] }}">
+        <input type="hidden" name="fare[capacity_luggage]" id="inp_cap_lug" value="{{ $defaultVehicle['capacity_luggage'] }}">
+        <input type="hidden" name="fare[name]" id="inp_v_name" value="{{ $defaultVehicle['name'] }}">
+        <input type="hidden" name="fare[estimatedFare]" id="inp_est_fare" value="{{ $defaultVehicle['estimated_fare'] }}">
+        <input type="hidden" name="fare[gratuity]" id="inp_gratuity" value="{{ $defaultVehicle['gratuity_fee'] }}">
+        <input type="hidden" name="fare[pickup_tax]" value="{{ $defaultVehicle['pickup_tax'] }}">
+        <input type="hidden" name="fare[dropoff_tax]" value="{{ $defaultVehicle['dropoff_tax'] }}">
+        <input type="hidden" name="fare[parking_fee]" value="{{ $defaultVehicle['parking_fee'] }}">
+        <input type="hidden" name="fare[stopover_fee]" value="{{ $defaultVehicle['stopover_fee'] }}">
+        <input type="hidden" name="fare[child_seat_fee]" value="{{ $defaultVehicle['child_seat_fee'] }}">
+        <input type="hidden" name="fare[booster_seat_fee]" value="{{ $defaultVehicle['booster_seat_fee'] }}">
+        <input type="hidden" name="fare[front_seat_fee]" value="{{ $defaultVehicle['front_seat_fee'] }}">
+        <input type="hidden" name="fare[extra_charges]" value="{{ $defaultVehicle['extra_charges'] }}">
+        <input type="hidden" name="fare[toll_fee]" value="{{ $defaultVehicle['toll_fee'] }}">
+        <input type="hidden" name="fare[surcharge_fee]" id="inp_surcharge" value="{{ $defaultVehicle['surcharge_fee'] }}">
+        <input type="hidden" name="fare[extra_luggage_fee]" id="inp_ex_lug_fee" value="{{ $defaultVehicle['extra_luggage_fee'] }}">
+        <input type="hidden" name="fare[total]" id="inp_total" value="{{ $defaultVehicle['total_fare'] }}">
+
+        <div id="surcharge_inputs_container">
+            @foreach($defaultVehicle['surcharge_details'] ?? [] as $idx => $sd)
+                <input type="hidden" name="surcharge_details[{{ $idx }}][name]" value="{{ $sd['name'] }}">
+                <input type="hidden" name="surcharge_details[{{ $idx }}][amount]" value="{{ $sd['amount'] }}">
             @endforeach
-        @endif
+        </div>
 
-        {{-- ======================================================= --}}
-        {{-- END HIDDEN INPUTS --}}
-        {{-- ======================================================= --}}
-
-
+        {{-- TOP SECTION --}}
         <div class="row g-4">
-
-            {{-- LEFT COLUMN: Vehicle Card --}}
+            {{-- LEFT: Card --}}
             <div class="col-lg-4">
                 <div class="vehicle-card-dark">
-                    <div class="info-icon-top"><i class="fas fa-info"></i></div>
 
                     <div class="v-img-container">
-                        <img src="{{ asset('images/cars11.webp') }}" class="v-img" alt="Car">
+                       <div class="v-img-container">
+                        <img src="{{ $defaultVehicle['image'] ?? asset('images/cars11.webp') }}"
+                            onerror="this.onerror=null;this.src='{{ asset('images/cars11.webp') }}';"
+                            id="disp_image"
+                            class="v-img"
+                            alt="Car">
                     </div>
 
-                    <div class="v-name">{{ $fare['capacity_passenger'] }}  Passenger Luxury Van {{ $fare['capacity_luggage'] }}<br>Bags Capacity</div>
-
+                    </div>
+                    <div class="v-name">
+                        <span id="disp_pax_cap">{{ $defaultVehicle['capacity_passenger'] }}</span> Passenger
+                        <span id="disp_name">{{ $defaultVehicle['name'] }}</span>
+                        <span id="disp_lug_cap">{{ $defaultVehicle['capacity_luggage'] }}</span> Bags Capacity
+                    </div>
                     <div class="v-icons-row">
                         <div class="v-icon-box">
                             <i class="fas fa-user"></i>
@@ -358,11 +270,11 @@
                     <div class="discount-badge">%</div>
                     <div class="d-flex">
                         <div class="pay-col left-col w-50">
-                            <div class="fw-bold">Pay Cash : <span class="price-red">${{ number_format($fare['total'] * 0.9, 2) }}</span></div>
+                            <div class="fw-bold">Pay Cash : <span class="price-red">$<span id="disp_pay_cash">{{ $defaultVehicle['pay_cash'] }}</span></span></div>
                             <div class="pay-sub">$1 Reservation Fee</div>
                         </div>
                         <div class="pay-col w-50">
-                            <div class="fw-bold">Pay By Card : <span class="price-black">${{ number_format($fare['total'], 2) }}</span></div>
+                            <div class="fw-bold">Pay By Card : <span class="price-black">$<span id="disp_pay_card">{{ $defaultVehicle['total_fare'] }}</span></span></div>
                             <div class="pay-sub">Pay full online</div>
                         </div>
                     </div>
@@ -372,139 +284,54 @@
                 </div>
             </div>
 
-            {{-- MIDDLE COLUMN: Fare Breakdown --}}
+            {{-- MIDDLE: Pricing Table --}}
             <div class="col-lg-4">
                 <h3 class="details-title">Booking Details</h3>
 
                 <table class="pricing-table">
-                    <tr>
-                        <td>Distance Covered</td>
-                        <td>:</td>
-                        <td>{{ number_format($distance_miles, 2) }} Miles</td>
-                    </tr>
-                    <tr>
-                        <td>Estimated Fare</td>
-                        <td>:</td>
-                        <td>${{ number_format($fare['estimatedFare'], 2) }}</td>
-                    </tr>
-                    {{-- <tr>
-                        <td>Distance Fare</td>
-                        <td>:</td>
-                        <td>${{ number_format($fare['distance_fare'], 2) }}</td>
-                    </tr> --}}
-                    <tr>
-                        <td>Gratuity(20% fee)</td>
-                        <td>:</td>
-                        <td>${{ number_format($fare['gratuity'], 2) }}</td>
-                    </tr>
+                    <tr><td>Distance Covered</td><td>:</td><td>{{ number_format($distance_miles, 2) }} Miles</td></tr>
+                    <tr><td>Estimated Fare</td><td>:</td><td>$<span id="tbl_est_fare">{{ $defaultVehicle['estimated_fare'] }}</span></td></tr>
+                    <tr><td>Gratuity(20% fee)</td><td>:</td><td>$<span id="tbl_gratuity">{{ $defaultVehicle['gratuity_fee'] }}</span></td></tr>
 
-                    {{-- Conditional Items: Show ONLY if value > 0 --}}
+                    @if($defaultVehicle['pickup_tax'] > 0) <tr><td>Airport Pickup Tax</td><td>:</td><td>${{ $defaultVehicle['pickup_tax'] }}</td></tr> @endif
+                    @if($defaultVehicle['dropoff_tax'] > 0) <tr><td>Airport Dropoff Tax</td><td>:</td><td>${{ $defaultVehicle['dropoff_tax'] }}</td></tr> @endif
+                    @if($defaultVehicle['parking_fee'] > 0) <tr><td>Parking Fee</td><td>:</td><td>${{ $defaultVehicle['parking_fee'] }}</td></tr> @endif
+                    @if($defaultVehicle['stopover_fee'] > 0) <tr><td>Stopover Fee</td><td>:</td><td>${{ $defaultVehicle['stopover_fee'] }}</td></tr> @endif
+                    @if($defaultVehicle['child_seat_fee'] > 0) <tr><td>Infant Seat Fee</td><td>:</td><td>${{ $defaultVehicle['child_seat_fee'] }}</td></tr> @endif
+                    @if($defaultVehicle['booster_seat_fee'] > 0) <tr><td>Booster Seat Fee</td><td>:</td><td>${{ $defaultVehicle['booster_seat_fee'] }}</td></tr> @endif
+                    @if($defaultVehicle['front_seat_fee'] > 0) <tr><td>Front Seat Fee</td><td>:</td><td>${{ $defaultVehicle['front_seat_fee'] }}</td></tr> @endif
+                    @if($defaultVehicle['toll_fee'] > 0) <tr><td>Toll Fee</td><td>:</td><td>${{ $defaultVehicle['toll_fee'] }}</td></tr> @endif
+                    @if($defaultVehicle['extra_charges'] > 0) <tr><td>Zip Extra Charges</td><td>:</td><td>${{ $defaultVehicle['extra_charges'] }}</td></tr> @endif
 
-                    @if(($fare['pickup_tax'] ?? 0) > 0)
-                    <tr>
-                        <td>Airport Pickup Tax</td>
-                        <td>:</td>
-                        <td>${{ number_format($fare['pickup_tax'], 2) }}</td>
+                    <tr id="row_surcharge" style="{{ $defaultVehicle['surcharge_fee'] > 0 ? '' : 'display:none;' }}">
+                        <td>Surcharge / Night Fee</td><td>:</td><td>$<span id="tbl_surcharge">{{ $defaultVehicle['surcharge_fee'] }}</span></td>
                     </tr>
-                    @endif
-
-                    @if(($fare['dropoff_tax'] ?? 0) > 0)
-                    <tr>
-                        <td>Airport Dropoff Tax</td>
-                        <td>:</td>
-                        <td>${{ number_format($fare['dropoff_tax'], 2) }}</td>
-                    </tr>
-                    @endif
-
-                    @if(($fare['parking_fee'] ?? 0) > 0)
-                    <tr>
-                        <td>Parking Fee</td>
-                        <td>:</td>
-                        <td>${{ number_format($fare['parking_fee'], 2) }}</td>
-                    </tr>
-                    @endif
-
-                    @if(($fare['stopover_fee'] ?? 0) > 0)
-                    <tr>
-                        <td>Stopover Fee</td>
-                        <td>:</td>
-                        <td>${{ number_format($fare['stopover_fee'], 2) }}</td>
-                    </tr>
-                    @endif
-
-                    @if(($fare['child_seat_fee'] ?? 0) > 0)
-                    <tr>
-                        <td>Infant Seat Fee</td>
-                        <td>:</td>
-                        <td>${{ number_format($fare['child_seat_fee'], 2) }}</td>
-                    </tr>
-                    @endif
-
-                    @if(($fare['booster_seat_fee'] ?? 0) > 0)
-                    <tr>
-                        <td>Booster Seat Fee</td>
-                        <td>:</td>
-                        <td>${{ number_format($fare['booster_seat_fee'], 2) }}</td>
-                    </tr>
-                    @endif
-
-                    @if(($fare['front_seat_fee'] ?? 0) > 0)
-                    <tr>
-                        <td>Front Seat Fee</td>
-                        <td>:</td>
-                        <td>${{ number_format($fare['front_seat_fee'], 2) }}</td>
-                    </tr>
-                    @endif
-
-                    {{-- Loop for Location Extra Charges --}}
-                    @if(isset($extra_charge_details) && count($extra_charge_details) > 0)
-                        @foreach($extra_charge_details as $detail)
-                            <tr>
-                                <td>{{ $detail['name'] }}</td>
-                                <td>:</td>
-                                <td>${{ number_format($detail['price'] ?? $detail['amount'], 2) }}</td>
-                            </tr>
-                        @endforeach
-                    @endif
-
-                    @if(($fare['toll_fee'] ?? 0) > 0)
-                    <tr>
-                        <td>Toll Fee</td>
-                        <td>:</td>
-                        <td>${{ number_format($fare['toll_fee'], 2) }}</td>
-                    </tr>
-                    @endif
-
-                    {{-- Loop for Surcharges (Time/Date based) --}}
-                    @if(isset($surcharge_details) && count($surcharge_details) > 0)
-                        @foreach($surcharge_details as $sDetail)
-                            <tr>
-                                <td>{{ $sDetail['name'] }}</td>
-                                <td>:</td>
-                                <td>${{ number_format($sDetail['amount'], 2) }}</td>
-                            </tr>
-                        @endforeach
-                    @endif
 
                     <tr>
                         <td class="pt-3" style="border-top: 1px solid #ddd;">Total Payable</td>
                         <td class="pt-3" style="border-top: 1px solid #ddd;">:</td>
-                        <td class="pt-3" style="border-top: 1px solid #ddd;">${{ number_format($fare['total'], 2) }}</td>
+                        <td class="pt-3" style="border-top: 1px solid #ddd;">$<span id="tbl_total">{{ $defaultVehicle['total_fare'] }}</span></td>
                     </tr>
                 </table>
 
-                @if(($fare['extra_luggage_fee'] ?? 0) > 0)
-                <div class="extra-luggage-card">
-                    <span class="fw-bold text-dark">Extra Luggage Fee</span>
-                    <div class="el-price">
-                        <div class="el-total">${{ number_format($fare['extra_luggage_fee'], 2) }}</div>
-                        <div class="el-per">(${{ number_format(($fare['extra_luggage_fee'] / max(1, ($request['luggage'] - 4))), 2) }}/Bag)</div>
+                {{-- EXTRA LUGGAGE CARD (HIGHLIGHTED BOX) --}}
+                <div id="box_ex_lug" class="extra-luggage-card" style="{{ $defaultVehicle['extra_luggage_fee'] > 0 ? '' : 'display:none;' }}">
+                    <div class="el-title">Extra Luggage Fee</div>
+                    <div class="text-end">
+                        <div class="el-total">$<span id="txt_ex_lug_total">{{ $defaultVehicle['extra_luggage_fee'] }}</span></div>
+                        <div class="el-per">
+                            ($<span id="txt_ex_lug_rate">{{
+                                $defaultVehicle['extra_luggage_count'] > 0
+                                ? number_format($defaultVehicle['extra_luggage_fee'] / $defaultVehicle['extra_luggage_count'], 2)
+                                : '0.00'
+                            }}</span>/Bag)
+                        </div>
                     </div>
                 </div>
-                @endif
+
             </div>
 
-            {{-- RIGHT COLUMN: Summary & Book --}}
+            {{-- RIGHT: Summary --}}
             <div class="col-lg-4">
                 <button type="submit" class="btn-book-green">Book Now</button>
                 <div class="text-center mt-2 mb-4" style="font-size: 0.8rem; color: #333;">
@@ -513,74 +340,253 @@
 
                 <div class="summary-yellow-box">
                     <div class="summary-header">
-                        <div class="summary-title">Booking Details</div>
-                        {{-- <a href="{{ route('home') }}" class="btn-change">Change</a> --}}
+                        <div class="summary-title" style="font-weight:700; color:#444; margin-bottom:10px;">Booking Details</div>
                     </div>
-
                     <table class="summary-list">
                         <tr>
                             <td>Service</td>
                             <td>:</td>
-                            <td>
-                                @if($trip_type == 'fromAirport')
-                                    Ride From Airport
-                                @elseif($trip_type == 'toAirport')
-                                    Ride To Airport
-                                @elseif($trip_type == 'doorToDoor')
-                                    Door to Door Service
-                                @else
-                                    {{ ucfirst($trip_type) }}
-                                @endif
-                            </td>
+                            <td>{{ $trip_type == 'fromAirport' ? 'Ride From Airport' : ($trip_type == 'toAirport' ? 'Ride To Airport' : 'Door to Door') }}</td>
                         </tr>
                         <tr>
                             <td>Date</td>
                             <td>:</td>
-                            <td>{{ $request['date'] ?? '-' }}</td>
+                            <td>{{ $request['date'] }}</td>
                         </tr>
                         <tr>
                             <td>Time</td>
                             <td>:</td>
-                            <td>{{ $request['time'] ?? '-' }}</td>
+                            <td>{{ $request['time'] }}</td>
                         </tr>
                         <tr>
                             <td>Pick up</td>
                             <td>:</td>
-                            <td>{{  $pickup ?? '-' }}</td>
+                            <td>{{ Str::limit($pickup, 30) }}</td>
                         </tr>
                         <tr>
                             <td>Drop off</td>
                             <td>:</td>
-                            <td>{{ $dropoff ?? '-' }}</td>
+                            <td>{{ Str::limit($dropoff, 30) }}</td>
                         </tr>
+
+                        {{-- PASSENGER BREAKDOWN --}}
                         <tr>
                             <td>Passengers</td>
                             <td>:</td>
-                            <td>{{ ((int)($request['adults'] ?? 0) + (int)($request['seats_dummy'] ?? 0)) }} ({{ $request['adults'] ?? 0 }} Adults + {{ $request['seats_dummy'] ?? 0 }} Children)</td>
+                            <td>
+                                {{ ((int)($request['adults'] ?? 0) + (int)($request['children'] ?? 0)) }}
+                                <span style="font-size: 0.8rem; color: #666;">
+                                    ({{ $request['adults'] ?? 0 }} Adults + {{ $request['children'] ?? 0 }} Children)
+                                </span>
+                            </td>
                         </tr>
+
+                        {{-- LUGGAGE --}}
                         <tr>
                             <td>Luggage</td>
                             <td>:</td>
-                            <td>{{ $request['luggage'] ?? 0 }} ( + {{ max(0, ($request['luggage'] ?? 0)-4) }} Extra)</td>
+                            <td>{{ $request['luggage'] ?? 0 }}</td>
+                        </tr>
+
+                        {{-- SEATS & EXTRAS --}}
+                        @if(($request['infant_seat'] ?? 0) > 0)
+                        <tr>
+                            <td>Infant Seat</td>
+                            <td>:</td>
+                            <td>{{ $request['infant_seat'] }}</td>
+                        </tr>
+                        @endif
+
+                        @if(($request['booster_seat'] ?? 0) > 0)
+                        <tr>
+                            <td>Booster Seat</td>
+                            <td>:</td>
+                            <td>{{ $request['booster_seat'] }}</td>
+                        </tr>
+                        @endif
+
+                        @if(($request['front_seat'] ?? 0) > 0)
+                        <tr>
+                            <td>Front Facing</td>
+                            <td>:</td>
+                            <td>{{ $request['front_seat'] }}</td>
+                        </tr>
+                        @endif
+
+                        @if(($request['stopover'] ?? 0) > 0)
+                        <tr>
+                            <td>Stopover</td>
+                            <td>:</td>
+                            <td>{{ $request['stopover'] }}</td>
+                        </tr>
+                        @endif
+
+                        <tr><td colspan="3"><hr style="margin: 5px 0; border-color: #131312;"></td></tr>
+
+                        {{-- VEHICLE DETAILS (ADDED HERE) --}}
+                        <tr>
+                            <td colspan="3" class="vehicle-det-header">Vehicle Details</td>
+                        </tr>
+
+                        <tr>
+                            <td>Vehicle</td>
+                            <td>:</td>
+                            <td><span id="sum_name">{{ $defaultVehicle['name'] }}</span></td>
+                        </tr>
+                        <tr>
+                            <td>Max Pax</td>
+                            <td>:</td>
+                            <td><span id="sum_pax">{{ $defaultVehicle['capacity_passenger'] }}</span></td>
+                        </tr>
+                        <tr>
+                            <td>Max Bags</td>
+                            <td>:</td>
+                            <td><span id="sum_lug">{{ $defaultVehicle['capacity_luggage'] }}</span></td>
+                        </tr>
+
+                         <tr><td colspan="3"><hr style="margin: 5px 0; border-color: #131312;"></td></tr>
+
+                        <tr>
+                            <td style="font-weight:700;">Total</td>
+                            <td style="font-weight:700;">:</td>
+                            <td class="fw-bold" style="font-size: 1.1rem; color: #000;">
+                                $<span id="sum_total">{{ $defaultVehicle['total_fare'] }}</span>
+                            </td>
                         </tr>
                     </table>
-
-                    <div class="vehicle-details-section">
-                        <div class="v-det-title">Vehicle Details</div>
-                        <table class="summary-list">
-                            <tr>
-                                <td>Vehicle</td>
-                                <td>:</td>
-                                <td>{{ $fare['capacity_passenger'] }} Passenger Luxury Van {{ $fare['capacity_luggage'] }} Bags Capacity</td>
-                            </tr>
-                        </table>
-                    </div>
-
                 </div>
             </div>
-
         </div>
+
     </form>
+
+    {{-- ======================================================= --}}
+    {{-- MORE VEHICLE OPTIONS LOOP --}}
+    {{-- ======================================================= --}}
+    <div class="more-options-wrapper">
+        <div class="mo-header">
+            <div class="mo-title">More Vehicle Option</div>
+            <div class="mo-subtitle">Select another vehicle that suits your needs</div>
+        </div>
+
+        @foreach($vehicleOptions as $vOpt)
+            <div class="option-card {{ $vOpt['vehicle_id'] == $defaultVehicle['vehicle_id'] ? 'd-none-custom' : '' }}"
+                 id="card_vehicle_{{ $vOpt['vehicle_id'] }}">
+                <div class="row align-items-center">
+                    <div class="col-md-3 oc-img-box">
+                        <img src="{{ $vOpt['image'] }}" class="oc-img">
+                    </div>
+                    <div class="col-md-9">
+                        <div class="oc-details">
+                            <div class="oc-title">
+                                {{ $vOpt['capacity_passenger'] }} Passenger {{ $vOpt['name'] }}
+                            </div>
+                            <div class="oc-features">
+                                <i class="fas fa-suitcase"></i> {{ $vOpt['capacity_luggage'] }} Bags Capacity
+                                <span class="oc-divider">|</span>
+                                <i class="fas fa-car"></i> {{ $vOpt['features'][0] ?? 'Luxury' }}
+                            </div>
+                            <div class="oc-breakdown">
+                                Estimated: ${{ $vOpt['estimated_fare'] }}, Gratuity: ${{ $vOpt['gratuity_fee'] }}
+                                @if($vOpt['surcharge_fee'] > 0) , Surcharge: ${{ $vOpt['surcharge_fee'] }} @endif
+                                @if($vOpt['extra_luggage_fee'] > 0) , Extra Luggage: ${{ $vOpt['extra_luggage_fee'] }} @endif
+                            </div>
+
+                            <div class="oc-action-container">
+                                <button type="button" class="btn-book-outline" onclick="selectVehicle({{ json_encode($vOpt) }})">
+                                    Book Now <i class="fas fa-check-circle ms-2"></i>
+                                </button>
+                                <div>
+                                    <span class="oc-total-label">Total Fare :</span>
+                                    <span class="oc-price">${{ $vOpt['total_fare'] }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endforeach
+    </div>
 </div>
 
+<script>
+    function selectVehicle(data) {
+        // 1. SHOW ALL cards first
+        document.querySelectorAll('.option-card').forEach(el => {
+            el.classList.remove('d-none-custom');
+        });
+
+        // 2. Hide the clicked card
+        const clickedCard = document.getElementById('card_vehicle_' + data.vehicle_id);
+        if(clickedCard) {
+            clickedCard.classList.add('d-none-custom');
+        }
+
+        // 3. Update Hidden Inputs
+        document.getElementById('inp_vehicle_id').value = data.vehicle_id;
+        document.getElementById('inp_cap_pass').value = data.capacity_passenger;
+        document.getElementById('inp_cap_lug').value = data.capacity_luggage;
+        document.getElementById('inp_v_name').value = data.name;
+        document.getElementById('inp_est_fare').value = data.estimated_fare;
+        document.getElementById('inp_gratuity').value = data.gratuity_fee;
+        document.getElementById('inp_surcharge').value = data.surcharge_fee;
+        document.getElementById('inp_ex_lug_fee').value = data.extra_luggage_fee;
+        document.getElementById('inp_total').value = data.total_fare;
+
+        const surContainer = document.getElementById('surcharge_inputs_container');
+        surContainer.innerHTML = '';
+        if(data.surcharge_details && data.surcharge_details.length > 0) {
+            data.surcharge_details.forEach((sd, idx) => {
+                surContainer.innerHTML += `<input type="hidden" name="surcharge_details[${idx}][name]" value="${sd.name}">`;
+                surContainer.innerHTML += `<input type="hidden" name="surcharge_details[${idx}][amount]" value="${sd.amount}">`;
+            });
+        }
+
+        // 4. Update Visuals
+        document.getElementById('disp_image').src = data.image;
+        document.getElementById('disp_pax_cap').innerText = data.capacity_passenger;
+        document.getElementById('disp_name').innerText = data.name;
+        document.getElementById('disp_lug_cap').innerText = data.capacity_luggage;
+        document.getElementById('disp_pay_cash').innerText = data.pay_cash;
+        document.getElementById('disp_pay_card').innerText = data.total_fare;
+
+        document.getElementById('tbl_est_fare').innerText = data.estimated_fare;
+        document.getElementById('tbl_gratuity').innerText = data.gratuity_fee;
+
+        const rowSur = document.getElementById('row_surcharge');
+        if(data.surcharge_fee > 0) {
+            rowSur.style.display = 'table-row';
+            document.getElementById('tbl_surcharge').innerText = data.surcharge_fee;
+        } else {
+            rowSur.style.display = 'none';
+        }
+
+        // Update Extra Luggage Card
+        const boxExLug = document.getElementById('box_ex_lug');
+        if(data.extra_luggage_fee > 0) {
+            boxExLug.style.display = 'flex';
+            document.getElementById('txt_ex_lug_total').innerText = data.extra_luggage_fee;
+
+            // Calculate Rate
+            let rate = 0;
+            if(data.extra_luggage_count > 0) {
+                rate = (data.extra_luggage_fee / data.extra_luggage_count).toFixed(2);
+            }
+            document.getElementById('txt_ex_lug_rate').innerText = rate;
+
+        } else {
+            boxExLug.style.display = 'none';
+        }
+
+        document.getElementById('tbl_total').innerText = data.total_fare;
+
+        // Update Summary Fields
+        document.getElementById('sum_name').innerText = data.name;
+        document.getElementById('sum_pax').innerText = data.capacity_passenger;
+        document.getElementById('sum_lug').innerText = data.capacity_luggage;
+        document.getElementById('sum_total').innerText = data.total_fare;
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+</script>
 @endsection

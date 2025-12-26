@@ -2,7 +2,7 @@
     /* Mobile Phone Button Style */
     .mobile-phone-btn {
         background-color: #ffc107; /* Yellow background */
-        color: #000; /* Black text */
+        color: #000;
         font-weight: 700;
         text-decoration: none;
         font-size: 14px;
@@ -11,7 +11,7 @@
         display: flex;
         align-items: center;
         gap: 6px;
-        white-space: nowrap; /* টেক্সট যাতে ভেঙে না যায় */
+        white-space: nowrap;
         border: none;
     }
 
@@ -19,8 +19,14 @@
         background-color: #e0a800;
         color: #000;
     }
+    .navbar-custom {
+        background-color: rgba(0, 0, 0, 0.95);
+        padding: 0px 0;
+        border-bottom: 1px solid #333;
+        backdrop-filter: blur(5px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    }
 
-    /* লোগো এবং বাটন এর সাইজ এডজাস্টমেন্ট ছোট স্ক্রিনের জন্য */
     @media (max-width: 400px) {
         .navbar-brand img {
             height: 45px; /* লোগো একটু ছোট হবে */
@@ -37,7 +43,7 @@
 
         {{-- 1. Logo (Left) --}}
         <a class="navbar-brand" href="{{ route('home') }}">
-            <img src="{{ asset('images/logo.png') }}" alt="Boston Logan Airport Taxi" height="65">
+            <img src="{{ asset('images/logo.png') }}" alt="Boston Logan Airport Taxi" height="80">
         </a>
 
         {{-- 2. Mobile Phone Button (CENTER) --}}
@@ -74,3 +80,4 @@
 
     </div>
 </nav>
+

@@ -4,6 +4,9 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\BookingController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/sitemap.xml', function () {
+    return generate_sitemap_xml();
+});
 Route::controller(HomeController::class)->group(function () {
     Route::get('/', 'home')->name('home');
     Route::get('/step2', 'step2')->name('step2');
@@ -21,11 +24,11 @@ Route::controller(HomeController::class)->group(function () {
     Route::get('/terms&conditions', 'termsConditions')->name('term.conditions');
     Route::get('/payment-policy', 'paymentPolicy')->name('payment.policy');
 
+    Route::get('/services', 'areService')->name('area.service');
+    Route::get('/service-details/{slug}', 'serviceDetials')->name('service.details');
     Route::get('/airports', 'airport')->name('airports');
     Route::get('/capacity-luggage', 'capacityLuggage')->name('luggage.capacity');
     Route::get('/setting', 'setting')->name('setting');
-    Route::get('/services', 'areService')->name('area.service');
-    Route::get('/service-details/{slug}', 'serviceDetials')->name('service.details');
 });
 Route::controller(BookingController::class)->group(function () {
     Route::post('/book-confirm', 'confirmBooking')->name('book.confirm');
