@@ -450,7 +450,7 @@
                             <td style="font-weight:700;">Total</td>
                             <td style="font-weight:700;">:</td>
                             <td class="fw-bold" style="font-size: 1.1rem; color: #000;">
-                                $<span id="sum_total">{{ $defaultVehicle['total_fare'] }}</span>
+                                $<span id="sum_total">{{ number_format($defaultVehicle['total_fare']) }}</span>
                             </td>
                         </tr>
                     </table>
@@ -498,7 +498,7 @@
                                 </button>
                                 <div>
                                     <span class="oc-total-label">Total Fare :</span>
-                                    <span class="oc-price">${{ $vOpt['total_fare'] }}</span>
+                                    <span class="oc-price">${{ number_format($vOpt['total_fare'],2)}}</span>
                                 </div>
                             </div>
                         </div>
