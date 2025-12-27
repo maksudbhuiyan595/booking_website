@@ -14,10 +14,7 @@ return new class extends Migration
         Schema::create('cities', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('slug')->unique();
-            $table->string('cover_image')->nullable();
-            $table->longText('content')->nullable();
-            $table->json('faqs')->nullable();
+            $table->string('url');
             $table->boolean('is_featured')->default(true);
             $table->timestamps();
         });

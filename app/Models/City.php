@@ -10,6 +10,5 @@ class City extends Model
 
     protected $casts = [
         'is_featured' => 'boolean',
-        'faqs' => 'array',
     ];
 }

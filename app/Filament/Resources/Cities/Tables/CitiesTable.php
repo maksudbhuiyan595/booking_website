@@ -17,15 +17,11 @@ class CitiesTable
     {
         return $table
             ->columns([
-                ImageColumn::make('cover_image')
-                    ->circular()
-                    ->defaultImageUrl(url('/images/placeholder.png')),
-
                 TextColumn::make('name')
                     ->searchable()
                     ->weight('bold'),
 
-                TextColumn::make('slug')
+                TextColumn::make('url')
                     ->color('gray')
                     ->icon('heroicon-o-link'),
 

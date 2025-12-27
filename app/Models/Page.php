@@ -7,4 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class Page extends Model
 {
     protected $guarded = [];
+    protected $casts = [
+        'is_active' => 'boolean',
+        'faqs' => 'array',
+        'tags' => 'array',
+    ];
 }
