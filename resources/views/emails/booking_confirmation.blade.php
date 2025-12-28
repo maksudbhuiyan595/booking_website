@@ -2,21 +2,137 @@
 <html>
 <head>
     <title>Booking Confirmation</title>
+    <style>
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; line-height: 1.6; background-color: #f4f4f4; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 8px; border: 1px solid #e0e0e0; }
+        .header { text-align: center; border-bottom: 2px solid #0FA96D; padding-bottom: 20px; margin-bottom: 25px; }
+        .header h2 { color: #0FA96D; margin: 0; font-size: 24px; text-transform: uppercase; }
+        .booking-ref { font-size: 16px; color: #555; margin-top: 5px; }
+
+        .section-title {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            font-weight: 700;
+            border-left: 5px solid #0FA96D;
+            margin-top: 25px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 5px; font-size: 13px; }
+        td { padding: 8px 10px; vertical-align: top; border-bottom: 1px solid #f0f0f0; }
+        tr:last-child td { border-bottom: none; }
+        .label { font-weight: 600; width: 45%; color: #555; }
+        .value { color: #000; }
+
+        .highlight-red { color: #d32f2f; font-weight: bold; }
+        .highlight-green { color: #2e7d32; font-weight: bold; }
+
+        .footer { margin-top: 40px; text-align: center; font-size: 12px; color: #888; border-top: 1px solid #eee; padding-top: 20px; }
+        .sub-row td { padding-left: 20px; color: #666; font-style: italic; font-size: 12px; }
+    </style>
 </head>
 <body>
-    <h2>Hello {{ $booking->passenger_name }},</h2>
-    <p>Your booking has been confirmed successfully!</p>
 
-    <h3>Booking Details:</h3>
-    <ul>
-        <li><strong>Booking No:</strong> {{ $booking->booking_no }}</li>
-        <li><strong>Date:</strong> {{ $booking->pickup_date }} at {{ $booking->pickup_time }}</li>
-        <li><strong>Pickup:</strong> {{ $booking->pickup_address }}</li>
-        <li><strong>Dropoff:</strong> {{ $booking->dropoff_address }}</li>
-        <li><strong>Vehicle:</strong> {{ $booking->vehicle_type }}</li>
-        <li><strong>Total Paid:</strong> ${{ number_format($booking->paid_amount, 2) }}</li>
-    </ul>
+    <div class="container">
+        <div class="header">
+            <h2>Booking Confirmed</h2>
+            <div class="booking-ref">Reference No: <strong>{{ $booking->booking_no }}</strong></div>
+        </div>
 
-    <p>Thank you for choosing us!</p>
+        <p>Dear <strong>{{ $booking->passenger_name }}</strong>,</p>
+        <p>Your booking has been successfully placed. We have received your partial payment via <strong>{{ ucfirst($booking->payment_method) }}</strong>.</p>
+
+        <div class="section-title">Passenger Details</div>
+        <table>
+            <tr><td class="label">Name:</td><td class="value">{{ $booking->passenger_name }}</td></tr>
+            <tr><td class="label">Email:</td><td class="value">{{ $booking->passenger_email }}</td></tr>
+            <tr><td class="label">Phone:</td><td class="value">{{ $booking->phone_country_code }} {{ $booking->passenger_phone }}</td></tr>
+
+            @if($booking->alternate_phone)
+            <tr><td class="label">Alt. Phone:</td><td class="value">{{ $booking->alternate_phone }}</td></tr>
+            @endif
+
+            @if($booking->mailing_address)
+            <tr><td class="label">Address:</td><td class="value">{{ $booking->mailing_address }}</td></tr>
+            @endif
+
+            @if($booking->special_needs)
+            <tr><td class="label highlight-red">Special Needs:</td><td class="value highlight-red">{{ $booking->special_needs }}</td></tr>
+            @endif
+        </table>
+
+        <div class="section-title">Trip Information</div>
+        <table>
+            <tr><td class="label">Service Type:</td><td class="value">
+                @if($booking->trip_type == 'fromAirport') From Airport
+                @elseif($booking->trip_type == 'toAirport') To Airport
+                @else Door to Door @endif
+            </td></tr>
+            <tr><td class="label">Pickup Date:</td><td class="value">{{ \Carbon\Carbon::parse($booking->pickup_date)->format('l, d M Y') }}</td></tr>
+            <tr><td class="label">Pickup Time:</td><td class="value">{{ \Carbon\Carbon::parse($booking->pickup_time)->format('h:i A') }}</td></tr>
+            <tr><td class="label">Pickup Location:</td><td class="value">{{ $booking->pickup_address }}</td></tr>
+            <tr><td class="label">Dropoff Location:</td><td class="value">{{ $booking->dropoff_address }}</td></tr>
+            <tr><td class="label">Total Distance:</td><td class="value">{{ $booking->distance_miles }} Miles</td></tr>
+
+            @if($booking->airline_name)
+            <tr><td class="label">Airline Info:</td><td class="value">{{ $booking->airline_name }} (Flight: {{ $booking->flight_number }})</td></tr>
+            @endif
+        </table>
+
+        <div class="section-title">Vehicle & Passengers</div>
+        <table>
+            <tr><td class="label">Selected Vehicle:</td><td class="value">Luxury Vehicle</td></tr>
+            <tr><td class="label">Total Passengers:</td><td class="value">{{ $booking->total_passengers }} ({{ $booking->adults }} Adults, {{ $booking->children }} Children)</td></tr>
+            <tr><td class="label">Luggage:</td><td class="value">{{ $booking->luggage }} Bags</td></tr>
+        </table>
+
+
+        <table>
+            <tr><td colspan="2" style="border-top: 2px solid #333;"></td></tr>
+
+            <tr style="font-size: 16px;">
+                <td class="label">TOTAL FARE:</td>
+                <td class="value" style="font-weight:bold;">${{ number_format($booking->total_fare, 2) }}</td>
+            </tr>
+            <tr>
+                <td class="label">Paid via {{ ucfirst($booking->payment_method) }}:</td>
+                <td class="value highlight-green">${{ number_format($booking->paid_amount, 2) }}</td>
+            </tr>
+            <tr>
+                <td class="label">Balance Due (To Driver):</td>
+                <td class="value highlight-red">${{ number_format($booking->due_amount, 2) }}</td>
+            </tr>
+              <tr>
+                <td class="label">Pay Cash (10% discount):</td>
+                <td class="value highlight-red">${{ number_format($booking->due_amount * 0.9, 2) }}</td>
+            </tr>
+        </table>
+
+        <div class="section-title">Payment Information</div>
+        <table>
+            <tr><td class="label">Payment Status:</td><td class="value">{{ ucfirst($booking->payment_status) }}</td></tr>
+            @if($booking->transaction_id)
+            <tr><td class="label">Transaction ID:</td><td class="value">{{ $booking->transaction_id }}</td></tr>
+            @endif
+
+            @if($booking->payment_method == 'stripe' && $booking->card_last_four)
+            <tr><td class="label">Card Used:</td><td class="value">{{ strtoupper($booking->card_brand) }} **** **** **** {{ $booking->card_last_four }}</td></tr>
+            @endif
+
+            @if($booking->card_holder_name)
+            <tr><td class="label">Billing Name:</td><td class="value">{{ $booking->card_holder_name }}</td></tr>
+            <tr><td class="label">Billing Address:</td><td class="value">{{ $booking->billing_address }}, {{ $booking->billing_city }} - {{ $booking->billing_zip }}</td></tr>
+            @endif
+        </table>
+
+        <div class="footer">
+            <p>If you have questions, reply to this email or call us at +1 (XXX) XXX-XXXX.</p>
+            <p>&copy; {{ date('Y') }} Boston Logan Airport Taxi. All Rights Reserved.</p>
+        </div>
+    </div>
+
 </body>
 </html>

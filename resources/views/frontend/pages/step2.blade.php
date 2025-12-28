@@ -3,6 +3,28 @@
 @section('content')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
+{{-- ========================================================= --}}
+{{--  PHP BLOCK: SET TIMEZONE & FORMAT DATE  --}}
+{{-- ========================================================= --}}
+@php
+    use Carbon\Carbon;
+
+    // 1. ইনপুট থেকে তারিখ ও সময় নিয়ে Carbon অবজেক্ট তৈরি (Timezone: America/New_York)
+    $rawDate = $request['date'] ?? now()->toDateString();
+    $rawTime = $request['time'] ?? '12:00';
+
+    try {
+        $bostonDateTime = Carbon::createFromFormat('Y-m-d H:i', $rawDate . ' ' . $rawTime, 'America/New_York');
+    } catch (\Exception $e) {
+        // যদি ফরম্যাটে কোনো সমস্যা হয়, ডিফল্ট বর্তমান সময় নেওয়া হবে
+        $bostonDateTime = Carbon::now('America/New_York');
+    }
+
+    // 2. সুন্দর ফরম্যাট তৈরি করা
+    $formattedDate = $bostonDateTime->format('l, F j, Y'); // e.g., Sunday, December 28, 2025
+    $formattedTime = $bostonDateTime->format('g:i A');      // e.g., 2:30 PM
+@endphp
+
 <style>
     body {
         background: #ffffff !important;
@@ -170,13 +192,11 @@
        ========================================= */
     @media (max-width: 768px) {
         .oc-action-container {
-            flex-direction: row; /* পাশাপাশি দেখানোর জন্য row সেট করা হলো */
+            flex-direction: row;
             justify-content: space-between;
             align-items: center;
             gap: 10px;
         }
-
-        /* মোবাইলে বাটন ও ফন্ট সাইজ একটু ছোট করা হলো যাতে সুন্দর দেখায় */
         .btn-book-outline {
             padding: 8px 12px;
             font-size: 0.85rem;
@@ -371,12 +391,12 @@
                         <tr>
                             <td>Date</td>
                             <td>:</td>
-                            <td>{{ $request['date'] }}</td>
+                            <td>{{ $formattedDate }}</td>
                         </tr>
                         <tr>
                             <td>Time</td>
                             <td>:</td>
-                            <td>{{ $request['time'] }}</td>
+                            <td>{{ $formattedTime }}</td>
                         </tr>
                         <tr>
                             <td>Pick up</td>
