@@ -566,7 +566,7 @@
                         icon: 'warning',
                         title: 'Service Unavailable Today',
                         html: `
-                            <b>Reservations cannot be processed between 10:00 PM and 6:00 AM EST.
+                            <b>Reservations cannot be processed between 10:00 PM and 6:00 AM.
                             For urgent or same-day bookings, please contact us at +1 (857) 331-9544</b><br>
                         `,
                         confirmButtonColor: '#d33'
