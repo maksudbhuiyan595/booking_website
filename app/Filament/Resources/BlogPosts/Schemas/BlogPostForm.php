@@ -45,6 +45,7 @@ class BlogPostForm
                 Section::make('Publishing')
                     ->schema([
                         FileUpload::make('thumbnail')
+                            ->disk('public')
                             ->label('Feature Image')
                             ->image()
                             ->imageEditor()
