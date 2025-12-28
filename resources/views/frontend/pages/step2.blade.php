@@ -508,7 +508,6 @@
             <div class="mo-title">More Vehicle Option</div>
             <div class="mo-subtitle">Select another vehicle that suits your needs</div>
         </div>
-
         @foreach($vehicleOptions as $vOpt)
             <div class="option-card {{ $vOpt['vehicle_id'] == $defaultVehicle['vehicle_id'] ? 'd-none-custom' : '' }}"
                  id="card_vehicle_{{ $vOpt['vehicle_id'] }}">
