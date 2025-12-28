@@ -7,7 +7,6 @@
     <meta name="google-site-verification" content="86x_Pxdx_MMID1zG3q322wIJHpeZOXtFCRYeghepuOc" />
     <link rel="canonical" href="{{ rtrim(request()->url(), '/') . '/' }}">
 
-    {{-- SEO Logic --}}
     @if (isset($seo))
         <title>{{ $seo->meta_title }}</title>
         <meta name="description" content="{{ $seo->meta_description }}">
@@ -15,31 +14,23 @@
         <title>Boston Logan Airport Taxi</title>
         <meta name="description" content="Reliable airport taxi service in Boston.">
     @endif
-
     <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,400&display=swap" rel="stylesheet">
-
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,400&display=swap"
+        rel="stylesheet">
     @include('frontend.css.style')
-
-    {{-- Dynamic Schema --}}
     @stack('schema')
 </head>
-
 <body>
-    {{-- Validation Popup --}}
     <div id="validationPopup" class="custom-popup">
         <div class="popup-icon"><i class="fas fa-exclamation-circle"></i></div>
         <div class="popup-message" id="popupText">Message goes here</div>
     </div>
-
-    {{-- Includes --}}
     @include('frontend.pages.nav')
     @include('frontend.pages.booking')
     @include('frontend.pages.rating')
-
-    {{-- Hero/Intro Section --}}
     <section class="content-section bg-light">
         <div class="container">
             <div class="row mb-4">
@@ -72,7 +63,8 @@
                     <ul class="why-choose-list">
                         <li>Flat-Rate, No-Surge Pricing</li>
                         <li>Vehicles Cleaned & Sanitized after Every Ride</li>
-                        <li><a href="{{ route('child.seat') }}" style="color:var(--btn-green); font-weight:bold;">Child Seats</a> Available</li>
+                        <li><a href="{{ route('child.seat') }}" style="color:var(--btn-green); font-weight:bold;">Child
+                                Seats</a> Available</li>
                         <li>Available 24/7, Including on Holidays</li>
                         <li>Licensed, Background-Checked Drivers</li>
                         <li>Long-Distance & Event Rides Available</li>
@@ -210,7 +202,62 @@
                             availability, although same-day rides might still be available.</div>
                     </div>
                 </div>
-                {{-- Other FAQ items... --}}
+
+                {{-- Question 2 --}}
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="h2">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c2" aria-expanded="false" aria-controls="c2">
+                            Do you clean your vehicles often?
+                        </button>
+                    </h2>
+                    <div id="c2" class="accordion-collapse collapse" aria-labelledby="h2" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Yes. Every vehicle is thoroughly disinfected after every ride to keep both you and other passengers safe and healthy.
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Question 3 --}}
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="h3">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c3" aria-expanded="false" aria-controls="c3">
+                            Do you have child seats in your car?
+                        </button>
+                    </h2>
+                    <div id="c3" class="accordion-collapse collapse" aria-labelledby="h3" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Absolutely. We do have infant, toddler, and booster seats. Ask for it when you book and we’ll have it ready.
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Question 4 --}}
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="h4">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c4" aria-expanded="false" aria-controls="c4">
+                            What if my flight is running late?
+                        </button>
+                    </h2>
+                    <div id="c4" class="accordion-collapse collapse" aria-labelledby="h4" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            No worries! We check your flight in real time, so your pickup time automatically adjusts, at no extra charge for reasonable delays.
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Question 5 --}}
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="h5">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c5" aria-expanded="false" aria-controls="c5">
+                            Are there hidden charges in your pricing?
+                        </button>
+                    </h2>
+                    <div id="c5" class="accordion-collapse collapse" aria-labelledby="h5" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Never. We provide open-book pricing with flat-rate rates. No hidden fees, no surprises.
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <h2 class="text-center fw-bold mb-4">Latest Blog</h2>
@@ -222,7 +269,8 @@
                                 <div class="blog-card h-100">
                                     <div class="blog-img-container">
                                         @if ($blog->thumbnail)
-                                            <img src="{{ asset('storage/' . $blog->thumbnail) }}" alt="{{ $blog->title }}">
+                                            <img src="{{ asset('storage/' . $blog->thumbnail) }}"
+                                                alt="{{ $blog->title }}">
                                         @else
                                             <img src="{{ asset('images/blog.webp') }}" alt="Default Image">
                                         @endif
@@ -231,9 +279,11 @@
                                         {{ Str::limit($blog->title, 60) }}
                                     </a>
                                     <div class="blog-meta">
-                                        admin /// {{ \Carbon\Carbon::parse($blog->published_at)->format('F d, Y') }} /// No Comments
+                                        admin /// {{ \Carbon\Carbon::parse($blog->published_at)->format('F d, Y') }}
+                                        /// No Comments
                                     </div>
-                                    <a href="{{ route('blog.details', $blog->slug) }}" class="read-more-btn">Read More »</a>
+                                    <a href="{{ route('blog.details', $blog->slug) }}" class="read-more-btn">Read
+                                        More »</a>
                                 </div>
                             </div>
                         @empty
@@ -329,4 +379,5 @@
     {{-- @endpush --}}
 
 </body>
+
 </html>
