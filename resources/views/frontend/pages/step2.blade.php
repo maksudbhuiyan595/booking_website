@@ -71,7 +71,7 @@
         background: linear-gradient(to top, rgba(0,0,0,0.3), transparent); z-index: 0;
     }
     .v-img-container { position: relative; z-index: 1; margin-bottom: 10px; }
-    .v-img { width: 100%; max-width: 250px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3)); }
+    .v-img { width: 100%; max-width: 360px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3)); }
 
     .v-name {
         font-size: 1.1rem; font-weight: 700; margin-bottom: 25px; position: relative; z-index: 1;
@@ -164,7 +164,7 @@
     .d-none-custom { display: none !important; }
 
     .oc-img-box { display: flex; align-items: center; justify-content: center; padding: 10px; }
-    .oc-img { max-width: 220px; width: 100%; height: auto; object-fit: contain; }
+    .oc-img { max-width: 400px; width: 100%; height: auto; object-fit: contain; }
     .oc-title { font-size: 1.25rem; font-weight: 700; color: #2c3e50; margin-bottom: 10px; }
     .oc-features { font-size: 0.9rem; color: #333; margin-bottom: 12px; font-weight: 500; }
     .oc-features i { margin-right: 6px; color: #000; }
