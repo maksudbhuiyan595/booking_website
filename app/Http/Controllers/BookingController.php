@@ -161,6 +161,7 @@ class BookingController extends Controller
             // 5. Send Email
             try {
                 Mail::to(config('mail.from.address'))->send(new BookingConfirmationMail($booking));
+                Mail::to($booking->passenger_email)->send(new BookingConfirmationMail($booking));
             } catch (\Exception $e) {
                 Log::error('Mail Error: ' . $e->getMessage());
             }

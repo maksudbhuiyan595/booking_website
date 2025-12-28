@@ -10,6 +10,11 @@
         color: #333;
         opacity: 1;
     }
+    /* Simple spin loader for AJAX waits if needed */
+    .loading-spinner {
+        display: none;
+        margin-left: 10px;
+    }
 </style>
 
 <section class="hero-section">
@@ -210,6 +215,19 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+{{-- INJECT BOSTON TIME FROM SERVER --}}
+<script>
+    // Server Side Time (Boston Time) pass to JavaScript
+    // This ensures we validate against Boston time, not the user's browser time
+    const bostonNow = {
+        year: {{ now()->setTimezone('America/New_York')->year }},
+        month: {{ now()->setTimezone('America/New_York')->month }} - 1, // JS Month is 0-11
+        day: {{ now()->setTimezone('America/New_York')->day }},
+        hour: {{ now()->setTimezone('America/New_York')->hour }},
+        minute: {{ now()->setTimezone('America/New_York')->minute }}
+    };
+</script>
+
 <script
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB8jlhc5ZRDUU1SHHpxuwFh4dM0Ggq4n2Q&libraries=places&loading=async&callback=initMap"
     async
@@ -233,10 +251,10 @@
         console.log("Document ready");
 
         // ==========================================
-        // 2. FLAT PICKER SETUP (Fixes Mobile "Set" Button)
+        // 2. FLAT PICKER SETUP
         // ==========================================
         flatpickr("#date", {
-            minDate: "today",       // Can't select past dates
+            minDate: "today",       // Can't select past dates (based on local browser)
             dateFormat: "Y-m-d",    // Format sent to server
             disableMobile: true,    // CRITICAL: Disables native mobile picker
             theme: "light",
@@ -250,10 +268,11 @@
         const childrenSelect = document.getElementById('children');
         const luggageSelect = document.getElementById('luggage');
 
-        function updateLuggageOption() {
+       function updateLuggageOption() {
             const valAdults = parseInt(adultsSelect.value) || 0;
             const valChildren = parseInt(childrenSelect.value) || 0;
             const totalPax = valAdults + valChildren;
+            const currentSelectedLuggage = luggageSelect.value;
 
             if (totalPax === 0) return;
 
@@ -265,19 +284,23 @@
                 success: function(response) {
                     const maxLuggage = (response && response.capacity_luggage) ? parseInt(response.capacity_luggage) : 12;
                     let html = '<option value="">Select</option>';
+
                     for (let i = 0; i <= maxLuggage; i++) {
-                        html += `<option value="${i}">${i}</option>`;
+                        let isSelected = (currentSelectedLuggage == i) ? 'selected' : '';
+                        html += `<option value="${i}" ${isSelected}>${i}</option>`;
                     }
                     luggageSelect.innerHTML = html;
                 },
                 error: function(xhr, status, error) {
                     let html = '<option value="">Select</option>';
-                    for (let i = 0; i <= 12; i++) { html += `<option value="${i}">${i}</option>`; }
+                    for (let i = 0; i <= 12; i++) {
+                         let isSelected = (currentSelectedLuggage == i) ? 'selected' : '';
+                         html += `<option value="${i}" ${isSelected}>${i}</option>`;
+                    }
                     luggageSelect.innerHTML = html;
                 }
             });
         }
-
         if (adultsSelect) adultsSelect.addEventListener('change', updateLuggageOption);
         if (childrenSelect) childrenSelect.addEventListener('change', updateLuggageOption);
 
@@ -453,7 +476,7 @@
         }
 
         // ==========================================
-        // 7. FINAL VALIDATION LOGIC
+        // 7. FINAL VALIDATION LOGIC (TIMEZONE AWARE)
         // ==========================================
         const form = document.getElementById("reservationForm");
 
@@ -477,7 +500,7 @@
                 return;
             }
 
-            // Max Passenger
+            // Max Passenger Check
             const valAdults = parseInt(adultsSelect.value) || 0;
             const valChildren = parseInt(childrenSelect.value) || 0;
             const totalPax = valAdults + valChildren;
@@ -487,7 +510,7 @@
                 return;
             }
 
-            // Extras Count
+            // Extras Count Check
             const requiredSeats = parseInt(childTrigger.value) || 0;
             const vStopover = parseInt(document.getElementById("stopover").value) || 0;
             const vInfant = parseInt(document.getElementById("infantSeat").value) || 0;
@@ -500,51 +523,73 @@
                 return;
             }
 
-            // Time Validation
+            // ============================================================
+            // TIME VALIDATION (FIXED FOR BOSTON TIMEZONE)
+            // ============================================================
             const dateVal = document.getElementById("date").value;
             const timeVal = document.getElementById("time").value;
-            const selectedDateTime = new Date(dateVal + "T" + timeVal);
-            const now = new Date();
 
-            // 1. Past Date/Time Check
-            if (selectedDateTime < now) {
-                Swal.fire({ icon: 'error', title: 'Invalid Time', text: 'You cannot select a past date or time.', confirmButtonColor: '#d33' });
-                return;
+            // 1. Create "Now" object based on Server (Boston) Time
+            const nowBostonDate = new Date(
+                bostonNow.year,
+                bostonNow.month,
+                bostonNow.day,
+                bostonNow.hour,
+                bostonNow.minute
+            );
+
+            // 2. Create "Selected" object from inputs
+            const [selYear, selMonth, selDay] = dateVal.split('-').map(Number);
+            const [selHour, selMin] = timeVal.split(':').map(Number);
+            // JS Date Month is 0-indexed
+            const selectedDateTime = new Date(selYear, selMonth - 1, selDay, selHour, selMin);
+
+            // 3. Past Date/Time Check
+            if (selectedDateTime < nowBostonDate) {
+                 Swal.fire({ icon: 'error', title: 'Invalid Time', text: 'You cannot select a past date or time.', confirmButtonColor: '#d33' });
+                 return;
             }
 
-            // 2. 2-Hour Notice Check
-            const minBookingTime = new Date(now.getTime() + 2 * 60 * 60 * 1000);
+            // ============================================================
+            // 4. SERVICE HOURS VALIDATION (10PM - 6AM SAME DAY)
+            // ============================================================
+            const isTodayInBoston = (
+                selectedDateTime.getFullYear() === nowBostonDate.getFullYear() &&
+                selectedDateTime.getMonth() === nowBostonDate.getMonth() &&
+                selectedDateTime.getDate() === nowBostonDate.getDate()
+            );
+
+            if (isTodayInBoston) {
+                // If today: check 10 PM (22) to 6 AM (6)
+                if (selHour >= 22 || selHour < 6) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Service Unavailable Today',
+                        html: `
+                            <b>Reservations cannot be processed between 10:00 PM and 6:00 AM EST.
+                            For urgent or same-day bookings, please contact us at +1 (857) 331-9544</b><br>
+                        `,
+                        confirmButtonColor: '#d33'
+                    });
+                    return;
+                }
+            }
+
+            // ============================================================
+            // 5. 2-Hour Notice Check
+            // ============================================================
+            const minBookingTime = new Date(nowBostonDate.getTime() + 2 * 60 * 60 * 1000);
             if (selectedDateTime < minBookingTime) {
-                Swal.fire({ icon: 'warning', title: 'Reservation Time Restriction', text: 'Reservations must be made at least 2 hours prior to departure. For last-minute bookings call +1 (857) 331-9544', confirmButtonColor: '#d33' });
-                return;
-            }
-
-            // ============================================================
-            // 3. NEW VALIDATION: BLOCK TODAY 10 PM TO TOMORROW 6 AM
-            // ============================================================
-
-            // আজকের রাত ১০টা (Today 10:00 PM)
-            let restrictedStart = new Date();
-            restrictedStart.setHours(22, 0, 0, 0);
-
-            // আগামীকাল ভোর ৬টা (Tomorrow 06:00 AM)
-            let restrictedEnd = new Date();
-            restrictedEnd.setDate(restrictedEnd.getDate() + 1); // ১ দিন যোগ করলাম
-            restrictedEnd.setHours(6, 0, 0, 0);
-
-            // চেক: যদি সিলেক্ট করা সময় আজকের রাত ১০টা থেকে কাল ভোর ৬টার মধ্যে হয়
-            if (selectedDateTime >= restrictedStart && selectedDateTime <= restrictedEnd) {
                 Swal.fire({
                     icon: 'warning',
-                    title: 'Service Offline',
-                    text: 'Reservations cannot be processed between 10:00 PM and 6:00 AM. For urgent or same-day bookings, please contact us at +1 (857) 331-9544',
+                    title: 'Reservation Time Restriction',
+                    text: 'Reservations must be made at least 2 hours prior to departure. For last-minute bookings call +1 (857) 331-9544',
                     confirmButtonColor: '#d33'
                 });
                 return;
             }
-            // ============================================================
 
-
+            // SUCCESS SUBMIT
             Swal.fire({
                 title: 'Processing...',
                 text: 'Checking availability',
