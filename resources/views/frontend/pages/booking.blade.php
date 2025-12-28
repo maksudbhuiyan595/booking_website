@@ -559,19 +559,28 @@
                 selectedDateTime.getDate() === nowBostonDate.getDate()
             );
 
+         // ============================================================
+            // 4. OFFICE HOURS VALIDATION (CURRENT TIME CHECK)
+            // ============================================================
+
+            // ১. চেক করা হচ্ছে ডেট কি আজকের?
             if (isTodayInBoston) {
-                // If today: check 10 PM (22) to 6 AM (6)
-                if (selHour >= 22 || selHour < 6) {
+
+                // ২. এখন ঘড়িতে কয়টা বাজে (Boston Time)?
+                const currentHour = bostonNow.hour;
+
+                // ৩. যদি বর্তমান সময় রাত ১০টা (22) এর বেশি অথবা সকাল ৬টা (6) এর কম হয়
+                if (currentHour >= 22 || currentHour < 6) {
                     Swal.fire({
                         icon: 'warning',
-                        title: 'Service Unavailable Today',
+                        title: 'Online Booking Closed Now',
                         html: `
                             <b>Reservations cannot be processed between 10:00 PM and 6:00 AM.
-                            For urgent or same-day bookings, please contact us at +1 (857) 331-9544</b><br>
+                                For urgent or same-day bookings, please contact us at +1 (857) 331-9544</b>
                         `,
                         confirmButtonColor: '#d33'
                     });
-                    return;
+                    return; // সাবমিট বন্ধ করে দেবে
                 }
             }
 
