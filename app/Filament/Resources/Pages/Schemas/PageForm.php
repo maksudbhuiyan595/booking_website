@@ -69,6 +69,7 @@ class PageForm
                     ->schema([
                         FileUpload::make('cover_image')
                             ->label('Cover Image')
+                            ->disk('public')
                             ->image()
                             ->imageEditor()
                             ->directory('pages/covers')

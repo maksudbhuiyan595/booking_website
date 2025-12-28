@@ -102,6 +102,7 @@ class ManageSettings extends Page
                                     ->schema([
                                         FileUpload::make('site_logo')
                                             ->label('Company Logo')
+                                            ->disk('public')
                                             ->image()
                                             ->imageEditor()
                                             ->directory('settings')

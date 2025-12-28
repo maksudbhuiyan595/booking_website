@@ -102,6 +102,7 @@ class VehicleForm
                                     ->image()
                                     ->imageEditor() // Crop/Resize feature
                                     ->imagePreviewHeight('200')
+                                    ->disk('public')
                                     ->directory('vehicles')
                                     ->columnSpanFull(),
 
