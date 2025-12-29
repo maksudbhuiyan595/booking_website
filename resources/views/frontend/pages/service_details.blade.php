@@ -5,7 +5,9 @@
 
 @section('meta')
     <meta name="description" content="{{ $page->meta_description ?? Str::limit(strip_tags($page->content), 150) }}">
-    <meta name="keywords" content="{{ $page->tags ?? 'taxi service, airport transfer, cab booking' }}">
+
+    {{-- FIX: Check if tags is an array and implode it, otherwise use it directly or fallback --}}
+    <meta name="keywords" content="{{ is_array($page->tags) ? implode(', ', $page->tags) : ($page->tags ?? 'taxi service, airport transfer, cab booking') }}">
 
     {{-- Open Graph / Facebook --}}
     <meta property="og:title" content="{{ $page->meta_title ?? $page->route_name }}">
