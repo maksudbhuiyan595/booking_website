@@ -73,10 +73,10 @@
 
     /* --- CONTENT AREA --- */
     .service-content-wrapper {
-        background: white;
+        /* background: white; */
         padding: 50px;
-        border-radius: 12px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        /* border-radius: 12px; */
+        /* box-shadow: 0 10px 30px rgba(0,0,0,0.08); */
         margin-bottom: 40px;
     }
 
@@ -141,7 +141,7 @@
 
 
 <div class="services-banner">
-    @if(!empty($page->cover_image) && file_exists(public_path('storage/' . $page->cover_image)))
+    @if(!empty($page->cover_image) && file_exists(('storage/' . $page->cover_image)))
         <img src="{{ asset('storage/' . $page->cover_image) }}" alt="{{ $page->route_name }}">
     @else
 
@@ -158,7 +158,7 @@
 
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-lg-10">
+        <div class="col-lg-12">
 
             {{-- 3. MAIN CONTENT (from 'content' column) --}}
             <div class="service-content-wrapper">
@@ -205,10 +205,10 @@
 
             {{-- 5. CTA BUTTON --}}
             <div class="text-center mt-5 mb-5">
-                <h4 class="mb-3 fw-bold">Need a ride for this route?</h4>
-                <a href="{{ route('home', ['service' => $page->route_name]) }}"
-                   class="btn btn-primary btn-lg px-5 py-3 fw-bold shadow rounded-pill">
-                    Book Now: <i class="fas fa-arrow-right ms-2"></i>
+                {{-- <h4 class="mb-3 fw-bold">Need a ride for this route?</h4> --}}
+                <a href="{{ route('home') }}"
+                   class="btn btn-warning btn-lg px-5 py-3 fw-bold shadow rounded-pill">
+                    Book Now
                 </a>
             </div>
 
