@@ -13,19 +13,19 @@ Route::controller(HomeController::class)->group(function () {
     Route::get('/step3', 'step3')->name('step3');
     Route::get('/step4', 'step4')->name('step4');
     Route::get('about/', 'about')->name('about');
-    Route::get('/child-seat', 'childSeat')->name('child.seat');
-    Route::get('/minivan/suv', 'minivan')->name('minivan');
+    Route::get('/taxi-infant-car-seat', 'childSeat')->name('child.seat');
+    Route::get('/minivan-taxi-service', 'minivan')->name('minivan');
     Route::get('/area-we-serve', 'areaWeServe')->name('area.we.serve');
     Route::get('/contact', 'contact')->name('contact');
 
     Route::get('/blogs', 'blogs')->name('blogs');
-    Route::get('/blog-details/{slug}', 'blogDetails')->name('blog.details');
+    Route::get('/{slug}', 'blogDetails')->name('blog.details');
     Route::get('/privacy-policy', 'privacyPolicy')->name('privacy.policy');
     Route::get('/terms&conditions', 'termsConditions')->name('term.conditions');
     Route::get('/payment-policy', 'paymentPolicy')->name('payment.policy');
 
     Route::get('/services', 'areService')->name('area.service');
-    Route::get('/service-details/{slug}', 'serviceDetials')->name('service.details');
+    Route::get('/{slug}', 'serviceDetials')->name('service.details');
     Route::get('/airports', 'airport')->name('airports');
     Route::get('/capacity-luggage', 'capacityLuggage')->name('luggage.capacity');
     Route::get('/setting', 'setting')->name('setting');

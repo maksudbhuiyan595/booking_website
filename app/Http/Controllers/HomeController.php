@@ -6,6 +6,7 @@ use App\Models\Airport;
 use App\Models\BlogPost;
 use App\Models\City;
 use App\Models\ExtraCharge;
+use App\Models\Page;
 use App\Models\Surcharge;
 use App\Models\Vehicle;
 use App\Settings\GeneralSettings;
@@ -41,13 +42,11 @@ class HomeController extends Controller
                             ->orderBy("published_at", "desc")
                             ->take(3)
                             ->get();
-        $cities = City::orderBy('name', 'asc')->paginate(12);
+        $cities = City::where('is_featured',true)->orderBy('name', 'asc')->paginate(12);
         $settings = app(GeneralSettings::class);
         $prefilledData = $request->all();
         return view("frontend.app", compact("blogs", "cities", "settings", "prefilledData"));
     }
-
-
     public function step2(Request $request)
     {
         $settings = app(GeneralSettings::class);
@@ -348,8 +347,12 @@ class HomeController extends Controller
     }
     public function serviceDetials($slug)
     {
-        $city = City::where("slug",$slug)->first();
-        return view("frontend.pages.service_details",compact("city"));
+
+        $page = Page::where('is_active',true)->where("slug",$slug)->first();
+        if(!$page){
+            return back();
+        }
+        return view("frontend.pages.service_details",compact("page"));
     }
     public function contact(Request $request)
     {

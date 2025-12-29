@@ -132,10 +132,9 @@
         <h3 class="services-title">Popular Cities for Car Service in Boston Neighborhood</h3>
 
        <div class="city-grid">
-            @forelse($cities as $city)
-                {{-- Updated Link to use 'service.details' route --}}
-                <a href="{{ route('service.details', $city->slug) }}" class="city-badge" title="{{ $city->name }}">
-                    <i class="fas fa-taxi"></i> {{ Str::limit($city->name, 15, '..') }}
+            @forelse ($cities as $city)
+                <a href="{{ url($city->url) }}" class="city-tag">
+                    <i class="fas fa-taxi"></i> {{ Str::limit($city->name, 40, '..') }}
                 </a>
             @empty
                 <div class="col-12">
