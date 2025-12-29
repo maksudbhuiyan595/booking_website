@@ -163,7 +163,7 @@
                             /// No Comments
                         </div>
 
-                        <a href="{{ route('blog.details', $blog->slug) }}" class="read-more-btn">Read More »</a>
+                        <a href="{{ url( $blog->slug) }}" class="read-more-btn">Read More »</a>
                     </div>
                 </div>
             @empty
