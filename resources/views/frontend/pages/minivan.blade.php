@@ -162,7 +162,7 @@
 
 <div class="hero-banner">
     {{-- Banner Image --}}
-    <img src="{{ asset('images/Taxi Service.webp') }}" alt="Minivan Taxi Service Banner">
+    <img src="{{ asset('images/Toyota sienna 2020 white 1.png') }}" alt="Minivan Taxi Service Banner">
 
     <div class="banner-overlay">
         {{-- Corrected 'Boston Map' to 'Boston MA' --}}

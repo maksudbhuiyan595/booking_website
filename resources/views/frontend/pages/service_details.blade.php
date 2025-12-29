@@ -1,15 +1,28 @@
 @extends('frontend.pages.master')
 
+{{-- 1. SEO SECTION (Meta Title, Description & Tags) --}}
+@section('title', $page->meta_title ?? $page->route_name)
+
+@section('meta')
+    <meta name="description" content="{{ $page->meta_description ?? Str::limit(strip_tags($page->content), 150) }}">
+    <meta name="keywords" content="{{ $page->tags ?? 'taxi service, airport transfer, cab booking' }}">
+
+    {{-- Open Graph / Facebook --}}
+    <meta property="og:title" content="{{ $page->meta_title ?? $page->route_name }}">
+    <meta property="og:description" content="{{ $page->meta_description ?? Str::limit(strip_tags($page->content), 150) }}">
+    <meta property="og:image" content="{{ !empty($page->cover_image) ? asset('storage/' . $page->cover_image) : asset('images/default-taxi.webp') }}">
+@endsection
+
 @section('content')
 
 <style>
-    /* --- GLOBAL & EXISTING STYLES --- */
+    /* --- GLOBAL STYLES --- */
     body {
         font-family: 'Inter', sans-serif;
-        background-color: #f9f9f9 !important; /* Slightly darker bg for contrast */
+        background-color: #f9f9f9 !important;
     }
 
-    /* --- BANNER STYLES --- */
+    /* --- BANNER SECTION --- */
     .services-banner {
         width: 100%;
         margin-bottom: 50px;
@@ -23,7 +36,12 @@
         height: 100%;
         object-fit: cover;
         object-position: center;
-        filter: brightness(0.6); /* Darken image for better text readability */
+        filter: brightness(0.6);
+        transition: transform 0.5s ease;
+    }
+
+    .services-banner:hover img {
+        transform: scale(1.02);
     }
 
     .banner-text-overlay {
@@ -39,105 +57,98 @@
 
     .banner-text-overlay h1 {
         font-weight: 800;
-        font-size: 3rem;
+        font-size: 3.5rem;
         text-transform: uppercase;
-        margin-bottom: 10px;
-        letter-spacing: 1px;
+        margin-bottom: 15px;
+        text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
     }
 
     .banner-text-overlay p {
-        font-size: 1.2rem;
+        font-size: 1.3rem;
         font-weight: 500;
-        opacity: 0.9;
+        text-shadow: 1px 1px 5px rgba(0,0,0,0.5);
     }
 
     /* --- CONTENT AREA --- */
     .service-content-wrapper {
         background: white;
-        padding: 40px;
-        border-radius: 8px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        padding: 50px;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
         margin-bottom: 40px;
     }
 
     .service-body {
-        font-size: 1.1rem;
-        line-height: 1.8;
+        font-size: 1.15rem;
+        line-height: 1.9;
         color: #444;
     }
 
-    /* Fix images inside the content editor */
+    /* Editor Image Responsive */
     .service-body img {
         max-width: 100%;
-        height: auto;
-        border-radius: 5px;
-        margin: 20px 0;
+        height: auto !important;
+        border-radius: 8px;
+        margin: 25px 0;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
-    .service-body h2, .service-body h3 {
-        color: #111;
+    .service-body h2 {
+        color: #222;
         font-weight: 700;
-        margin-top: 30px;
-        margin-bottom: 15px;
+        margin-top: 40px;
+        font-size: 2rem;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 10px;
     }
 
     /* --- FAQ SECTION --- */
     .faq-section {
-        margin-top: 50px;
+        margin-top: 60px;
     }
 
     .faq-title {
-        font-weight: 700;
-        margin-bottom: 25px;
+        font-weight: 800;
+        margin-bottom: 35px;
         color: #111;
         text-align: center;
+        text-transform: uppercase;
     }
 
     .accordion-item {
         border: none;
-        margin-bottom: 10px;
-        border-radius: 8px !important;
+        margin-bottom: 15px;
+        border-radius: 10px !important;
         overflow: hidden;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.03);
-    }
-
-    .accordion-button {
-        font-weight: 600;
-        color: #333;
-        background-color: #fff;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.04);
     }
 
     .accordion-button:not(.collapsed) {
-        color: #0d6efd; /* Bootstrap Primary Blue */
-        background-color: #e7f1ff;
+        color: #0d6efd;
+        background-color: #f0f7ff;
         box-shadow: none;
-    }
-
-    .accordion-button:focus {
-        box-shadow: none;
-        border-color: rgba(0,0,0,.125);
     }
 
     /* Responsive */
     @media (max-width: 768px) {
-        .services-banner { height: 350px; }
+        .services-banner { height: 300px; }
         .banner-text-overlay h1 { font-size: 2rem; }
-        .service-content-wrapper { padding: 20px; }
+        .service-content-wrapper { padding: 25px; }
     }
 </style>
 
-{{-- 1. DYNAMIC BANNER --}}
+
 <div class="services-banner">
-    {{-- Check if city has a specific cover image, otherwise use default --}}
-    @if($city->cover_image)
-        <img src="{{ asset('storage/' . $city->cover_image) }}" alt="Taxi Service in {{ $city->name }}">
+    @if(!empty($page->cover_image) && file_exists(public_path('storage/' . $page->cover_image)))
+        <img src="{{ asset('storage/' . $page->cover_image) }}" alt="{{ $page->route_name }}">
     @else
-        <img src="{{ asset('images/Taxi Service.webp') }}" alt="Default Service Banner">
+
+        <img src="{{ asset('images/Taxi Service.webp') }}" alt="{{ $page->route_name }}">
     @endif
 
     <div class="banner-text-overlay">
-        <h1>Taxi Service in {{ $city->name }}</h1>
-        <p>Reliable & Affordable Airport Transfers</p>
+        <h1>{{ $page->route_name }}</h1>
+        <p>Premium & Reliable Transportation Service</p>
     </div>
 </div>
 
@@ -147,23 +158,22 @@
     <div class="row justify-content-center">
         <div class="col-lg-10">
 
-            {{-- 2. MAIN CONTENT --}}
+            {{-- 3. MAIN CONTENT (from 'content' column) --}}
             <div class="service-content-wrapper">
                 <div class="service-body">
-                    {{-- Render HTML content from database --}}
-                    {!! $city->content !!}
+                    {!! $page->content !!}
                 </div>
             </div>
 
-            {{-- 3. FAQ SECTION (Dynamic JSON Handling) --}}
-            @if($city->faqs)
+            {{-- 4. FAQ SECTION (from 'faqs' json column) --}}
+            @if(!empty($page->faqs))
                 <div class="faq-section">
-                    <h3 class="faq-title">Frequently Asked Questions about {{ $city->name }} Transfer</h3>
+                    <h3 class="faq-title">Frequently Asked Questions</h3>
 
-                    <div class="accordion" id="cityFaqAccordion">
+                    <div class="accordion" id="pageFaqAccordion">
                         @php
-                            // Check if FAQs are already array (casted in model) or string (needs decode)
-                            $faqs = is_string($city->faqs) ? json_decode($city->faqs, true) : $city->faqs;
+                            // JSON Decode
+                            $faqs = is_string($page->faqs) ? json_decode($page->faqs, true) : $page->faqs;
                         @endphp
 
                         @if(is_array($faqs) || is_object($faqs))
@@ -174,14 +184,14 @@
                                                 data-bs-toggle="collapse" data-bs-target="#collapse{{ $index }}"
                                                 aria-expanded="{{ $index == 0 ? 'true' : 'false' }}"
                                                 aria-controls="collapse{{ $index }}">
-                                            {{-- Handle different JSON keys (question/q/title) --}}
+                                            {{-- JSON Key Check --}}
                                             {{ $faq['question'] ?? $faq['title'] ?? 'Question' }}
                                         </button>
                                     </h2>
                                     <div id="collapse{{ $index }}" class="accordion-collapse collapse {{ $index == 0 ? 'show' : '' }}"
-                                         aria-labelledby="heading{{ $index }}" data-bs-parent="#cityFaqAccordion">
+                                         aria-labelledby="heading{{ $index }}" data-bs-parent="#pageFaqAccordion">
                                         <div class="accordion-body">
-                                            {!! $faq['answer'] ?? $faq['description'] ?? 'Answer' !!}
+                                            {!! $faq['answer'] ?? $faq['description'] ?? 'Answer Not Available' !!}
                                         </div>
                                     </div>
                                 </div>
@@ -191,10 +201,12 @@
                 </div>
             @endif
 
-            {{-- 4. CTA BUTTON --}}
-            <div class="text-center mt-5">
-                <a href="{{ route('home') }}" class="btn btn-primary btn-lg px-5 py-3 fw-bold shadow">
-                    Book a Ride to {{ $city->name }}
+            {{-- 5. CTA BUTTON --}}
+            <div class="text-center mt-5 mb-5">
+                <h4 class="mb-3 fw-bold">Need a ride for this route?</h4>
+                <a href="{{ route('home', ['service' => $page->route_name]) }}"
+                   class="btn btn-primary btn-lg px-5 py-3 fw-bold shadow rounded-pill">
+                    Book Now: <i class="fas fa-arrow-right ms-2"></i>
                 </a>
             </div>
 

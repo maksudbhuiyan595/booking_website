@@ -25,7 +25,7 @@
         width: 100%;
         height: 400px;
         /* Updated Background with Blade asset helper */
-        background: url('{{ asset("images/Airport-Taxi-with-Car-Seat.webp") }}') no-repeat center center scroll;
+        background: url('{{ asset("images/Airport Taxi with Child Car Seats.png") }}') no-repeat center center scroll;
         background-size: cover;
         display: flex;
         align-items: flex-end;

@@ -176,12 +176,13 @@
 
             <h3 class="text-center fw-bold mt-5">Popular Cities for Car Service in Boston Neighborhood</h3>
             <div class="city-grid">
-                @foreach ($cities as $city)
-                    <a href="{{ route('service.details', $city->slug) }}" class="city-tag">
-                        <i class="fas fa-taxi"></i> {{ $city->name }}
-                    </a>
-                @endforeach
+                    @foreach ($cities as $city)
+                        <a href="{{ url($city->url) }}" class="city-tag">
+                              <i class="fas fa-taxi"></i> {{ Str::limit($city->name, 15, '..') }}
+                        </a>
+                    @endforeach
             </div>
+
             <div class="text-center mt-4">
                 <a href="{{ route('area.we.serve') }}" class="btn btn-warning fw-bold px-4 shadow">Show More</a>
             </div>
@@ -275,14 +276,14 @@
                                             <img src="{{ asset('images/blog.webp') }}" alt="Default Image">
                                         @endif
                                     </div>
-                                    <a href="{{ route('blog.details', $blog->slug) }}" class="blog-title">
+                                    <a href="{{ url( $blog->slug) }}" class="blog-title">
                                         {{ Str::limit($blog->title, 60) }}
                                     </a>
                                     <div class="blog-meta">
                                         admin /// {{ \Carbon\Carbon::parse($blog->published_at)->format('F d, Y') }}
                                         /// No Comments
                                     </div>
-                                    <a href="{{ route('blog.details', $blog->slug) }}" class="read-more-btn">Read
+                                    <a href="{{ url($blog->slug) }}" class="read-more-btn">Read
                                         More »</a>
                                 </div>
                             </div>
