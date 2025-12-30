@@ -262,6 +262,9 @@
         <input type="hidden" name="fare[extra_luggage_fee]" id="inp_ex_lug_fee" value="{{ $defaultVehicle['extra_luggage_fee'] }}">
         <input type="hidden" name="fare[total]" id="inp_total" value="{{ $defaultVehicle['total_fare'] }}">
 
+        <input type="hidden" name="child_seat" id="inp_total" value="{{ $child_seat }}">
+        <input type="hidden" name="reqPassengers" id="inp_total" value="{{ $reqPassengers }}">
+
         <div id="surcharge_inputs_container">
             @foreach($defaultVehicle['surcharge_details'] ?? [] as $idx => $sd)
                 <input type="hidden" name="surcharge_details[{{ $idx }}][name]" value="{{ $sd['name'] }}">
@@ -286,13 +289,13 @@
                     </div>
                     <div class="v-name">
                         <span id="disp_pax_cap">{{ $defaultVehicle['capacity_passenger'] }}</span> Passenger
-                        <span id="disp_name">{{ $defaultVehicle['name'] }}</span>
+                        <span id="disp_name"> Luxury Vehicle</span>
                         <span id="disp_lug_cap">{{ $defaultVehicle['capacity_luggage'] }}</span> Bags Capacity
                     </div>
                     <div class="v-icons-row">
                         <div class="v-icon-box">
                             <i class="fas fa-user"></i>
-                            <span>{{ ((int)($request['adults'] ?? 0) + (int)($request['children'] ?? 0)) }}<br>Passengers</span>
+                            <span>{{ $reqPassengers ?? 0 }}<br>Passengers</span>
                         </div>
                         <div class="v-icon-box">
                             <i class="fas fa-suitcase"></i>
@@ -300,7 +303,7 @@
                         </div>
                         <div class="v-icon-box">
                             <i class="fas fa-baby"></i>
-                            <span>{{ $request['seats_dummy'] ?? 0 }}<br>Child Seat</span>
+                            <span>{{ $child_seat ?? 0 }}<br>Child Seat</span>
                         </div>
                     </div>
                 </div>
@@ -336,6 +339,7 @@
                     @if($defaultVehicle['dropoff_tax'] > 0) <tr><td>Airport Dropoff Tax</td><td>:</td><td>${{ number_format($defaultVehicle['dropoff_tax'], 2) }}</td></tr> @endif
                     @if($defaultVehicle['parking_fee'] > 0) <tr><td>Parking Fee</td><td>:</td><td>${{ number_format($defaultVehicle['parking_fee'], 2) }}</td></tr> @endif
                     @if($defaultVehicle['stopover_fee'] > 0) <tr><td>Stopover Fee</td><td>:</td><td>${{ number_format($defaultVehicle['stopover_fee'], 2) }}</td></tr> @endif
+                    @if($defaultVehicle['pet_fee'] > 0) <tr><td> Pets Fee</td><td>:</td><td>${{ number_format($defaultVehicle['pet_fee'], 2) }}</td></tr> @endif
                     @if($defaultVehicle['child_seat_fee'] > 0) <tr><td>Infant Seat Fee</td><td>:</td><td>${{ number_format($defaultVehicle['child_seat_fee'], 2) }}</td></tr> @endif
                     @if($defaultVehicle['booster_seat_fee'] > 0) <tr><td>Booster Seat Fee</td><td>:</td><td>${{ number_format($defaultVehicle['booster_seat_fee'], 2) }}</td></tr> @endif
                     @if($defaultVehicle['front_seat_fee'] > 0) <tr><td>Front Seat Fee</td><td>:</td><td>${{ number_format($defaultVehicle['front_seat_fee'], 2) }}</td></tr> @endif
@@ -413,9 +417,9 @@
                             <td>Passengers</td>
                             <td>:</td>
                             <td>
-                                {{ ((int)($request['adults'] ?? 0) + (int)($request['children'] ?? 0)) }}
+                                {{ $reqPassengers ?? 0 }}
                                 <span style="font-size: 0.8rem; color: #666;">
-                                    ({{ $request['adults'] ?? 0 }} Adults + {{ $request['children'] ?? 0 }} Children)
+                                    ({{ $request['adults'] ?? 0 }} Adults + {{ $child_seat ?? 0 }} Children)
                                 </span>
                             </td>
                         </tr>
@@ -459,6 +463,13 @@
                             <td>{{ $request['stopover'] }}</td>
                         </tr>
                         @endif
+                        @if(($request['pets'] ?? 0) > 0)
+                        <tr>
+                            <td>Pets</td>
+                            <td>:</td>
+                            <td>{{ $request['pets'] }}</td>
+                        </tr>
+                        @endif
 
                         <tr><td colspan="3"><hr style="margin: 5px 0; border-color: #131312;"></td></tr>
 
@@ -470,7 +481,7 @@
                         <tr>
                             <td>Vehicle</td>
                             <td>:</td>
-                            <td><span id="sum_name">{{ $defaultVehicle['name'] }}</span></td>
+                            <td><span id="sum_name"> Luxury Vehicle</span></td>
                         </tr>
                         <tr>
                             <td>Max Pax</td>

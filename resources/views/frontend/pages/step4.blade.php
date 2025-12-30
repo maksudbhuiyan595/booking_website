@@ -264,9 +264,49 @@
                             <tr><td>Dropoff</td><td>:</td><td>{{ Str::limit($request->dropoff ?? $request->to_address, 25) }}</td></tr>
                             <tr>
                                 <td>Passengers</td><td>:</td>
-                                <td>{{ ((int)$request->adults + (int)$request->children) }} <span style="font-size:0.75rem; color:#666;">({{ $request->adults }} Ad + {{ $request->children }} Ch)</span></td>
+                                <td>{{ $request->reqPassengers }} <span style="font-size:0.75rem; color:#666;">({{ $request->adults }} Adults + {{ $request->child_seat }} Childen)</span></td>
                             </tr>
                             <tr><td>Luggage</td><td>:</td><td>{{ $request->luggage }} Bags</td></tr>
+
+                        {{-- SEATS & EXTRAS --}}
+                        @if(($request['infant_seat'] ?? 0) > 0)
+                        <tr>
+                            <td>Infant Seat</td>
+                            <td>:</td>
+                            <td>{{ $request['infant_seat'] }}</td>
+                        </tr>
+                        @endif
+
+                        @if(($request['booster_seat'] ?? 0) > 0)
+                        <tr>
+                            <td>Booster Seat</td>
+                            <td>:</td>
+                            <td>{{ $request['booster_seat'] }}</td>
+                        </tr>
+                        @endif
+
+                        @if(($request['front_seat'] ?? 0) > 0)
+                        <tr>
+                            <td>Front Facing</td>
+                            <td>:</td>
+                            <td>{{ $request['front_seat'] }}</td>
+                        </tr>
+                        @endif
+
+                        @if(($request['stopover'] ?? 0) > 0)
+                        <tr>
+                            <td>Stopover</td>
+                            <td>:</td>
+                            <td>{{ $request['stopover'] }}</td>
+                        </tr>
+                        @endif
+                        @if(($request['pets'] ?? 0) > 0)
+                        <tr>
+                            <td>Pets</td>
+                            <td>:</td>
+                            <td>{{ $request['pets'] }}</td>
+                        </tr>
+                        @endif
                         </table>
 
                         {{-- 3. VEHICLE DETAILS --}}
@@ -276,7 +316,7 @@
                         <table class="summary-table mb-3">
                             <tr>
                                 <td>Vehicle</td><td>:</td>
-                                <td style="font-weight:700;">{{ $request->fare['name'] ?? $request->vehicle_display_name }}</td>
+                                <td style="font-weight:700;">Luxury Vehicle </td>
                             </tr>
                             <tr>
                                 <td>Max Pax</td><td>:</td>

@@ -52,6 +52,7 @@ return new class extends Migration
             $table->integer('infant_seat_count')->default(0);
             $table->integer('front_seat_count')->default(0);
             $table->integer('stopover_count')->default(0);
+            $table->integer('pet_count')->default(0);
 
             // --- Billing Info ---
             $table->string('card_holder_name')->nullable();

@@ -18,7 +18,7 @@ class BookingController extends Controller
 {
     public function confirmBooking(Request $request)
     {
-        // 1. Validation
+    //    dd($request->all());
         $request->validate([
             'stripe_token'   => 'required|string',
             'amount_charged' => 'required|numeric|min:1',
@@ -107,8 +107,8 @@ class BookingController extends Controller
 
             // Counts
             $booking->adults           = $request->adults ?? 0;
-            $booking->children         = $request->children ?? 0;
-            $booking->total_passengers = ((int)$request->adults + (int)$request->seats_dummy);
+            $booking->children         = $request->child_seat ?? 0;
+            $booking->total_passengers = $request->reqPassengers;
             $booking->luggage          = $request->luggage ?? 0;
 
             // Extras
@@ -116,6 +116,7 @@ class BookingController extends Controller
             $booking->infant_seat_count  = $request->infant_seat ?? 0;
             $booking->front_seat_count   = $request->front_seat ?? 0;
             $booking->stopover_count     = $request->stopover ?? 0;
+            $booking->pet_count          = $request->pets ?? 0;
 
             // Billing
             $booking->card_holder_name = $request->card_holder_name;

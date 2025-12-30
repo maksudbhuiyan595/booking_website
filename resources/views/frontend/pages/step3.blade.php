@@ -407,15 +407,54 @@
                             <tr>
                                 <td>Passengers</td>
                                 <td>:</td>
-                                <td>{{ (int) $request->adults + (int) $request->seats_dummy }} ({{ $request->adults }}
-                                    Adults + {{ $request->seats_dummy }} Children)</td>
+                                <td>{{ $request->reqPassengers }} ({{ $request->adults }}
+                                    Adults + {{ $request->child_seat}} Children)</td>
                             </tr>
                             <tr>
-                                <td>Luggage</td>
-                                <td>:</td>
-                                <td>{{ $request->luggage }} (4 Bags Free + {{ max(0, (int) $request->luggage - 4) }}
-                                    Extra)</td>
-                            </tr>
+                            <td>Luggage</td>
+                            <td>:</td>
+                            <td>{{ $request['luggage'] ?? 0 }}</td>
+                        </tr>
+
+                        {{-- SEATS & EXTRAS --}}
+                        @if(($request['infant_seat'] ?? 0) > 0)
+                        <tr>
+                            <td>Infant Seat</td>
+                            <td>:</td>
+                            <td>{{ $request['infant_seat'] }}</td>
+                        </tr>
+                        @endif
+
+                        @if(($request['booster_seat'] ?? 0) > 0)
+                        <tr>
+                            <td>Booster Seat</td>
+                            <td>:</td>
+                            <td>{{ $request['booster_seat'] }}</td>
+                        </tr>
+                        @endif
+
+                        @if(($request['front_seat'] ?? 0) > 0)
+                        <tr>
+                            <td>Front Facing</td>
+                            <td>:</td>
+                            <td>{{ $request['front_seat'] }}</td>
+                        </tr>
+                        @endif
+
+                        @if(($request['stopover'] ?? 0) > 0)
+                        <tr>
+                            <td>Stopover</td>
+                            <td>:</td>
+                            <td>{{ $request['stopover'] }}</td>
+                        </tr>
+                        @endif
+                        @if(($request['pets'] ?? 0) > 0)
+                        <tr>
+                            <td>Pets</td>
+                            <td>:</td>
+                            <td>{{ $request['pets'] }}</td>
+                        </tr>
+                        @endif
                         </table>
 
                         <div class="sidebar-header price-section">

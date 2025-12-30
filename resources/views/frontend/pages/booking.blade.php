@@ -120,9 +120,11 @@
                                 <i class="fas fa-plus-circle"></i> Add Stops & Specific Seats
                             </div>
                             <div id="extrasSection">
+
+                                {{-- 1. STOPOVER --}}
                                 <div class="extra-row">
                                     <div class="extra-info">
-                                        <div class="extra-label">Stopover/Pets <span class="extra-price-tag">{{ $settings->stopover_fee ?? 0 }}</span></div>
+                                        <div class="extra-label">Stopover <span class="extra-price-tag">{{ $settings->stopover_fee ?? 0 }}</span></div>
                                     </div>
                                     <div class="d-flex align-items-center">
                                         <select id="stopover" name="stopover" data-price="{{ $settings->stopover_fee ?? 0 }}" class="extra-select-box">
@@ -133,6 +135,23 @@
                                         <div id="stopoverDisplay" class="total-price-display">$0</div>
                                     </div>
                                 </div>
+
+                                {{-- 2. PETS --}}
+                                <div class="extra-row">
+                                    <div class="extra-info">
+                                        <div class="extra-label">Pets <span class="extra-price-tag">{{ $settings->pet_fee ?? $settings->stopover_fee }}</span></div>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <select id="pets" name="pets" data-price="{{ $settings->pet_fee ?? $settings->stopover_fee }}" class="extra-select-box">
+                                            <option value="0">0</option>
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                        </select>
+                                        <div id="petsDisplay" class="total-price-display">$0</div>
+                                    </div>
+                                </div>
+
+                                {{-- 3. INFANT SEAT --}}
                                 <div class="extra-row">
                                     <div class="extra-info">
                                         <div class="extra-label">Infant Seat <span class="extra-price-tag">{{ $settings->child_seat_fee ?? 0 }}</span></div>
@@ -146,6 +165,8 @@
                                         <div id="infantSeatDisplay" class="total-price-display">$0</div>
                                     </div>
                                 </div>
+
+                                {{-- 4. FRONT FACING --}}
                                 <div class="extra-row">
                                     <div class="extra-info">
                                         <div class="extra-label">Front Facing <span class="extra-price-tag">{{ $settings->regular_Seat_rules ?? 0 }}</span></div>
@@ -159,6 +180,8 @@
                                         <div id="frontSeatDisplay" class="total-price-display">$0</div>
                                     </div>
                                 </div>
+
+                                {{-- 5. BOOSTER SEAT --}}
                                 <div class="extra-row">
                                     <div class="extra-info">
                                         <div class="extra-label">Booster Seat <span class="extra-price-tag">{{ $settings->booster_seat_fee ?? 0 }}</span></div>
@@ -186,7 +209,12 @@
                         One stop solutions for Boston Airport Transfer, Logan Ground Transportation, City Rides, Long Distance Car Services from/to Boston, Door to Door transfers and Chauffeured Cars for special occasions.
                     </p>
                     <div class="hero-img-wrapper">
-                        <img src="{{ asset('images/car.jpg') }}" alt="Lexus" class="hero-img">
+                        {{-- DYNAMIC IMAGE --}}
+                        @if(isset($defaultVehicle['image']) && !empty($defaultVehicle['image']))
+                            <img src="{{ asset($defaultVehicle['image']) }}" alt="Vehicle" class="hero-img">
+                        @else
+                            <img src="{{ asset('images/car.jpg') }}" alt="Default Car" class="hero-img">
+                        @endif
                     </div>
                 </div>
             </div>
@@ -198,11 +226,11 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-{{-- INJECT BOSTON TIME FROM SERVER --}}
+{{-- INJECT BOSTON TIME --}}
 <script>
     const bostonNow = {
         year: {{ now()->setTimezone('America/New_York')->year }},
-        month: {{ now()->setTimezone('America/New_York')->month }} - 1, // JS Month (0-11)
+        month: {{ now()->setTimezone('America/New_York')->month }} - 1,
         day: {{ now()->setTimezone('America/New_York')->day }},
         hour: {{ now()->setTimezone('America/New_York')->hour }},
         minute: {{ now()->setTimezone('America/New_York')->minute }}
@@ -218,7 +246,7 @@
 
 <script>
     // ==========================================
-    // 1. UPDATED GOOGLE MAPS LOGIC
+    // 1. GOOGLE MAPS SETUP
     // ==========================================
     let mapInitialized = false;
     let placesLib = null;
@@ -226,7 +254,6 @@
     async function initMap() {
         console.log("Google Maps Loader Triggered");
         try {
-            // New Import Library method to fix Warning
             placesLib = await google.maps.importLibrary("places");
             mapInitialized = true;
             console.log("Places Library Loaded Successfully");
@@ -241,11 +268,9 @@
 
     async function initAutocomplete(id) {
         if (!placesLib) {
-            console.log("Waiting for Maps Library...");
             setTimeout(() => initAutocomplete(id), 500);
             return;
         }
-
         const input = document.getElementById(id);
         if (!input) return;
 
@@ -264,7 +289,7 @@
         console.log("Document ready");
 
         // ==========================================
-        // 2. FLAT PICKER SETUP
+        // 2. FLAT PICKER
         // ==========================================
         flatpickr("#date", {
             minDate: "today",
@@ -275,7 +300,7 @@
         });
 
         // ==========================================
-        // 3. Dynamic Luggage Capacity via AJAX
+        // 3. LUGGAGE CAPACITY
         // ==========================================
         const adultsSelect = document.getElementById('adults');
         const childrenSelect = document.getElementById('children');
@@ -308,7 +333,6 @@
                 },
                 error: function(xhr) {
                     console.error("Luggage Error:", xhr.responseText);
-                    // Fallback
                     let html = '<option value="">Select</option>';
                     for (let i = 0; i <= 12; i++) {
                         let isSelected = (currentSelectedLuggage == i) ? 'selected' : '';
@@ -323,20 +347,19 @@
 
 
         // ==========================================
-        // 4. Trip Type, Airports & Autocomplete Logic
+        // 4. AIRPORTS & AUTOCOMPLETE
         // ==========================================
         const fromLoc = document.getElementById("fromLocation");
         const toLoc = document.getElementById("toLocation");
         let airports = [];
 
-        // LOAD AIRPORTS
         $.ajax({
             url: "/airports",
             type: "GET",
             dataType: "json",
             success: function(data) {
                 if (typeof data === 'string') {
-                    console.error("CRITICAL: Server returned HTML. Check web.php");
+                    console.error("CRITICAL: Server returned HTML.");
                     return;
                 }
                 airports = data;
@@ -412,7 +435,7 @@
 
 
         // ==========================================
-        // 5. Time Setup
+        // 5. TIME SETUP
         // ==========================================
         const timeSelect = document.getElementById("time");
         for (let h = 0; h < 24; h++) {
@@ -426,7 +449,7 @@
         }
 
         // ==========================================
-        // 6. Extras & Pricing Logic
+        // 6. EXTRAS & PRICING
         // ==========================================
         const toggleBtn = document.getElementById("toggleExtrasBtn");
         const section = document.getElementById("extrasSection");
@@ -452,6 +475,7 @@
 
         const items = [
             { id: 'stopover', price: {{ $settings->stopover_fee ?? 0 }} },
+            { id: 'pets', price: {{ $settings->pet_fee ?? 0 }} },
             { id: 'infantSeat', price: {{ $settings->child_seat_fee ?? 0 }} },
             { id: 'frontSeat', price: {{ $settings->regular_Seat_rules ?? 0 }} },
             { id: 'boosterSeat', price: {{ $settings->booster_seat_fee ?? 0 }} }
@@ -479,7 +503,7 @@
         }
 
         // ==========================================
-        // 7. FINAL VALIDATION LOGIC
+        // 7. FINAL VALIDATION
         // ==========================================
         const form = document.getElementById("reservationForm");
 
@@ -503,7 +527,7 @@
                 return;
             }
 
-            // Max Passenger
+            // Max Passenger Check
             const valAdults = parseInt(adultsSelect.value) || 0;
             const valChildren = parseInt(childrenSelect.value) || 0;
             const totalPax = valAdults + valChildren;
@@ -517,23 +541,20 @@
             // FIX: VALIDATION (Child Seats == Infant + Front + Booster)
             // ==========================================
             const requiredSeats = parseInt(childTrigger.value) || 0;
-            const vStopover = parseInt(document.getElementById("stopover").value) || 0;
             const vInfant = parseInt(document.getElementById("infantSeat").value) || 0;
             const vFront = parseInt(document.getElementById("frontSeat").value) || 0;
             const vBooster = parseInt(document.getElementById("boosterSeat").value) || 0;
 
-            // ৪ টির যোগফল
-            const totalSpecificItems = vStopover + vInfant + vFront + vBooster;
+            const totalSpecificItems = vInfant + vFront + vBooster;
 
-            // চেক করা হচ্ছে: মেইন ড্রপডাউনের ভ্যালু == এই ৪ টির যোগফল কি না?
             if (requiredSeats !== totalSpecificItems) {
                  Swal.fire({
                      icon: 'error',
                      title: 'Selection Mismatch',
                      html: `
                         You selected <b>${requiredSeats}</b> in "Child Seats".<br>
-                        But selected total <b>${totalSpecificItems}</b> items below.<br>
-                        (Stopover + Infant + Front + Booster)<br><br>
+                        But selected total <b>${totalSpecificItems}</b> specific seats below.<br>
+                        (Infant + Front + Booster)<br><br>
                         <b>They must be equal.</b>
                      `,
                      confirmButtonColor: '#d33'
@@ -554,19 +575,33 @@
             const [selHour, selMin] = timeVal.split(':').map(Number);
             const selectedDateTime = new Date(selYear, selMonth - 1, selDay, selHour, selMin);
 
-            // 1. Past Date Check
+            // 1. Past Date
             if (selectedDateTime < nowBostonDate) {
                  Swal.fire({ icon: 'error', title: 'Invalid Time', text: 'You cannot select a past date or time.', confirmButtonColor: '#d33' });
                  return;
             }
 
-            // 2. 2-HOUR NOTICE CHECK
+            // 2. Service Hours (CHECKING CURRENT TIME)
+            // Checks if OFFICE is currently closed (10PM - 6AM)
+            const currentHour = bostonNow.hour;
+            if (currentHour >= 22 || currentHour < 6) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Online Booking Closed',
+                    html: `<b>Reservations cannot be processed between 10:00 PM and 6:00 AM.
+                                        For urgent or same-day bookings, please contact us at +1 (857) 331-9544`,
+                    confirmButtonColor: '#d33'
+                });
+                return;
+            }
+
+            // 3. 2-Hour Notice
             const minBookingTime = new Date(nowBostonDate.getTime() + 2 * 60 * 60 * 1000);
             if (selectedDateTime < minBookingTime) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Reservation Time Restriction',
-                    text: 'Reservations must be made at least 2 hours prior to departure.',
+                    text: 'Reservations must be made at least 2 hours prior to departure. For last-minute or urgent bookings, please call +1 (857) 331-9544.',
                     confirmButtonColor: '#d33'
                 });
                 return;
