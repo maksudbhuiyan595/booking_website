@@ -208,27 +208,40 @@
             </tr>
             <tr>
                 <td class="label">Total Passengers:</td>
+               @php
+                    $extraSeats =
+                        ($booking->infant_seat_count ?? 0)
+                    + ($booking->booster_seat_count ?? 0)
+                    + ($booking->front_seat_count ?? 0)
+                    + ($booking->stopover_count ?? 0)
+                    + ($booking->pet_count ?? 0);
+
+                    $totalSeats = ($booking->total_passengers ?? 0) + $extraSeats;
+                @endphp
+
                 <td class="value">
-                    {{ $booking->total_passengers }}
-                    ({{ $booking->adults }} Adults, {{ $booking->children }} Children)
+                    {{ $totalSeats }}
+                    ({{ $booking->adults }} Adults, {{ $booking->children }} Childrens
 
-                    {{-- Infant Seat Check --}}
                     @if ($booking->infant_seat_count > 0)
-                        , Infant Seat: {{ $booking->infant_seat_count }}
+                        , {{ $booking->infant_seat_count }} Infants
                     @endif
 
-                    {{-- Booster Seat Check --}}
                     @if ($booking->booster_seat_count > 0)
-                        , Booster Seat: {{ $booking->booster_seat_count }}
+                        , {{ $booking->booster_seat_count }} Boosters
                     @endif
 
-                    {{-- Front Facing Seat Check --}}
                     @if ($booking->front_seat_count > 0)
-                        , Front Facing Seat: {{ $booking->front_seat_count }}
+                        , {{ $booking->front_seat_count }} Front Facing
                     @endif
-                     @if ($booking->stopover_count > 0)
-                        , Stopover Seat: {{ $booking->stopover_count }}
+
+                    @if ($booking->stopover_count > 0)
+                        ,{{ $booking->stopover_count }} Stopovers
                     @endif
+
+                    @if ($booking->pet_count > 0)
+                        , {{ $booking->pet_count }} Pets
+                    @endif )
                 </td>
             </tr>
             <tr>
@@ -236,7 +249,6 @@
                 <td class="value">{{ $booking->luggage }} Bags</td>
             </tr>
         </table>
-
 
         <table>
             <tr>

@@ -100,6 +100,7 @@ class HomeController extends Controller
             'children'     => 'nullable|integer|min:0',
             'booster_seat' => 'nullable|integer|min:0',
             'stopover'     => 'nullable|integer|min:0',
+            'pets'         => 'nullable|integer|min:0',
             'front_seat'   => 'nullable|integer|min:0',
             'infant_seat'  => 'nullable|integer|min:0',
         ]);
@@ -160,6 +161,7 @@ class HomeController extends Controller
             $childSeatFee   = ($settings->child_seat_fee ?? 0) * ($request->infant_seat ?? 0);
             $boosterSeatFee = ($settings->booster_seat_fee ?? 0) * ($request->booster_seat ?? 0);
             $stopoverFee    = ($settings->stopover_fee ?? 0) * ($request->stopover ?? 0);
+            $petFee    = ($settings->pet_fee ?? $settings->stopover_fee) * ($request->pets ?? 0);
             $frontSeatFee   = ($settings->front_seat_fee ?? 0) * ($request->front_seat ?? 0);
 
             // ZIP Code Logic
@@ -190,7 +192,8 @@ class HomeController extends Controller
             $vehicleOptions = [];
 
             $reqLuggage = (int) ($request->luggage ?? 0);
-            $reqPassengers = (int) ($request->adults ?? 0) + (int) ($request->children ?? 0);
+            $reqPassengers = (int) ($request->adults ?? 0)
+                            + max(0, (int) ($request->children ?? 0) - (int) ($request->seats_dummy ?? 0));
             $gratuityPercent = (float) ($settings->gratuity_percent ?? 0);
 
             // Surcharge Preparation
@@ -247,19 +250,23 @@ class HomeController extends Controller
 
                 // D. Extra Luggage Logic
                 $freeLuggageCapacity = (int) $vehicle->capacity_luggage;
-                $extraLuggageCount =max(0, $request->luggage - ($request->adults + $request->children));
+                $extraLuggageCount =max(0, $request->luggage - ($request->adults + $reqPassengers));
+                $child_seat = max(
+                    0,
+                    (int) ($request->children ?? 0) - (int) ($request->seats_dummy ?? 0)
+                );
                 $extraLuggageFee = $extraLuggageCount * ($settings->luggage_fee ?? 0);
 
                 // E. Final Total
                 $totalFare = $estimatedFare + $gratuityFee + $pickupTax + $dropoffTax + $parkingFee +
-                            $childSeatFee + $boosterSeatFee + $stopoverFee + $frontSeatFee +
+                            $childSeatFee + $boosterSeatFee + $stopoverFee + $frontSeatFee + $petFee +
                             $extraChargeTotal + $tollFeeTotal + $surchargeTotal + $extraLuggageFee;
 
                 // Store Data
                 $vehicleOptions[] = [
                     'vehicle_id'        => $vehicle->id,
                     'name'              => $vehicle->name,
-                    'image'             => $vehicle->image ? asset('storage/' . $vehicle->image) : asset('images/cars11.webp'),
+                    'image'             => $vehicle->image,
                     'capacity_passenger'=> $vehicle->capacity_passenger,
                     'capacity_luggage'  => $vehicle->capacity_luggage,
                     'features'          => $vehicle->features ?? ['Luxury'],
@@ -271,6 +278,7 @@ class HomeController extends Controller
                     'dropoff_tax'       => $dropoffTax,
                     'parking_fee'       => $parkingFee,
                     'stopover_fee'      => $stopoverFee,
+                    'pet_fee'           => $petFee,
                     'child_seat_fee'    => $childSeatFee,
                     'booster_seat_fee'  => $boosterSeatFee,
                     'front_seat_fee'    => $frontSeatFee,
@@ -300,10 +308,12 @@ class HomeController extends Controller
             if (!$defaultVehicle) {
                 $defaultVehicle = $vehicleOptions[0] ?? null;
             }
-
+            // dd($defaultVehicle);
             return view('frontend.pages.step2', [
                 'trip_type' => $request->tripType,
                 'distance_miles' => $distanceMiles,
+                'child_seat' => $child_seat,
+                'reqPassengers' => $reqPassengers,
                 'pickup' => $origin,
                 'dropoff' => $destination,
                 'request' => $request->all(),
@@ -328,6 +338,7 @@ class HomeController extends Controller
     }
     public function step4(Request $request)
     {
+        // dd($request->all());
         return view("frontend.pages.step4",compact("request"));
     }
     public function about(Request $request)
