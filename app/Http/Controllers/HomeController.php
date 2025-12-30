@@ -19,8 +19,8 @@ class HomeController extends Controller
 
     public function airport(Request $request)
     {
-        $airport = Airport::where('is_active',true)->get();
-        return response()->json($airport);
+       $airports = Airport::where('is_active', true)->get();
+        return response()->json($airports);
     }
     public function areService(Request $request)
     {
@@ -29,8 +29,10 @@ class HomeController extends Controller
     }
     public function capacityLuggage(Request $request)
     {
+        $pax = $request->passenger;
         $vehicle = Vehicle::where('is_active', true)
-                        ->where('capacity_passenger', $request->passenger)
+                        ->where('capacity_passenger', '=', $pax)
+                        ->orderBy('capacity_passenger', 'asc')
                         ->select('capacity_luggage')
                         ->first();
         $limit = $vehicle ? $vehicle->capacity_luggage : 12;
@@ -347,7 +349,6 @@ class HomeController extends Controller
     }
     public function serviceDetials($slug)
     {
-
         $page = Page::where('is_active',true)->where("slug",$slug)->first();
         if(!$page){
             return back();

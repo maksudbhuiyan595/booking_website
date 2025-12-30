@@ -8,6 +8,8 @@ Route::get('/sitemap.xml', function () {
     return generate_sitemap_xml();
 });
 Route::controller(HomeController::class)->group(function () {
+    Route::get('/airports', 'airport')->name('airports');
+    Route::get('/capacity-luggage', 'capacityLuggage')->name('luggage.capacity');
     Route::get('/', 'home')->name('home');
     Route::get('/step2', 'step2')->name('step2');
     Route::get('/step3', 'step3')->name('step3');
@@ -26,8 +28,6 @@ Route::controller(HomeController::class)->group(function () {
 
     Route::get('/services', 'areService')->name('area.service');
     Route::get('/{slug}', 'serviceDetials')->name('service.details');
-    Route::get('/airports', 'airport')->name('airports');
-    Route::get('/capacity-luggage', 'capacityLuggage')->name('luggage.capacity');
     Route::get('/setting', 'setting')->name('setting');
 });
 Route::controller(BookingController::class)->group(function () {

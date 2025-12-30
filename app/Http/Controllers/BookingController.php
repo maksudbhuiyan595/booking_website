@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\BlogPost;
 use Illuminate\Http\Request;
 use App\Models\Booking;
 use App\Mail\BookingConfirmationMail;
@@ -189,5 +190,6 @@ class BookingController extends Controller
             ])->withInput();
         }
     }
+
 
 }

@@ -1,20 +1,11 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <style>
-    .hero-section {
-        margin-top: 25px;
-    }
-    .flatpickr-input {
-        background-color: white !important;
-    }
-     #date::placeholder {
-        color: #333;
-        opacity: 1;
-    }
-    /* Simple spin loader for AJAX waits if needed */
-    .loading-spinner {
-        display: none;
-        margin-left: 10px;
-    }
+    .hero-section { margin-top: 25px; }
+    .flatpickr-input { background-color: white !important; }
+    #date::placeholder { color: #333; opacity: 1; }
+    .loading-spinner { display: none; margin-left: 10px; }
+    /* Google Maps Dropdown fix */
+    .pac-container { z-index: 10000 !important; }
 </style>
 
 <section class="hero-section">
@@ -31,23 +22,15 @@
                         <input type="hidden" name="extras_total" id="extrasTotalInput" value="0">
 
                         <div class="row g-1 mb-1">
-                            {{-- DATE FIELD WITH ICON --}}
+                            {{-- DATE FIELD --}}
                             <div class="col-6">
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
-                                    <input
-                                        type="text"
-                                        id="date"
-                                        name="date"
-                                        class="form-control flatpickr-input"
-                                        placeholder="Date"
-                                        readonly="readonly"
-                                        required
-                                    >
+                                    <input type="text" id="date" name="date" class="form-control flatpickr-input" placeholder="Date" readonly="readonly" required>
                                 </div>
                             </div>
 
-                            {{-- TIME FIELD WITH ICON --}}
+                            {{-- TIME FIELD --}}
                             <div class="col-6">
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-clock"></i></span>
@@ -217,17 +200,16 @@
 
 {{-- INJECT BOSTON TIME FROM SERVER --}}
 <script>
-    // Server Side Time (Boston Time) pass to JavaScript
-    // This ensures we validate against Boston time, not the user's browser time
     const bostonNow = {
         year: {{ now()->setTimezone('America/New_York')->year }},
-        month: {{ now()->setTimezone('America/New_York')->month }} - 1, // JS Month is 0-11
+        month: {{ now()->setTimezone('America/New_York')->month }} - 1, // JS Month (0-11)
         day: {{ now()->setTimezone('America/New_York')->day }},
         hour: {{ now()->setTimezone('America/New_York')->hour }},
         minute: {{ now()->setTimezone('America/New_York')->minute }}
     };
 </script>
 
+{{-- GOOGLE MAPS LOADER --}}
 <script
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB8jlhc5ZRDUU1SHHpxuwFh4dM0Ggq4n2Q&libraries=places&loading=async&callback=initMap"
     async
@@ -235,16 +217,47 @@
 </script>
 
 <script>
-    // 1. Google Maps Callback Logic
+    // ==========================================
+    // 1. UPDATED GOOGLE MAPS LOGIC
+    // ==========================================
     let mapInitialized = false;
+    let placesLib = null;
 
-    function initMap() {
-        console.log("Google Maps API Loaded");
-        mapInitialized = true;
-        // Re-trigger trip update to attach autocomplete if needed
-        if(typeof window.updateTrip === 'function') {
-            window.updateTrip();
+    async function initMap() {
+        console.log("Google Maps Loader Triggered");
+        try {
+            // New Import Library method to fix Warning
+            placesLib = await google.maps.importLibrary("places");
+            mapInitialized = true;
+            console.log("Places Library Loaded Successfully");
+
+            if(typeof window.updateTrip === 'function') {
+                window.updateTrip();
+            }
+        } catch (error) {
+            console.error("Google Maps Library Load Error:", error);
         }
+    }
+
+    async function initAutocomplete(id) {
+        if (!placesLib) {
+            console.log("Waiting for Maps Library...");
+            setTimeout(() => initAutocomplete(id), 500);
+            return;
+        }
+
+        const input = document.getElementById(id);
+        if (!input) return;
+
+        const autocomplete = new placesLib.Autocomplete(input, {
+            types: ["geocode"],
+            componentRestrictions: { country: "us" },
+            fields: ["address_components", "geometry", "icon", "name"]
+        });
+
+        input.addEventListener('keydown', function(e) {
+            if (e.key === "Enter") e.preventDefault();
+        });
     }
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -254,9 +267,9 @@
         // 2. FLAT PICKER SETUP
         // ==========================================
         flatpickr("#date", {
-            minDate: "today",       // Can't select past dates (based on local browser)
-            dateFormat: "Y-m-d",    // Format sent to server
-            disableMobile: true,    // CRITICAL: Disables native mobile picker
+            minDate: "today",
+            dateFormat: "Y-m-d",
+            disableMobile: true,
             theme: "light",
             allowInput: true
         });
@@ -268,7 +281,7 @@
         const childrenSelect = document.getElementById('children');
         const luggageSelect = document.getElementById('luggage');
 
-       function updateLuggageOption() {
+        function updateLuggageOption() {
             const valAdults = parseInt(adultsSelect.value) || 0;
             const valChildren = parseInt(childrenSelect.value) || 0;
             const totalPax = valAdults + valChildren;
@@ -282,20 +295,24 @@
                 data: { passenger: totalPax },
                 dataType: "json",
                 success: function(response) {
-                    const maxLuggage = (response && response.capacity_luggage) ? parseInt(response.capacity_luggage) : 12;
-                    let html = '<option value="">Select</option>';
+                    const maxLuggage = (response && response.capacity_luggage !== undefined)
+                                       ? parseInt(response.capacity_luggage)
+                                       : 12;
 
+                    let html = '<option value="">Select</option>';
                     for (let i = 0; i <= maxLuggage; i++) {
                         let isSelected = (currentSelectedLuggage == i) ? 'selected' : '';
                         html += `<option value="${i}" ${isSelected}>${i}</option>`;
                     }
                     luggageSelect.innerHTML = html;
                 },
-                error: function(xhr, status, error) {
+                error: function(xhr) {
+                    console.error("Luggage Error:", xhr.responseText);
+                    // Fallback
                     let html = '<option value="">Select</option>';
                     for (let i = 0; i <= 12; i++) {
-                         let isSelected = (currentSelectedLuggage == i) ? 'selected' : '';
-                         html += `<option value="${i}" ${isSelected}>${i}</option>`;
+                        let isSelected = (currentSelectedLuggage == i) ? 'selected' : '';
+                        html += `<option value="${i}" ${isSelected}>${i}</option>`;
                     }
                     luggageSelect.innerHTML = html;
                 }
@@ -312,23 +329,27 @@
         const toLoc = document.getElementById("toLocation");
         let airports = [];
 
-        // Load airports
+        // LOAD AIRPORTS
         $.ajax({
             url: "/airports",
             type: "GET",
             dataType: "json",
             success: function(data) {
+                if (typeof data === 'string') {
+                    console.error("CRITICAL: Server returned HTML. Check web.php");
+                    return;
+                }
                 airports = data;
-                window.updateTrip(); // Initialize fields
+                window.updateTrip();
             },
-            error: function(xhr, status, error) {
-                console.error("Failed to load airports:", error);
+            error: function(xhr) {
+                console.error("Failed to load airports.");
             }
         });
 
         function buildAirportSelect(name) {
             let html = `<select name="${name}" class="form-select" required><option value="">Select Airport</option>`;
-            const targetAirport = "Boston Logan International Airport"; // Default select
+            const targetAirport = "Boston Logan International Airport";
 
             if(Array.isArray(airports)){
                 airports.forEach(airport => {
@@ -338,22 +359,6 @@
             }
             html += `</select>`;
             return html;
-        }
-
-        function initAutocomplete(id) {
-            if (!mapInitialized || !window.google || !window.google.maps || !window.google.maps.places) {
-                setTimeout(() => initAutocomplete(id), 500);
-                return;
-            }
-            const input = document.getElementById(id);
-            if (!input) return;
-            const autocomplete = new google.maps.places.Autocomplete(input, {
-                types: ["geocode"],
-                componentRestrictions: { country: "us" }
-            });
-            input.addEventListener('keydown', function(e) {
-                if (e.key === "Enter") e.preventDefault();
-            });
         }
 
         window.updateTrip = function() {
@@ -400,9 +405,7 @@
             };
 
             sel.addEventListener("change", updateHiddenAddress);
-            if (sel.value) {
-                updateHiddenAddress();
-            }
+            if (sel.value) updateHiddenAddress();
         }
 
         document.querySelectorAll('input[name="tripType"]').forEach(r => r.addEventListener('change', window.updateTrip));
@@ -476,7 +479,7 @@
         }
 
         // ==========================================
-        // 7. FINAL VALIDATION LOGIC (TIMEZONE AWARE)
+        // 7. FINAL VALIDATION LOGIC
         // ==========================================
         const form = document.getElementById("reservationForm");
 
@@ -500,7 +503,7 @@
                 return;
             }
 
-            // Max Passenger Check
+            // Max Passenger
             const valAdults = parseInt(adultsSelect.value) || 0;
             const valChildren = parseInt(childrenSelect.value) || 0;
             const totalPax = valAdults + valChildren;
@@ -510,95 +513,66 @@
                 return;
             }
 
-            // Extras Count Check
+            // ==========================================
+            // FIX: VALIDATION (Child Seats == Infant + Front + Booster)
+            // ==========================================
             const requiredSeats = parseInt(childTrigger.value) || 0;
             const vStopover = parseInt(document.getElementById("stopover").value) || 0;
             const vInfant = parseInt(document.getElementById("infantSeat").value) || 0;
             const vFront = parseInt(document.getElementById("frontSeat").value) || 0;
             const vBooster = parseInt(document.getElementById("boosterSeat").value) || 0;
-            const totalSelectedExtras = vStopover + vInfant + vFront + vBooster;
 
-            if (requiredSeats > 0 && requiredSeats !== totalSelectedExtras) {
-                 Swal.fire({ icon: 'error', title: 'Selection Mismatch', html: `Selected Child Seats (${requiredSeats}) does not match specific seats below.`, confirmButtonColor: '#d33' });
+            // ৪ টির যোগফল
+            const totalSpecificItems = vStopover + vInfant + vFront + vBooster;
+
+            // চেক করা হচ্ছে: মেইন ড্রপডাউনের ভ্যালু == এই ৪ টির যোগফল কি না?
+            if (requiredSeats !== totalSpecificItems) {
+                 Swal.fire({
+                     icon: 'error',
+                     title: 'Selection Mismatch',
+                     html: `
+                        You selected <b>${requiredSeats}</b> in "Child Seats".<br>
+                        But selected total <b>${totalSpecificItems}</b> items below.<br>
+                        (Stopover + Infant + Front + Booster)<br><br>
+                        <b>They must be equal.</b>
+                     `,
+                     confirmButtonColor: '#d33'
+                 });
                 return;
             }
 
-            // ============================================================
-            // TIME VALIDATION (FIXED FOR BOSTON TIMEZONE)
-            // ============================================================
+            // TIME VALIDATION (BOSTON)
             const dateVal = document.getElementById("date").value;
             const timeVal = document.getElementById("time").value;
 
-            // 1. Create "Now" object based on Server (Boston) Time
             const nowBostonDate = new Date(
-                bostonNow.year,
-                bostonNow.month,
-                bostonNow.day,
-                bostonNow.hour,
-                bostonNow.minute
+                bostonNow.year, bostonNow.month, bostonNow.day,
+                bostonNow.hour, bostonNow.minute
             );
 
-            // 2. Create "Selected" object from inputs
             const [selYear, selMonth, selDay] = dateVal.split('-').map(Number);
             const [selHour, selMin] = timeVal.split(':').map(Number);
-            // JS Date Month is 0-indexed
             const selectedDateTime = new Date(selYear, selMonth - 1, selDay, selHour, selMin);
 
-            // 3. Past Date/Time Check
+            // 1. Past Date Check
             if (selectedDateTime < nowBostonDate) {
                  Swal.fire({ icon: 'error', title: 'Invalid Time', text: 'You cannot select a past date or time.', confirmButtonColor: '#d33' });
                  return;
             }
 
-            // ============================================================
-            // 4. SERVICE HOURS VALIDATION (10PM - 6AM SAME DAY)
-            // ============================================================
-            const isTodayInBoston = (
-                selectedDateTime.getFullYear() === nowBostonDate.getFullYear() &&
-                selectedDateTime.getMonth() === nowBostonDate.getMonth() &&
-                selectedDateTime.getDate() === nowBostonDate.getDate()
-            );
-
-         // ============================================================
-            // 4. OFFICE HOURS VALIDATION (CURRENT TIME CHECK)
-            // ============================================================
-
-            // ১. চেক করা হচ্ছে ডেট কি আজকের?
-            if (isTodayInBoston) {
-
-                // ২. এখন ঘড়িতে কয়টা বাজে (Boston Time)?
-                const currentHour = bostonNow.hour;
-
-                // ৩. যদি বর্তমান সময় রাত ১০টা (22) এর বেশি অথবা সকাল ৬টা (6) এর কম হয়
-                if (currentHour >= 22 || currentHour < 6) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Online Booking Closed Now',
-                        html: `
-                            <b>Reservations cannot be processed between 10:00 PM and 6:00 AM.
-                                For urgent or same-day bookings, please contact us at +1 (857) 331-9544</b>
-                        `,
-                        confirmButtonColor: '#d33'
-                    });
-                    return; // সাবমিট বন্ধ করে দেবে
-                }
-            }
-
-            // ============================================================
-            // 5. 2-Hour Notice Check
-            // ============================================================
+            // 2. 2-HOUR NOTICE CHECK
             const minBookingTime = new Date(nowBostonDate.getTime() + 2 * 60 * 60 * 1000);
             if (selectedDateTime < minBookingTime) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Reservation Time Restriction',
-                    text: 'Reservations must be made at least 2 hours prior to departure. For last-minute bookings call +1 (857) 331-9544',
+                    text: 'Reservations must be made at least 2 hours prior to departure.',
                     confirmButtonColor: '#d33'
                 });
                 return;
             }
 
-            // SUCCESS SUBMIT
+            // SUCCESS
             Swal.fire({
                 title: 'Processing...',
                 text: 'Checking availability',
