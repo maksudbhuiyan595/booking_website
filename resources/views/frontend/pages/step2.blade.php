@@ -274,7 +274,6 @@
             {{-- LEFT: Card --}}
             <div class="col-lg-4">
                 <div class="vehicle-card-dark">
-
                     <div class="v-img-container">
                        <div class="v-img-container">
                         <img src="{{ $defaultVehicle['image'] ?? asset('images/cars11.webp') }}"
