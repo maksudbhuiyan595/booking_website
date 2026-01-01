@@ -252,10 +252,7 @@ class HomeController extends Controller
                 $freeLuggageCapacity = (int) $vehicle->capacity_luggage;
 
                 $extraLuggageCount =max(0, $request->luggage - $reqPassengers);
-                $child_seat = max(
-                    0,
-                    (int) ($request->children ?? 0) - (int) ($request->seats_dummy ?? 0)
-                );
+                $child_seat = ((int) ($request->children ?? 0));
                 $extraLuggageFee = $extraLuggageCount * ($settings->luggage_fee ?? 0);
 
                 // E. Final Total
