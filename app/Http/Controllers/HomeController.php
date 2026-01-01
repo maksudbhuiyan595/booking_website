@@ -193,7 +193,7 @@ class HomeController extends Controller
 
             $reqLuggage = (int) ($request->luggage ?? 0);
             $reqPassengers = (int) ($request->adults ?? 0)
-                            + max(0, (int) ($request->children ?? 0) - (int) ($request->seats_dummy ?? 0));
+                            + ((int) ($request->children ?? 0) );
             $gratuityPercent = (float) ($settings->gratuity_percent ?? 0);
 
             // Surcharge Preparation
