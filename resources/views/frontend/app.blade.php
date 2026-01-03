@@ -276,7 +276,7 @@
                                             <img src="{{ asset('images/blog.webp') }}" alt="Default Image">
                                         @endif
                                     </div>
-                                    <a href="{{ url( $blog->slug) }}" class="blog-title">
+                                    <a href="{{ route( 'blog.details',$blog->slug) }}" class="blog-title">
                                         {{ Str::limit($blog->title, 60) }}
                                     </a>
                                     <div class="blog-meta">

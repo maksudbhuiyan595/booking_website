@@ -23,12 +23,13 @@
     </url>
     @endforeach
 
-    @foreach ($services as $service)
+   @foreach ($services as $service)
+    @if (!empty($service->slug))
     <url>
-        <loc>{{ route('service.details', $service->slug) }}</loc>
-        <lastmod>{{ $service->updated_at->tz('America/New_York')->toAtomString() }}</lastmod>
-        <priority>0.80</priority>
+        <loc>{{ route('service.details', ['slug' => $service->slug]) }}</loc>
+        <lastmod>{{ $service->updated_at->toAtomString() }}</lastmod>
     </url>
-    @endforeach
+    @endif
+@endforeach
 
 </urlset>

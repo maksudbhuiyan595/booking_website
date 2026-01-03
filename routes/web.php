@@ -21,7 +21,7 @@ Route::controller(HomeController::class)->group(function () {
     Route::get('/contact', 'contact')->name('contact');
 
     Route::get('/blogs', 'blogs')->name('blogs');
-    Route::get('/{slug}', 'blogDetails')->name('blog.details');
+    Route::get('blog/{slug}', 'blogDetails')->name('blog.details');
     Route::get('/privacy-policy', 'privacyPolicy')->name('privacy.policy');
     Route::get('/terms&conditions', 'termsConditions')->name('term.conditions');
     Route::get('/payment-policy', 'paymentPolicy')->name('payment.policy');

@@ -341,15 +341,18 @@ class HomeController extends Controller
     }
     public function about(Request $request)
     {
-        return view("frontend.pages.about",compact("request"));
+        $settings = app(GeneralSettings::class);
+        return view("frontend.pages.about",compact("request","settings"));
     }
     public function childSeat(Request $request)
     {
-        return view("frontend.pages.child-seat",compact("request"));
+        $settings = app(GeneralSettings::class);
+        return view("frontend.pages.child-seat",compact("request","settings"));
     }
     public function minivan(Request $request)
     {
-        return view("frontend.pages.minivan",compact("request"));
+        $settings = app(GeneralSettings::class);
+        return view("frontend.pages.minivan",compact("request","settings"));
     }
     public function areaWeServe(Request $request)
     {
@@ -362,7 +365,8 @@ class HomeController extends Controller
         if(!$page){
             return back();
         }
-        return view("frontend.pages.service_details",compact("page"));
+         $settings = app(GeneralSettings::class);
+        return view("frontend.pages.service_details",compact("page","settings"));
     }
     public function contact(Request $request)
     {

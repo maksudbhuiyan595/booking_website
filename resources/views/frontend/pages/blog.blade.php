@@ -153,7 +153,7 @@
                         </div>
 
                         {{-- Link to details page --}}
-                        <a href="{{ url( $blog->slug) }}" class="blog-title">
+                        <a href="{{ route('blog.details', $blog->slug) }}" class="blog-title">
                             {{ $blog->title }}
                         </a>
 

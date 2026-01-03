@@ -174,6 +174,7 @@
 </div>
 
 {{-- Rating Component Included Here --}}
+@include('frontend.pages.booking')
 @include('frontend.pages.rating')
 
 <div class="container">
