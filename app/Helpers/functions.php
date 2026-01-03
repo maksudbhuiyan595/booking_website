@@ -2,6 +2,7 @@
 
 use App\Models\BlogPost;
 use App\Models\City;
+use App\Models\Page;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
 
@@ -22,7 +23,7 @@ if (!function_exists('generate_sitemap_xml')) {
             'area.service'    => '0.80',
         ];
         $blogs = BlogPost::latest()->get();
-        $services = City::all();
+        $services = Page::all();
         return Response::view('sitemap', [
             'staticRouteNames' => $staticRouteNames,
             'blogs'            => $blogs,

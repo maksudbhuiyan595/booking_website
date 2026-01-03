@@ -154,6 +154,7 @@
     </div>
 </div>
 
+@include('frontend.pages.booking')
 @include('frontend.pages.rating')
 
 <div class="container py-5">
