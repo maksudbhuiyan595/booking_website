@@ -78,7 +78,12 @@ class BookingForm
                             ->columnSpanFull()
                             ->hidden(fn(Get $get) => $get('trip_type') === 'toAirport'),
 
-                        TextInput::make('distance')->numeric()->suffix('miles'),
+                        TextInput::make('distance_miles')
+                            ->numeric()
+                            ->suffix('miles')
+                            ->default(0)
+                            ->formatStateUsing(fn($state) => $state == 0 ? null : $state)
+                            ->dehydrateStateUsing(fn($state) => $state ?? 0),
                         TextInput::make('vehicle_type'),
                         TextInput::make('flight_number'),
 
@@ -88,7 +93,10 @@ class BookingForm
 
                 Section::make('Customer Details')
                     ->schema([
-                        TextInput::make('passenger_name')->required(),
+                        TextInput::make('passenger_name')
+                            ->default('Customer')
+                            ->formatStateUsing(fn($state) => $state == 'Customer' ? null : $state)
+                            ->dehydrateStateUsing(fn($state) => $state ?? 'Customer'),
                         TextInput::make('passenger_phone')->required(),
                         TextInput::make('passenger_email')->email()->required(),
                     ])->columns(3)
@@ -97,8 +105,16 @@ class BookingForm
                 Section::make('Payment & Status')
                     ->schema([
                         TextInput::make('total_fare')->prefix('$')->numeric()->required(),
-                        TextInput::make('paid_amount')->prefix('$')->numeric(),
-                        TextInput::make('due_amount')->prefix('$')->numeric(),
+                        TextInput::make('paid_amount')->prefix('$')
+                            ->numeric()
+                            ->default(0)
+                            ->formatStateUsing(fn($state) => $state == 0 ? null : $state)
+                            ->dehydrateStateUsing(fn($state) => $state ?? 0),
+                        TextInput::make('due_amount')->prefix('$')
+                            ->numeric()
+                            ->default(0)
+                            ->formatStateUsing(fn($state) => $state == 0 ? null : $state)
+                            ->dehydrateStateUsing(fn($state) => $state ?? 0),
 
                         Select::make('payment_status')
                             ->options([
