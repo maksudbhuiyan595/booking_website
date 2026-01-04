@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Bookings\Schemas;
 
 use App\Models\Airport;
 use App\Models\Booking;
+use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -48,8 +49,23 @@ class BookingForm
                         DatePicker::make('pickup_date')
                             ->required()
                             ->native(false)
-                            ->minDate(now()),
-                        TimePicker::make('pickup_time')->required(),
+                            ->minDate(now()->timezone(config('app.timezone'))->startOfDay())
+                            ->closeOnDateSelection()
+                            ->live(),
+
+                        TimePicker::make('pickup_time')
+                            ->required()
+                            ->seconds(false)
+                            ->rule(fn (Get $get) => function (string $attribute, $value, \Closure $fail) use ($get) {
+                                $date = $get('pickup_date');
+                                if ($date) {
+                                    $selectedDateTime = Carbon::parse($date . ' ' . $value, config('app.timezone'));
+                                    if ($selectedDateTime->isPast()) {
+                                        $fail('The pickup time cannot be in the past.');
+                                    }
+                                }
+                            })
+                            ->live(),
 
                         Select::make('pickup_address')
                             ->label('Pickup Airport')
