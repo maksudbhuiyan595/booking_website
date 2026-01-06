@@ -44,7 +44,7 @@ class HomeController extends Controller
                             ->orderBy("published_at", "desc")
                             ->take(3)
                             ->get();
-        $cities = City::where('is_featured',true)->orderBy('name', 'asc')->paginate(12);
+        $cities = City::where('is_featured',true)->orderBy('name', 'asc')->get();
         $settings = app(GeneralSettings::class);
         $prefilledData = $request->all();
         return view("frontend.app", compact("blogs", "cities", "settings", "prefilledData"));
@@ -356,7 +356,7 @@ class HomeController extends Controller
     }
     public function areaWeServe(Request $request)
     {
-        $cities = City::orderBy('name', 'asc')->paginate(12);
+        $cities = City::orderBy('name', 'asc')->paginate(48);
         return view("frontend.pages.area-we-serve",compact("cities"));
     }
     public function serviceDetials($slug)
