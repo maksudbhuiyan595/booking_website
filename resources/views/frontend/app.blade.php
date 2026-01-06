@@ -182,14 +182,14 @@
                         </a>
                     @endforeach
             </div>
-            @if ($cities >= 20)
+
                 <div class="text-center mt-4">
                     <a href="{{ route('area.we.serve') }}"
                     class="btn btn-warning fw-bold px-4 shadow">
                         Show More
                     </a>
                 </div>
-            @endif
+           
 
         </div>
     </section>
