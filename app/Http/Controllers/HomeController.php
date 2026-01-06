@@ -44,7 +44,7 @@ class HomeController extends Controller
                             ->orderBy("published_at", "desc")
                             ->take(3)
                             ->get();
-        $cities = City::where('is_featured',true)->orderBy('name', 'asc')->get();
+        $cities = City::where('is_featured',true)->orderBy('name', 'asc')->take(20);
         $settings = app(GeneralSettings::class);
         $prefilledData = $request->all();
         return view("frontend.app", compact("blogs", "cities", "settings", "prefilledData"));
