@@ -167,9 +167,6 @@
     <div class="banner-overlay">
         {{-- Corrected 'Boston Map' to 'Boston MA' --}}
         <h1 class="banner-title">Minivan Taxi Service Near Me | Airport Taxi Van In Boston MA</h1>
-        <a href="tel:+18573319544" class="banner-phone-btn">
-            <i class="fas fa-phone-alt"></i> +1 857-331-9544
-        </a>
     </div>
 </div>
 
