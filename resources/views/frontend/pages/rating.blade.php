@@ -22,7 +22,7 @@
         }
 
         .rating-logo {
-            height: 35px;
+            height: 45px;
         }
 
         .ratings-row {
