@@ -356,7 +356,7 @@ class HomeController extends Controller
     }
     public function areaWeServe(Request $request)
     {
-        $cities = City::orderBy('name', 'asc')->paginate(48);
+        $cities = City::orderBy('name', 'asc')->paginate(30);
         return view("frontend.pages.area-we-serve",compact("cities"));
     }
     public function serviceDetials($slug)
