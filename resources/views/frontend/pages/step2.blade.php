@@ -335,8 +335,8 @@
                     <tr><td>Estimated Fare</td><td>:</td><td>$<span id="tbl_est_fare">{{ number_format($defaultVehicle['estimated_fare'], 2) }}</span></td></tr>
                     <tr><td>Gratuity(20% fee)</td><td>:</td><td>$<span id="tbl_gratuity">{{ number_format($defaultVehicle['gratuity_fee'], 2) }}</span></td></tr>
 
-                    @if($defaultVehicle['pickup_tax'] > 0) <tr><td>Airport Pickup Tax</td><td>:</td><td>${{ number_format($defaultVehicle['pickup_tax'], 2) }}</td></tr> @endif
-                    @if($defaultVehicle['dropoff_tax'] > 0) <tr><td>Airport Dropoff Tax</td><td>:</td><td>${{ number_format($defaultVehicle['dropoff_tax'], 2) }}</td></tr> @endif
+                    @if($defaultVehicle['pickup_tax'] > 0) <tr><td>Airport Pickup Toll</td><td>:</td><td>${{ number_format($defaultVehicle['pickup_tax'], 2) }}</td></tr> @endif
+                    @if($defaultVehicle['dropoff_tax'] > 0) <tr><td>Airport Dropoff Toll</td><td>:</td><td>${{ number_format($defaultVehicle['dropoff_tax'], 2) }}</td></tr> @endif
                     @if($defaultVehicle['parking_fee'] > 0) <tr><td>Parking Fee</td><td>:</td><td>${{ number_format($defaultVehicle['parking_fee'], 2) }}</td></tr> @endif
                     @if($defaultVehicle['stopover_fee'] > 0) <tr><td>Stopover Fee</td><td>:</td><td>${{ number_format($defaultVehicle['stopover_fee'], 2) }}</td></tr> @endif
                     @if($defaultVehicle['pet_fee'] > 0) <tr><td> Pets Fee</td><td>:</td><td>${{ number_format($defaultVehicle['pet_fee'], 2) }}</td></tr> @endif

@@ -154,6 +154,7 @@ class HomeController extends Controller
             // ---------------------------------------------------
             // 5. COMMON FEES CALCULATION
             // ---------------------------------------------------
+
             $pickupTax  = $request->tripType === 'fromAirport' ? ($airport->pickup_tax_fee ?? 0) : 0;
             $dropoffTax = $request->tripType === 'toAirport' ? ($airport->dropoff_tax_fee ?? 0) : 0;
             $parkingFee = ($request->tripType === 'fromAirport' || $request->tripType === 'toAirport') ? ($airport->parking_fee ?? 0) : 0;
@@ -162,7 +163,7 @@ class HomeController extends Controller
             $boosterSeatFee = ($settings->booster_seat_fee ?? 0) * ($request->booster_seat ?? 0);
             $stopoverFee    = ($settings->stopover_fee ?? 0) * ($request->stopover ?? 0);
             $petFee    = ($settings->pet_fee ?? $settings->stopover_fee) * ($request->pets ?? 0);
-            $frontSeatFee   = ($settings->front_seat_fee ?? 0) * ($request->front_seat ?? 0);
+            $frontSeatFee   = ($settings->regular_Seat_rules ?? 0) * ($request->front_seat ?? 0);
 
             // ZIP Code Logic
             $extractZip = function($address) { preg_match('/\b\d{5}\b/', $address, $matches); return $matches[0] ?? null; };
