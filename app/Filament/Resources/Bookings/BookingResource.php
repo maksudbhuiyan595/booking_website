@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Bookings;
 use App\Filament\Resources\Bookings\Pages\CreateBooking;
 use App\Filament\Resources\Bookings\Pages\EditBooking;
 use App\Filament\Resources\Bookings\Pages\ListBookings;
+use App\Filament\Resources\Bookings\Pages\ViewBooking;
 use App\Filament\Resources\Bookings\Schemas\BookingForm;
 use App\Filament\Resources\Bookings\Tables\BookingsTable;
 use App\Models\Booking;
@@ -39,7 +40,7 @@ class BookingResource extends Resource
         ];
     }
 
-    
+
 
     public static function getPages(): array
     {
@@ -47,6 +48,7 @@ class BookingResource extends Resource
             'index' => ListBookings::route('/'),
             'create' => CreateBooking::route('/create'),
             'edit' => EditBooking::route('/{record}/edit'),
+            'view' => ViewBooking::route('/{record}'),
         ];
     }
 }
