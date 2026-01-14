@@ -168,8 +168,13 @@ class BookingController extends Controller
                 Log::error('Mail Error: ' . $e->getMessage());
             }
 
-            return redirect()->route('home')
-                ->with('notify', ['type' => 'success', 'message' => 'Booking Confirmed Successfully!']);
+           return redirect()->route('home', [
+                    'payment' => 'success',
+                    'booking' => $booking->booking_no
+                ])->with('notify', [
+                    'type' => 'success',
+                    'message' => 'Payment successful! Booking confirmed.'
+                ]);
 
         } catch (\Throwable $e) {
             Log::error('Stripe Error: ' . $e->getMessage());
@@ -191,6 +196,5 @@ class BookingController extends Controller
             ])->withInput();
         }
     }
-
 
 }
