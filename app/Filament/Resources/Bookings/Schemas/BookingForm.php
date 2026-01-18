@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Bookings\Schemas;
 use App\Models\Airport;
 use App\Models\Booking;
 use Carbon\Carbon;
+use Dom\Text;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -115,6 +116,9 @@ class BookingForm
                             ->dehydrateStateUsing(fn($state) => $state ?? 'Customer'),
                         TextInput::make('passenger_phone')->required(),
                         TextInput::make('passenger_email')->email()->required(),
+                        TextInput::make('total_passengers')->numeric(),
+                        TextInput::make('children')->numeric(),
+                        TextInput::make('luggage')->numeric(),
                     ])->columns(3)
                     ->columnSpanFull(),
 
