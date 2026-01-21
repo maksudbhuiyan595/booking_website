@@ -197,16 +197,7 @@ class BookingController extends Controller
             // STEP 5: FAILURE & SAFETY NET (REFUND LOGIC)
             // ==================================================
             Log::error('Stripe/System Error: ' . $e->getMessage());
-            if ($paymentIntent) {
-                try {
-                    if ($paymentIntent->status === 'requires_capture') {
-                        $paymentIntent->cancel();
-                        Log::info('Payment auto-canceled due to system error for Booking: ' . $booking->booking_no);
-                    }
-                } catch (\Exception $cancelErr) {
-                    Log::error('Failed to cancel payment: ' . $cancelErr->getMessage());
-                }
-            }
+           
             if($booking) {
                 $booking->status = 'failed';
                 $booking->payment_status = 'failed';
