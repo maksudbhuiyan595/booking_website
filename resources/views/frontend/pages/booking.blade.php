@@ -503,7 +503,7 @@
         }
 
         // ==========================================
-        // 7. FINAL VALIDATION
+        // 7. FINAL VALIDATION (WITH UPDATED LOGIC)
         // ==========================================
         const form = document.getElementById("reservationForm");
 
@@ -537,9 +537,7 @@
                 return;
             }
 
-            // ==========================================
-            // FIX: VALIDATION (Child Seats == Infant + Front + Booster)
-            // ==========================================
+            // Child Seats Validation
             const requiredSeats = parseInt(childTrigger.value) || 0;
             const vInfant = parseInt(document.getElementById("infantSeat").value) || 0;
             const vFront = parseInt(document.getElementById("frontSeat").value) || 0;
@@ -551,18 +549,15 @@
                  Swal.fire({
                      icon: 'error',
                      title: 'Selection Mismatch',
-                     html: `
-                        You selected <b>${requiredSeats}</b> in "Child Seats".<br>
-                        But selected total <b>${totalSpecificItems}</b> specific seats below.<br>
-                        (Infant + Front + Booster)<br><br>
-                        <b>They must be equal.</b>
-                     `,
+                     html: `You selected <b>${requiredSeats}</b> in "Child Seats".<br>But selected total <b>${totalSpecificItems}</b> specific seats.<br><b>They must be equal.</b>`,
                      confirmButtonColor: '#d33'
                  });
                 return;
             }
 
-            // TIME VALIDATION (BOSTON)
+            // ==========================================
+            // LOGIC START: 2-Hour Notice + Night Restriction
+            // ==========================================
             const dateVal = document.getElementById("date").value;
             const timeVal = document.getElementById("time").value;
 
@@ -575,37 +570,60 @@
             const [selHour, selMin] = timeVal.split(':').map(Number);
             const selectedDateTime = new Date(selYear, selMonth - 1, selDay, selHour, selMin);
 
-            // 1. Past Date
+            // 1. Past Date Check (অতীতের সময় সিলেক্ট করা যাবে না)
             if (selectedDateTime < nowBostonDate) {
                  Swal.fire({ icon: 'error', title: 'Invalid Time', text: 'You cannot select a past date or time.', confirmButtonColor: '#d33' });
                  return;
             }
 
-            // 2. Service Hours (CHECKING CURRENT TIME)
-            // Checks if OFFICE is currently closed (10PM - 6AM)
-            const currentHour = bostonNow.hour;
-            if (currentHour >= 22 || currentHour < 6) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Online Booking Closed',
-                    html: `<b>Reservations cannot be processed between 10:00 PM and 6:00 AM.
-                                        For urgent or same-day bookings, please contact us at +1 (857) 331-9544`,
-                    confirmButtonColor: '#d33'
-                });
-                return;
-            }
+            // 2. Universal 2-Hour Notice Check
+            // সব সময়ের জন্য ২ ঘণ্টা নোটিশ বাধ্যতামূলক
+            const minNoticeTime = new Date(nowBostonDate.getTime() + 2 * 60 * 60 * 1000);
 
-            // 3. 2-Hour Notice
-            const minBookingTime = new Date(nowBostonDate.getTime() + 2 * 60 * 60 * 1000);
-            if (selectedDateTime < minBookingTime) {
+            if (selectedDateTime < minNoticeTime) {
                 Swal.fire({
                     icon: 'warning',
-                    title: 'Reservation Time Restriction',
+                    title: 'Short Notice',
                     text: 'Reservations must be made at least 2 hours prior to departure. For last-minute or urgent bookings, please call +1 (857) 331-9544.',
                     confirmButtonColor: '#d33'
                 });
                 return;
             }
+
+            // 3. Night Time Logic (10 PM - 6 AM)
+            // এখন যদি রাত ১০টা থেকে সকাল ৬টার মধ্যে হয়
+            const currentHour = bostonNow.hour;
+
+            if (currentHour >= 22 || currentHour < 6) {
+
+                // সকাল ৬টার সময় বের করা হচ্ছে (যে পর্যন্ত বুকিং নেওয়া যাবে না)
+                let nextMorning = new Date(nowBostonDate);
+
+                if (currentHour >= 22) {
+                    // যদি রাত ১০টার বেশি বাজে, তাহলে "আগামীকাল" সকাল ৬টা
+                    nextMorning.setDate(nextMorning.getDate() + 1);
+                }
+                // যদি রাত ১২টার পর (যেমন রাত ২টা) বাজে, তাহলে "আজ" সকাল ৬টা (তারিখ চেঞ্জ হবে না)
+
+                nextMorning.setHours(6, 0, 0, 0); // সকাল ৬:০০ সেট করা হলো
+
+                // কাস্টমার যদি সকাল ৬টার আগের কোনো সময় সিলেক্ট করে
+                if (selectedDateTime < nextMorning) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Night Service Restricted',
+                        html: `
+                            <b>Reservations cannot be processed between 10:00 PM and 6:00 AM.
+                                        For urgent or same-day bookings, please contact us at +1 (857) 331-9544
+                        `,
+                        confirmButtonColor: '#d33'
+                    });
+                    return;
+                }
+            }
+            // ==========================================
+            // LOGIC END
+            // ==========================================
 
             // SUCCESS
             Swal.fire({
