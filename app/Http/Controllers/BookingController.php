@@ -36,6 +36,7 @@ class BookingController extends Controller
         // ======================================================
         DB::beginTransaction();
         try {
+            
             $lastBooking = Booking::lockForUpdate()->orderBy('id', 'desc')->first();
             $lastNumber = 0;
             if ($lastBooking && preg_match('/BLAT-(\d+)/', $lastBooking->booking_no, $matches)) {
@@ -197,7 +198,7 @@ class BookingController extends Controller
             // STEP 5: FAILURE & SAFETY NET (REFUND LOGIC)
             // ==================================================
             Log::error('Stripe/System Error: ' . $e->getMessage());
-           
+
             if($booking) {
                 $booking->status = 'failed';
                 $booking->payment_status = 'failed';
