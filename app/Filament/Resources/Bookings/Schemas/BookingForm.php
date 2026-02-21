@@ -4,6 +4,8 @@ namespace App\Filament\Resources\Bookings\Schemas;
 
 use App\Models\Airport;
 use App\Models\Booking;
+use Carbon\Carbon;
+use Dom\Text;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -48,8 +50,23 @@ class BookingForm
                         DatePicker::make('pickup_date')
                             ->required()
                             ->native(false)
-                            ->minDate(now()),
-                        TimePicker::make('pickup_time')->required(),
+                            ->minDate(now()->timezone(config('app.timezone'))->startOfDay())
+                            ->closeOnDateSelection()
+                            ->live(),
+
+                        TimePicker::make('pickup_time')
+                            ->required()
+                            ->seconds(false)
+                            ->rule(fn (Get $get) => function (string $attribute, $value, \Closure $fail) use ($get) {
+                                $date = $get('pickup_date');
+                                if ($date) {
+                                    $selectedDateTime = Carbon::parse($date . ' ' . $value, config('app.timezone'));
+                                    if ($selectedDateTime->isPast()) {
+                                        $fail('The pickup time cannot be in the past.');
+                                    }
+                                }
+                            })
+                            ->live(),
 
                         Select::make('pickup_address')
                             ->label('Pickup Airport')
@@ -78,7 +95,12 @@ class BookingForm
                             ->columnSpanFull()
                             ->hidden(fn(Get $get) => $get('trip_type') === 'toAirport'),
 
-                        TextInput::make('distance')->numeric()->suffix('miles'),
+                        TextInput::make('distance_miles')
+                            ->numeric()
+                            ->suffix('miles')
+                            ->default(0)
+                            ->formatStateUsing(fn($state) => $state == 0 ? null : $state)
+                            ->dehydrateStateUsing(fn($state) => $state ?? 0),
                         TextInput::make('vehicle_type'),
                         TextInput::make('flight_number'),
 
@@ -88,17 +110,31 @@ class BookingForm
 
                 Section::make('Customer Details')
                     ->schema([
-                        TextInput::make('passenger_name')->required(),
+                        TextInput::make('passenger_name')
+                            ->default('Customer')
+                            ->formatStateUsing(fn($state) => $state == 'Customer' ? null : $state)
+                            ->dehydrateStateUsing(fn($state) => $state ?? 'Customer'),
                         TextInput::make('passenger_phone')->required(),
                         TextInput::make('passenger_email')->email()->required(),
+                        TextInput::make('total_passengers')->numeric(),
+                        TextInput::make('children')->numeric(),
+                        TextInput::make('luggage')->numeric(),
                     ])->columns(3)
                     ->columnSpanFull(),
 
                 Section::make('Payment & Status')
                     ->schema([
                         TextInput::make('total_fare')->prefix('$')->numeric()->required(),
-                        TextInput::make('paid_amount')->prefix('$')->numeric(),
-                        TextInput::make('due_amount')->prefix('$')->numeric(),
+                        TextInput::make('paid_amount')->prefix('$')
+                            ->numeric()
+                            ->default(0)
+                            ->formatStateUsing(fn($state) => $state == 0 ? null : $state)
+                            ->dehydrateStateUsing(fn($state) => $state ?? 0),
+                        TextInput::make('due_amount')->prefix('$')
+                            ->numeric()
+                            ->default(0)
+                            ->formatStateUsing(fn($state) => $state == 0 ? null : $state)
+                            ->dehydrateStateUsing(fn($state) => $state ?? 0),
 
                         Select::make('payment_status')
                             ->options([
