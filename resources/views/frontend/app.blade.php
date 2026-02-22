@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-site-verification" content="7KCLc8w_vDk2W_R7z-hXAcRRscV47KSUv2V0lislJgQ" />
-    <meta name='title', content="Boston Logan Airport Taxi Cab with Minivan and Child Seat option"/>
-    <meta name="meta_description",content="Boston Logan Airport Taxi is here with 24/7 professional airport transportation with licensed drivers, sanitized vehicles, and flat-rate pricing."/>
+    <meta name="title" content="Boston Logan Airport Taxi Cab with Minivan and Child Seat option"/>
+    <meta name="description" content="Boston Logan Airport Taxi is here with 24/7 professional airport transportation with licensed drivers, sanitized vehicles, and flat-rate pricing."/>
     <meta name='robots' content='index, follow' />
     <!-- Open Graph Meta Tags -->
     <meta property="og:type" content="website">
