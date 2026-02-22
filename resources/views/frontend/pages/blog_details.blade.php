@@ -1,5 +1,56 @@
 @extends('frontend.pages.master')
 
+@section('title', $blog->meta_title)
+@section('meta_description'," $blog->meta_description")
+
+@section('meta')
+<meta name="keywords" content="{{ $blog->tags ?? 'blog, taxi service, Boston' }}">
+@endsection
+
+@section('head')
+<meta property="og:title" content="{{ $blog->meta_title ?? $blog->title }}">
+<meta property="og:description" content="{{ $blog->meta_description ?? Str::limit(strip_tags($blog->content), 150) }}">
+<meta property="og:image" content="{{ $blog->thumbnail ? asset('storage/' . $blog->thumbnail) : asset('images/default-taxi.webp') }}">
+<meta property="og:type" content="article">
+<meta property="og:url" content="{{ url()->current() }}">
+@endsection
+
+ @php
+        $taxiSchema = [
+            "@context" => "https://schema.org",
+            "@type" => ["TaxiService", "LocalBusiness"],
+            "@id" => url()->current() . '/' . "#taxi",
+            "name" => "Boston Logan Airport Taxi",
+            "url" => url()->current() . '/',
+            "image" =>  asset('storage/' . $blog->thumbnail),
+            "telephone" => "+1857-331-9544",
+            "priceRange" => "$$",
+            "address" => [
+                "@type" => "PostalAddress",
+                "streetAddress" => "Boston Logan International Airport",
+                "addressLocality" => "Boston",
+                "addressRegion" => "MA",
+                "postalCode" => "02128",
+                "addressCountry" => "US"
+            ],
+            "areaServed" => [
+                "@type" => "AdministrativeArea",
+                "name" => "Greater Boston Area"
+            ],
+            "serviceType" => "Airport Taxi Service",
+            "openingHoursSpecification" => [
+                "@type" => "OpeningHoursSpecification",
+                "dayOfWeek" => ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+                "opens" => "00:00",
+                "closes" => "23:59"
+            ]
+        ];
+
+    @endphp
+    <script type="application/ld+json">
+        {!! json_encode($taxiSchema, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
+    </script>
+@endsection
 @section('content')
 
 <style>

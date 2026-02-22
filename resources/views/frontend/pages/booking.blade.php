@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <style>
-    .hero-section { margin-top: 25px; }
+    /* .hero-section { margin-top: 25px; } */
     .flatpickr-input { background-color: white !important; }
     #date::placeholder { color: #333; opacity: 1; }
     .loading-spinner { display: none; margin-left: 10px; }
@@ -10,7 +10,11 @@
 
 <section class="hero-section">
     <div class="container">
-        <h1 class="main-title d-flex justify-content-center">Boston Logan Airport Taxi</h1>
+        @if (url()->current() == url('/'))
+            <h1 class="mb-3 text-primary fw-bold d-flex justify-content-center text-center w-100">
+               Boston Logan Airport Taxi
+            </h1>
+        @endif
         <div class="row hero-row">
             <div class="col-lg-5 form-column mb-4 mb-lg-0">
                 <div class="reservation-card" id="floatingCard">

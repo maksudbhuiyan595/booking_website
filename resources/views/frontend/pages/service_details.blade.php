@@ -1,13 +1,15 @@
 @extends('frontend.pages.master')
 @section('title', $page->meta_title ?? $page->route_name)
 @section('meta_description', "$page->meta_description")
-<meta name="keywords"
-    content="{{ is_array($page->tags) ? implode(', ', $page->tags) : ($page->tags ?? 'taxi service, airport transfer, cab booking') }}">
-<meta property="og:title" content="{{ $page->meta_title ?? $page->route_name }}">
-<meta property="og:description" content="{{ $page->meta_description ?? Str::limit(strip_tags($page->content), 150) }}">
-<meta property="og:image"
-    content="{{ !empty($page->cover_image) ? asset('storage/' . $page->cover_image) : asset('images/default-taxi.webp') }}">
+
+@section('meta')
+    <meta name="keywords" content="{{ is_array($page->tags) ? implode(', ', $page->tags) : 'taxi service, airport transfer' }}">
+    <meta property="og:title" content="{{ $page->meta_title }}">
+    <meta property="og:description" content="{{ $page->meta_description }}">
+    <meta property="og:image" content="{{ !empty($page->cover_image) ? asset('storage/' . $page->cover_image) : asset('images/default-taxi.webp') }}">
+@endsection
 @section('schema')
+
     @php
         $taxiSchema = [
             "@context" => "https://schema.org",
