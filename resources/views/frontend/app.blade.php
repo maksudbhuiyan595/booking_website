@@ -39,7 +39,7 @@
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','GTM-W4NMSCF4');</script>
     <!-- End Google Tag Manager -->
-    @php
+    {{-- @php
         $taxiSchema = [
             "@context" => "https://schema.org",
             "@type" => ["TaxiService", "LocalBusiness"],
@@ -72,7 +72,7 @@
     @endphp
     <script type="application/ld+json">
     {!! json_encode($taxiSchema, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT) !!}
-    </script>
+    </script> --}}
     @stack('schema')
     @include('frontend.css.style')
 </head>
