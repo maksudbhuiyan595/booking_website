@@ -24,9 +24,10 @@
                 <div class="col-lg-4 mb-4">
                     <h5 class="footer-title">Contact Information</h5>
                     <ul class="footer-links contact-info">
-                        <li><i class="fas fa-map-marker-alt contact-icon"></i> <div>3 Putnam Gardens Apt 22 Cambridge, MA 02139</div></li>
-                        <li><i class="fas fa-phone-alt contact-icon"></i> <div>+1857-331-9544</div></li>
-                        <li><i class="fas fa-envelope contact-icon"></i> <div>blairporttaxicab@gmail.com</div></li>
+                        <li><i class="fas fa-map-marker-alt contact-icon"></i> <div>{{ $settings->company_address }}</div></li>
+                        <li><i class="fas fa-phone-alt contact-icon"></i> <div>{{ $settings->company_phone }}</div></li>
+                        <li><i class="fas fa-envelope contact-icon"></i> <div>{{ $settings->company_email }}</div></li>
+
                     </ul>
                     <div class="social-icons">
                         <a href="https://www.facebook.com/bostonloganairporttaxi1" class="social-btn"><i class="fab fa-facebook-f"></i></a>
