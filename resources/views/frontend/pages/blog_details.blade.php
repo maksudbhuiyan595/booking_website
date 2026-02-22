@@ -20,6 +20,7 @@
     <meta property="og:url" content="{{ url()->current() }}">
 @endsection
 
+@section("schema")
  @php
         $taxiSchema = [
             "@context" => "https://schema.org",
