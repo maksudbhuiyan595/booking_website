@@ -1,21 +1,23 @@
 @extends('frontend.pages.master')
 
 @section('title', $blog->meta_title)
-@section('meta_description'," $blog->meta_description")
+
+@section('meta_description', $blog->meta_description)
 
 @section('meta')
- @php
-        $keywords = is_array($blog->tags) ? implode(', ', $blog->tags) : ($blog->tags ?? 'blog, taxi service, Boston');
+    @php
+        $keywords = is_array($blog->tags)
+            ? implode(', ', $blog->tags)
+            : ($blog->tags ?? 'blog, taxi service, Boston');
     @endphp
-    <meta name="keywords" content="{{ $keywords }}">
-@endsection
 
-@section('head')
-<meta property="og:title" content="{{ $blog->meta_title ?? $blog->title }}">
-<meta property="og:description" content="{{ $blog->meta_description ?? Str::limit(strip_tags($blog->content), 150) }}">
-<meta property="og:image" content="{{ $blog->thumbnail ? asset('storage/' . $blog->thumbnail) : asset('images/default-taxi.webp') }}">
-<meta property="og:type" content="article">
-<meta property="og:url" content="{{ url()->current() }}">
+    <meta name="keywords" content="{{ $keywords }}">
+
+    <meta property="og:title" content="{{ $blog->meta_title ?? $blog->title }}">
+    <meta property="og:description" content="{{ $blog->meta_description ?? Str::limit(strip_tags($blog->content), 150) }}">
+    <meta property="og:image" content="{{ $blog->thumbnail ? asset('storage/' . $blog->thumbnail) : asset('images/default-taxi.webp') }}">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="{{ url()->current() }}">
 @endsection
 
  @php
