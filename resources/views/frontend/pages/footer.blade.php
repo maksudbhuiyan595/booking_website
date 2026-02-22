@@ -30,7 +30,7 @@
                     </ul>
                     <div class="social-icons">
                         <a href="https://www.facebook.com/bostonloganairporttaxi1" class="social-btn"><i class="fab fa-facebook-f"></i></a>
-                        <a href="https://x.com/blairporttaxi" class="social-btn"><i class="fab fa-x-twitter"></i></a>
+                        {{-- <a href="https://x.com/blairporttaxi" class="social-btn"><i class="fab fa-x-twitter"></i></a> --}}
                         <a href="https://www.instagram.com/bostonloganairporttaxi/" class="social-btn"><i class="fab fa-instagram"></i></a>
                         <a href="https://www.pinterest.com/blairporttaxi/" class="social-btn"><i class="fab fa-pinterest-p"></i></a>
                     </div>

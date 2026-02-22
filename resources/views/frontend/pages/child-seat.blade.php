@@ -13,7 +13,7 @@
                 "@id" =>url()->current() .'/' . "#taxi",
                 "name" => "Boston Logan Airport Taxi",
                 "url" => url()->current() .'/',
-                "image" => asset('images/Airport Taxi with Child Car Seats.png'),
+                "logo" => asset('images/Airport Taxi with Child Car Seats.png'),
                 "telephone" => "+1857-331-9544",
                 "priceRange" => "$$",
                 "address" => [

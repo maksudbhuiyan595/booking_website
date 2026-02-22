@@ -1,401 +1,530 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google-site-verification" content="7KCLc8w_vDk2W_R7z-hXAcRRscV47KSUv2V0lislJgQ" />
-    <meta name="title" content="Boston Logan Airport Taxi Cab with Minivan and Child Seat option"/>
-    <meta name="description" content="Boston Logan Airport Taxi is here with 24/7 professional airport transportation with licensed drivers, sanitized vehicles, and flat-rate pricing."/>
-    <meta name='robots' content='index, follow' />
-    <!-- Open Graph Meta Tags -->
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Boston Logan Airport Taxi Cab with Minivan and Child Seat Option">
-    <meta property="og:description" content="Boston Logan Airport Taxi offers 24/7 professional airport transportation with licensed drivers, sanitized vehicles, child seats, and flat-rate pricing.">
-    <meta property="og:url" content="{{ url()->current() . '/'}}">
-    <meta property="og:image" content="{{ asset('images/logo.png') }}">
-    <meta property="og:site_name" content="Boston Logan Airport Taxi">
-    <!-- Facebook -->
-    <meta property="og:see_also" content="https://www.facebook.com/bostonloganairporttaxi1">
-    <!-- Twitter (X) Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Boston Logan Airport Taxi - 24/7 Airport Transportation">
-    <meta name="twitter:description" content="Reliable and professional airport taxi service in Boston with child seat option and flat rates.">
-    <meta name="twitter:image" content="{{ asset('images/logo.png') }}">
-    <meta name="twitter:site" content="@blairporttaxi">
-    <!-- Pinterest Verification (Optional if needed) -->
-    <meta name="pinterest" content="https://www.pinterest.com/blairporttaxi/">
+@extends('frontend.pages.master')
+@section('content')
+@section('title', "Boston Logan Airport Taxi Cab with Minivan and Child Seat option")
+@section('meta_description', "Boston Logan Airport Taxi is here with 24/7 professional airport transportation with licensed drivers, sanitized vehicles, and flat-rate pricing.")
+    @section('schema')
+        @php
+            $taxiSchema = [
+                "@context" => "https://schema.org",
+                "@type" => ["TaxiService", "LocalBusiness"],
+                "@id" => url()->current() . '/' . "#taxi",
+                "name" => "Boston Logan Airport Taxi",
+                "url" => url()->current() . '/',
+                "logo" => asset('images/logo.png'),
+                "telephone" => "+1857-331-9544",
+                "priceRange" => "$$",
+                "address" => [
+                    "@type" => "PostalAddress",
+                    "streetAddress" => "Boston Logan International Airport",
+                    "addressLocality" => "Boston",
+                    "addressRegion" => "MA",
+                    "postalCode" => "02128",
+                    "addressCountry" => "US"
+                ],
+                "areaServed" => [
+                    "@type" => "AdministrativeArea",
+                    "name" => "Greater Boston Area"
+                ],
+                "serviceType" => "Airport Taxi Service",
+                "openingHoursSpecification" => [
+                    "@type" => "OpeningHoursSpecification",
+                    "dayOfWeek" => ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+                    "opens" => "00:00",
+                    "closes" => "23:59"
+                ]
+            ];
+        @endphp
+        <script type="application/ld+json">
+            {!! json_encode($taxiSchema, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
+         </script>
+    @endsection
+    <style>
+        /* --- PAGE STYLES --- */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff !important;
+            color: #333;
+        }
 
-    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
-    <link rel="canonical" href="{{ rtrim(request()->url(), '/') . '/' }}">
-    <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,400&display=swap"
-        rel="stylesheet">
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-W4NMSCF4');</script>
-    <!-- End Google Tag Manager -->
-    {{-- @php
-        $taxiSchema = [
-            "@context" => "https://schema.org",
-            "@type" => ["TaxiService", "LocalBusiness"],
-            "@id" => route('home') . "#taxi",
-            "name" => "Boston Logan Airport Taxi",
-            "url" => route('home'),
-            "logo" => asset('images/logo.png'),
-            "telephone" => "+1857-331-9544",
-            "priceRange" => "$$",
-            "address" => [
-                "@type" => "PostalAddress",
-                "streetAddress" => "Boston Logan International Airport",
-                "addressLocality" => "Boston",
-                "addressRegion" => "MA",
-                "postalCode" => "02128",
-                "addressCountry" => "US"
-            ],
-            "areaServed" => [
-                "@type" => "AdministrativeArea",
-                "name" => "Greater Boston Area"
-            ],
-            "serviceType" => "Airport Taxi Service",
-            "openingHoursSpecification" => [
-                "@type" => "OpeningHoursSpecification",
-                "dayOfWeek" => ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
-                "opens" => "00:00",
-                "closes" => "23:59"
-            ]
-        ];
-    @endphp
-    <script type="application/ld+json">
-    {!! json_encode($taxiSchema, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT) !!}
-    </script> --}}
-    @stack('schema')
-    @include('frontend.css.style')
-</head>
-<body>
-    <div id="validationPopup" class="custom-popup">
-        <div class="popup-icon"><i class="fas fa-exclamation-circle"></i></div>
-        <div class="popup-message" id="popupText">Message goes here</div>
-    </div>
-    @include('frontend.pages.nav')
-    @include('frontend.pages.booking')
-    @include('frontend.pages.rating')
-    <section class="content-section bg-light">
-        <div class="container">
-            <div class="row mb-4">
-                <div class="col-12">
-                    <p>Planning a trip to or from Logan International Airport? You deserve a clean, safe, and reliable
-                        ride, and that’s precisely what we provide. <strong>Boston Logan Airport Taxi</strong> is here
-                        with 24/7 professional airport transportation with licensed drivers, sanitized vehicles, and
-                        flat-rate pricing. Whether you are on a business trip, on vacation with your family, or need a
-                        hassle-free airport pickup, we’ve created our service to suit your comfort and peace of mind. We
-                        service all towns in Boston and guarantee on-time pickup every time. Just let us manage your
-                        ride so you can focus on your flight and relaxation.</p>
+        /* --- HERO BANNER STYLES --- */
+        .hero-banner {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            /* Banner Height */
+            overflow: hidden;
+            margin-bottom: 50px;
+        }
+
+        .hero-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        .banner-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            /* Dark overlay for text readability */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .banner-title {
+            color: #ffffff;
+            font-size: 3.5rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 25px;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+        }
+
+        .banner-phone-btn {
+            background-color: #fbbf24;
+            /* Taxi Yellow */
+            color: black;
+            font-size: 1.5rem;
+            font-weight: 700;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            transition: transform 0.3s, background-color 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .banner-phone-btn:hover {
+            background-color: #f59e0b;
+            transform: scale(1.05);
+            color: black;
+        }
+
+        .banner-phone-btn i {
+            margin-right: 10px;
+        }
+
+        /* --- CONTENT STYLES --- */
+        .service-page-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 15px 40px 15px;
+        }
+
+        .section-title {
+            color: #111;
+            font-weight: 700;
+            font-size: 28px;
+            margin-bottom: 20px;
+            line-height: 1.3;
+        }
+
+        .section-text {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .section-text strong {
+            color: #000;
+            font-weight: 700;
+        }
+
+        .section-text a {
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding-left: 10px;
+        }
+
+        .feature-list li {
+            position: relative;
+            padding-left: 20px;
+            margin-bottom: 8px;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .feature-list li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: #000;
+            font-weight: bold;
+        }
+
+        .content-img {
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+            object-fit: cover;
+            max-height: 350px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .cta-box {
+            background-color: #f0f9ff;
+            border-left: 5px solid #3b82f6;
+            padding: 20px;
+            margin-top: 30px;
+            border-radius: 4px;
+        }
+
+        /* Spacing between sections */
+        .content-row {
+            margin-bottom: 50px;
+            align-items: flex-start;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .banner-title {
+                font-size: 2.2rem;
+            }
+
+            .banner-phone-btn {
+                font-size: 1.2rem;
+                padding: 12px 30px;
+            }
+
+            .hero-banner {
+                height: 400px;
+            }
+        }
+    </style>
+    <body>
+        <div id="validationPopup" class="custom-popup">
+            <div class="popup-icon"><i class="fas fa-exclamation-circle"></i></div>
+            <div class="popup-message" id="popupText">Message goes here</div>
+        </div>
+        @include('frontend.pages.booking')
+        @include('frontend.pages.rating')
+        <section class="content-section bg-light">
+            <div class="container">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <p>Planning a trip to or from Logan International Airport? You deserve a clean, safe, and reliable
+                            ride, and that’s precisely what we provide. <strong>Boston Logan Airport Taxi</strong> is here
+                            with 24/7 professional airport transportation with licensed drivers, sanitized vehicles, and
+                            flat-rate pricing. Whether you are on a business trip, on vacation with your family, or need a
+                            hassle-free airport pickup, we’ve created our service to suit your comfort and peace of mind. We
+                            service all towns in Boston and guarantee on-time pickup every time. Just let us manage your
+                            ride so you can focus on your flight and relaxation.</p>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-lg-6">
+                        <img src="{{ asset('images/Boston Logaqn Aorport Taxi Service.webp') }}" alt="White Van"
+                            class="img-fluid rounded mb-3 w-100 service-img">
+                        <h3 class="section-title h4">Safe and Trusted Logan Airport Taxi Service Across Greater Boston</h3>
+                        <p>We prioritize your well-being and safety. So, after every ride, we clean and disinfect every car.
+                            We clean door handles and seat belts, sanitize the seats and floor, and make every effort to
+                            keep anything that may affect both you and your loved ones clean. We keep both our drivers
+                            clean, but our cars also feel fresh and enjoyable for today’s discerning passenger on every
+                            ride. Your safety and well-being will never be overshadowed by entrepreneurship as you travel
+                            for any reason in and around Greater Boston.</p>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <h3 class="section-title h4">Why Choose Boston Logan Airport Taxi?</h3>
+                        <ul class="why-choose-list">
+                            <li>Flat-Rate, No-Surge Pricing</li>
+                            <li>Vehicles Cleaned & Sanitized after Every Ride</li>
+                            <li><a href="{{ route('child.seat') }}" style="color:var(--btn-green); font-weight:bold;">Child
+                                    Seats</a> Available</li>
+                            <li>Available 24/7, Including on Holidays</li>
+                            <li>Licensed, Background-Checked Drivers</li>
+                            <li>Long-Distance & Event Rides Available</li>
+                            <li>Live Flight Tracking & Real-Time Adjustments</li>
+                        </ul>
+                        <div class="mt-4 position-relative">
+                            <img src="{{ asset('images/Sanitized Vehicles.webp') }}" alt="Sanitizing"
+                                class="img-fluid rounded w-100 service-img">
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            <div class="row g-4">
-                <div class="col-lg-6">
-                    <img src="{{ asset('images/Boston Logaqn Aorport Taxi Service.webp') }}" alt="White Van"
-                        class="img-fluid rounded mb-3 w-100 service-img">
-                    <h3 class="section-title h4">Safe and Trusted Logan Airport Taxi Service Across Greater Boston</h3>
-                    <p>We prioritize your well-being and safety. So, after every ride, we clean and disinfect every car.
-                        We clean door handles and seat belts, sanitize the seats and floor, and make every effort to
-                        keep anything that may affect both you and your loved ones clean. We keep both our drivers
-                        clean, but our cars also feel fresh and enjoyable for today’s discerning passenger on every
-                        ride. Your safety and well-being will never be overshadowed by entrepreneurship as you travel
-                        for any reason in and around Greater Boston.</p>
+        </section>
+        {{-- Services Info Section --}}
+        <section class="content-section">
+            <div class="container">
+                <div class="row align-items-center mb-5">
+                    <div class="col-lg-4 mb-4 mb-lg-0">
+                        <h3 class="section-title">CHILDREN'S SEATING CAPABILITIES</h3>
+                        <p>Safety comes first, especially with our littlest rides. We offer properly installed infant,
+                            toddler, and booster seats, upon request, so your child’s safety can be ensured. Just tell us
+                            what you need when booking, and we will take care of the rest to ensure all your family can ride
+                            together.</p>
+                    </div>
+                    <div class="col-lg-4 mb-4 mb-lg-0 text-center">
+                        <img src="{{ asset('images/Child Seat.webp') }}" alt="Child Seat"
+                            class="img-fluid rounded service-img">
+                    </div>
+                    <div class="col-lg-4">
+                        <h3 class="section-title">TRAVEL WITH FAMILY OR LUGGAGE</h3>
+                        <p>Additional bags, or are you with elderly parents, or traveling with a group? Our spacious sedans
+                            and vans make traveling with a group of colleagues, family members, etc, comfortable and
+                            convenient. You’ll enjoy the ride, whether your destination is near or far, with door-to-door
+                            service, friendly drivers, and in our spacious, cruise-worthy vehicles.</p>
+                    </div>
                 </div>
 
-                <div class="col-lg-6">
-                    <h3 class="section-title h4">Why Choose Boston Logan Airport Taxi?</h3>
-                    <ul class="why-choose-list">
-                        <li>Flat-Rate, No-Surge Pricing</li>
-                        <li>Vehicles Cleaned & Sanitized after Every Ride</li>
-                        <li><a href="{{ route('child.seat') }}" style="color:var(--btn-green); font-weight:bold;">Child
-                                Seats</a> Available</li>
-                        <li>Available 24/7, Including on Holidays</li>
-                        <li>Licensed, Background-Checked Drivers</li>
-                        <li>Long-Distance & Event Rides Available</li>
-                        <li>Live Flight Tracking & Real-Time Adjustments</li>
-                    </ul>
-                    <div class="mt-4 position-relative">
-                        <img src="{{ asset('images/Sanitized Vehicles.webp') }}" alt="Sanitizing"
+                <div class="row align-items-center mb-5">
+                    <div class="col-lg-6 mb-4 mb-lg-0">
+                        <h3 class="section-title">Reliable Airport Service</h3>
+                        <p>We’re the go-to transportation service for prompt trips to and from Logan Airport, offering
+                            service to neighborhoods and towns such as <a href="#"
+                                style="color:var(--btn-green);">Boston</a>, Cambridge, Somerville, <a href="#"
+                                style="color:var(--btn-green);">Hanscom AFB</a>, Lexington, Waltham, Brookline, Burlington,
+                            Belmont, Arlington, Haverhill, Worcester, Methuen, Nashua, and many more. Our professional
+                            drivers are only a stone’s throw away, regardless of where you are. We monitor all flight delays
+                            in real-time, and your driver will be waiting for you on arrival at no extra cost. We promise
+                            one thing: on time, every time.</p>
+                    </div>
+                    <div class="col-lg-6">
+                        <img src="{{ asset('images/Boston Logan Airport.webp') }}" alt="Airport"
                             class="img-fluid rounded w-100 service-img">
                     </div>
                 </div>
-            </div>
-        </div>
-    </section>
 
-    {{-- Services Info Section --}}
-    <section class="content-section">
-        <div class="container">
-            <div class="row align-items-center mb-5">
-                <div class="col-lg-4 mb-4 mb-lg-0">
-                    <h3 class="section-title">CHILDREN'S SEATING CAPABILITIES</h3>
-                    <p>Safety comes first, especially with our littlest rides. We offer properly installed infant,
-                        toddler, and booster seats, upon request, so your child’s safety can be ensured. Just tell us
-                        what you need when booking, and we will take care of the rest to ensure all your family can ride
-                        together.</p>
-                </div>
-                <div class="col-lg-4 mb-4 mb-lg-0 text-center">
-                    <img src="{{ asset('images/Child Seat.webp') }}" alt="Child Seat"
-                        class="img-fluid rounded service-img">
-                </div>
-                <div class="col-lg-4">
-                    <h3 class="section-title">TRAVEL WITH FAMILY OR LUGGAGE</h3>
-                    <p>Additional bags, or are you with elderly parents, or traveling with a group? Our spacious sedans
-                        and vans make traveling with a group of colleagues, family members, etc, comfortable and
-                        convenient. You’ll enjoy the ride, whether your destination is near or far, with door-to-door
-                        service, friendly drivers, and in our spacious, cruise-worthy vehicles.</p>
-                </div>
-            </div>
-
-            <div class="row align-items-center mb-5">
-                <div class="col-lg-6 mb-4 mb-lg-0">
-                    <h3 class="section-title">Reliable Airport Service</h3>
-                    <p>We’re the go-to transportation service for prompt trips to and from Logan Airport, offering
-                        service to neighborhoods and towns such as <a href="#"
-                            style="color:var(--btn-green);">Boston</a>, Cambridge, Somerville, <a href="#"
-                            style="color:var(--btn-green);">Hanscom AFB</a>, Lexington, Waltham, Brookline, Burlington,
-                        Belmont, Arlington, Haverhill, Worcester, Methuen, Nashua, and many more. Our professional
-                        drivers are only a stone’s throw away, regardless of where you are. We monitor all flight delays
-                        in real-time, and your driver will be waiting for you on arrival at no extra cost. We promise
-                        one thing: on time, every time.</p>
-                </div>
-                <div class="col-lg-6">
-                    <img src="{{ asset('images/Boston Logan Airport.webp') }}" alt="Airport"
-                        class="img-fluid rounded w-100 service-img">
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-12">
-                    <h3 class="section-title">Long-Distance & Special Event Transfers</h3>
-                    <p>Need a ride beyond Boston? We have long-distance trips to <a href="#"
-                            style="color:var(--btn-green);">Cape Cod</a>, New York, New Hampshire, Yarmouth MA, and
-                        others. Whether it’s business travel, weddings, or events, our dependable service ensures
-                        comfort, promptness, and peace of mind. Leave the driving to us, and let us worry about
-                        directions.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    {{-- Testimonials Section --}}
-    <section class="content-section bg-light">
-        <div class="container">
-            <h2 class="text-center mb-5 fw-bold">Here's What Our Customers Say...</h2>
-            <div class="row g-4 mb-5">
-                <div class="col-md-4">
-                    <div class="testimonial-box">
-                        <p class="testimonial-text">"Reliable and clean taxi service. Got to Logan Airport with plenty
-                            of time to spare. Very professional driver. Highly recommend!"</p>
-                        <div class="customer-name">Jessica Morgan</div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="testimonial-box">
-                        <p class="testimonial-text">"Smooth ride with the car seat set the right way. The vehicle was
-                            spotless. Great service. I'll book again!"</p>
-                        <div class="customer-name">Graham Bronson</div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="testimonial-box">
-                        <p class="testimonial-text">"The driver was very polite and helped with our luggage, and the
-                            reservation was quite simple. Five stars from me."</p>
-                        <div class="customer-name">Liam O'Connor</div>
+                <div class="row">
+                    <div class="col-12">
+                        <h3 class="section-title">Long-Distance & Special Event Transfers</h3>
+                        <p>Need a ride beyond Boston? We have long-distance trips to <a href="#"
+                                style="color:var(--btn-green);">Cape Cod</a>, New York, New Hampshire, Yarmouth MA, and
+                            others. Whether it’s business travel, weddings, or events, our dependable service ensures
+                            comfort, promptness, and peace of mind. Leave the driving to us, and let us worry about
+                            directions.</p>
                     </div>
                 </div>
             </div>
-
-            <div class="row mb-5">
-                <div class="col-12 text-center">
-                    <h3 class="fw-bold">Book Your Ride with Confidence</h3>
-                    <p class="w-75 mx-auto">Whether you are booking ahead or need a ride at this time, <strong>Boston
-                            Logan Airport Taxi</strong> is ready for you! Booking is quick and easy, either give us a
-                        call or fill in our short reservation form. One of our employees will verify your booking,
-                        allocate a clean and modern car for your transfer, and guarantee a punctual driver. There is
-                        never any reason why traveling should be difficult, and with us, it isn’t. Book your ride today!
-                    </p>
+        </section>
+        {{-- Testimonials Section --}}
+        <section class="content-section bg-light">
+            <div class="container">
+                <h2 class="text-center mb-5 fw-bold">Here's What Our Customers Say...</h2>
+                <div class="row g-4 mb-5">
+                    <div class="col-md-4">
+                        <div class="testimonial-box">
+                            <p class="testimonial-text">"Reliable and clean taxi service. Got to Logan Airport with plenty
+                                of time to spare. Very professional driver. Highly recommend!"</p>
+                            <div class="customer-name">Jessica Morgan</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="testimonial-box">
+                            <p class="testimonial-text">"Smooth ride with the car seat set the right way. The vehicle was
+                                spotless. Great service. I'll book again!"</p>
+                            <div class="customer-name">Graham Bronson</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="testimonial-box">
+                            <p class="testimonial-text">"The driver was very polite and helped with our luggage, and the
+                                reservation was quite simple. Five stars from me."</p>
+                            <div class="customer-name">Liam O'Connor</div>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            <h3 class="text-center fw-bold mt-5">Popular Cities for Car Service in Boston Neighborhood</h3>
-            <div class="city-grid">
+                <div class="row mb-5">
+                    <div class="col-12 text-center">
+                        <h3 class="fw-bold">Book Your Ride with Confidence</h3>
+                        <p class="w-75 mx-auto">Whether you are booking ahead or need a ride at this time, <strong>Boston
+                                Logan Airport Taxi</strong> is ready for you! Booking is quick and easy, either give us a
+                            call or fill in our short reservation form. One of our employees will verify your booking,
+                            allocate a clean and modern car for your transfer, and guarantee a punctual driver. There is
+                            never any reason why traveling should be difficult, and with us, it isn’t. Book your ride today!
+                        </p>
+                    </div>
+                </div>
+
+                <h3 class="text-center fw-bold mt-5">Popular Cities for Car Service in Boston Neighborhood</h3>
+                <div class="city-grid">
                     @foreach ($cities as $city)
                         <a href="{{ url($city->url) }}" class="city-tag">
-                              <i class="fas fa-taxi"></i> {{ Str::limit($city->name, 15, '..') }}
+                            <i class="fas fa-taxi"></i> {{ Str::limit($city->name, 15, '..') }}
                         </a>
                     @endforeach
-            </div>
+                </div>
 
                 <div class="text-center mt-4">
-                    <a href="{{ route('area.we.serve') }}"
-                    class="btn btn-warning fw-bold px-4 shadow">
+                    <a href="{{ route('area.we.serve') }}" class="btn btn-warning fw-bold px-4 shadow">
                         Show More
                     </a>
                 </div>
 
 
-        </div>
-    </section>
-
-    {{-- FAQ & Blog Section --}}
-    <section class="content-section">
-        <div class="container">
-            <h2 class="text-center fw-bold mb-4">Frequently Asked Questions (FAQ)</h2>
-            <div class="accordion mb-5" id="faqAccordion">
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="h1"><button class="accordion-button" type="button"
-                            data-bs-toggle="collapse" data-bs-target="#c1">How early in advance should I reserve a
-                            taxi to Logan Airport?</button></h2>
-                    <div id="c1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
-                        <div class="accordion-body">We advise all guests to book at least 24 hours in advance to ensure
-                            availability, although same-day rides might still be available.</div>
-                    </div>
-                </div>
-
-                {{-- Question 2 --}}
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="h2">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c2" aria-expanded="false" aria-controls="c2">
-                            Do you clean your vehicles often?
-                        </button>
-                    </h2>
-                    <div id="c2" class="accordion-collapse collapse" aria-labelledby="h2" data-bs-parent="#faqAccordion">
-                        <div class="accordion-body">
-                            Yes. Every vehicle is thoroughly disinfected after every ride to keep both you and other passengers safe and healthy.
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Question 3 --}}
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="h3">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c3" aria-expanded="false" aria-controls="c3">
-                            Do you have child seats in your car?
-                        </button>
-                    </h2>
-                    <div id="c3" class="accordion-collapse collapse" aria-labelledby="h3" data-bs-parent="#faqAccordion">
-                        <div class="accordion-body">
-                            Absolutely. We do have infant, toddler, and booster seats. Ask for it when you book and we’ll have it ready.
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Question 4 --}}
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="h4">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c4" aria-expanded="false" aria-controls="c4">
-                            What if my flight is running late?
-                        </button>
-                    </h2>
-                    <div id="c4" class="accordion-collapse collapse" aria-labelledby="h4" data-bs-parent="#faqAccordion">
-                        <div class="accordion-body">
-                            No worries! We check your flight in real time, so your pickup time automatically adjusts, at no extra charge for reasonable delays.
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Question 5 --}}
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="h5">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c5" aria-expanded="false" aria-controls="c5">
-                            Are there hidden charges in your pricing?
-                        </button>
-                    </h2>
-                    <div id="c5" class="accordion-collapse collapse" aria-labelledby="h5" data-bs-parent="#faqAccordion">
-                        <div class="accordion-body">
-                            Never. We provide open-book pricing with flat-rate rates. No hidden fees, no surprises.
-                        </div>
-                    </div>
-                </div>
             </div>
-
-            <h2 class="text-center fw-bold mb-4">Latest Blog</h2>
+        </section>
+        {{-- FAQ & Blog Section --}}
+        <section class="content-section">
             <div class="container">
-                <div class="services-section">
-                    <div class="row g-4">
-                        @forelse($blogs as $blog)
-                            <div class="col-md-4">
-                                <div class="blog-card h-100">
-                                    <div class="blog-img-container">
-                                        @if ($blog->thumbnail)
-                                            <img src="{{ asset('storage/' . $blog->thumbnail) }}"
-                                                alt="{{ $blog->title }}">
-                                        @else
-                                            <img src="{{ asset('images/blog.webp') }}" alt="Default Image">
-                                        @endif
+                <h2 class="text-center fw-bold mb-4">Frequently Asked Questions (FAQ)</h2>
+                <div class="accordion mb-5" id="faqAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="h1"><button class="accordion-button" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#c1">How early in advance should I reserve a
+                                taxi to Logan Airport?</button></h2>
+                        <div id="c1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">We advise all guests to book at least 24 hours in advance to ensure
+                                availability, although same-day rides might still be available.</div>
+                        </div>
+                    </div>
+
+                    {{-- Question 2 --}}
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="h2">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#c2" aria-expanded="false" aria-controls="c2">
+                                Do you clean your vehicles often?
+                            </button>
+                        </h2>
+                        <div id="c2" class="accordion-collapse collapse" aria-labelledby="h2"
+                            data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Yes. Every vehicle is thoroughly disinfected after every ride to keep both you and other
+                                passengers safe and healthy.
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Question 3 --}}
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="h3">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#c3" aria-expanded="false" aria-controls="c3">
+                                Do you have child seats in your car?
+                            </button>
+                        </h2>
+                        <div id="c3" class="accordion-collapse collapse" aria-labelledby="h3"
+                            data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Absolutely. We do have infant, toddler, and booster seats. Ask for it when you book and
+                                we’ll have it ready.
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Question 4 --}}
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="h4">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#c4" aria-expanded="false" aria-controls="c4">
+                                What if my flight is running late?
+                            </button>
+                        </h2>
+                        <div id="c4" class="accordion-collapse collapse" aria-labelledby="h4"
+                            data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                No worries! We check your flight in real time, so your pickup time automatically adjusts, at
+                                no extra charge for reasonable delays.
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Question 5 --}}
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="h5">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#c5" aria-expanded="false" aria-controls="c5">
+                                Are there hidden charges in your pricing?
+                            </button>
+                        </h2>
+                        <div id="c5" class="accordion-collapse collapse" aria-labelledby="h5"
+                            data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Never. We provide open-book pricing with flat-rate rates. No hidden fees, no surprises.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h2 class="text-center fw-bold mb-4">Latest Blog</h2>
+                <div class="container">
+                    <div class="services-section">
+                        <div class="row g-4">
+                            @forelse($blogs as $blog)
+                                <div class="col-md-4">
+                                    <div class="blog-card h-100">
+                                        <div class="blog-img-container">
+                                            @if ($blog->thumbnail)
+                                                <img src="{{ asset('storage/' . $blog->thumbnail) }}" alt="{{ $blog->title }}">
+                                            @else
+                                                <img src="{{ asset('images/blog.webp') }}" alt="Default Image">
+                                            @endif
+                                        </div>
+                                        <a href="{{ route('blog.details', $blog->slug) }}" class="blog-title">
+                                            {{ Str::limit($blog->title, 60) }}
+                                        </a>
+                                        <div class="blog-meta">
+                                            admin /// {{ \Carbon\Carbon::parse($blog->published_at)->format('F d, Y') }}
+                                            /// No Comments
+                                        </div>
+                                        <a href="{{ url($blog->slug) }}" class="read-more-btn">Read
+                                            More »</a>
                                     </div>
-                                    <a href="{{ route( 'blog.details',$blog->slug) }}" class="blog-title">
-                                        {{ Str::limit($blog->title, 60) }}
-                                    </a>
-                                    <div class="blog-meta">
-                                        admin /// {{ \Carbon\Carbon::parse($blog->published_at)->format('F d, Y') }}
-                                        /// No Comments
-                                    </div>
-                                    <a href="{{ url($blog->slug) }}" class="read-more-btn">Read
-                                        More »</a>
                                 </div>
-                            </div>
-                        @empty
-                            <div class="col-12 text-center py-4">
-                                <p class="text-muted">No recent blog posts available.</p>
-                            </div>
-                        @endforelse
+                            @empty
+                                <div class="col-12 text-center py-4">
+                                    <p class="text-muted">No recent blog posts available.</p>
+                                </div>
+                            @endforelse
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    @include('frontend.pages.footer')
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    {{-- Notification Scripts (MERGED & FIXED) --}}
-    @if (session()->has('notify'))
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                // 1. Custom Notify Function
-                if (typeof Notify === 'function') {
-                    Notify(
-                        "{{ session('notify.type') }}",
-                        "{{ session('notify.message') }}"
-                    );
-                }
-
-                // 2. SweetAlert
-                Swal.fire({
-                    toast: true,
-                    position: 'top-center',
-                    icon: "{{ session('notify.type') }}",
-                    title: "{{ session('notify.message') }}",
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true,
-                    allowOutsideClick: true,
+        {{-- Notification Scripts (MERGED & FIXED) --}}
+        @if (session()->has('notify'))
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    // 1. Custom Notify Function
+                    if (typeof Notify === 'function') {
+                        Notify(
+                            "{{ session('notify.type') }}",
+                            "{{ session('notify.message') }}"
+                        );
+                    }
+                    // 2. SweetAlert
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-center',
+                        icon: "{{ session('notify.type') }}",
+                        title: "{{ session('notify.message') }}",
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        allowOutsideClick: true,
+                    });
                 });
-            });
-        </script>
-
-        {{-- 3. Bootstrap Alert Banner --}}
-        <div class="container fixed-top mt-3" style="z-index: 9999">
-            <div class="alert alert-{{ session('notify.type') }} alert-dismissible fade show shadow" role="alert">
-                {{ session('notify.message') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </script>
+            {{-- 3. Bootstrap Alert Banner --}}
+            <div class="container fixed-top mt-3" style="z-index: 9999">
+                <div class="alert alert-{{ session('notify.type') }} alert-dismissible fade show shadow" role="alert">
+                    {{ session('notify.message') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
             </div>
-        </div>
-    @endif
-
-</body>
-
-</html>
+        @endif
+    </body>
+@endsection

@@ -1,4 +1,6 @@
 @extends('frontend.pages.master')
+@section('title', "Contact")
+@section('meta_description', "Boston Logaqn Aorport Taxi Service")
 
 @section('content')
 
