@@ -25,6 +25,7 @@
     <meta name="twitter:site" content="@blairporttaxi">
     <!-- Pinterest Verification (Optional if needed) -->
     <meta name="pinterest" content="https://www.pinterest.com/blairporttaxi/">
+    @yield(section: 'meta')
     <link rel="canonical" href="{{ rtrim(request()->url(), '/') . '/' }}">
     <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
     <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
