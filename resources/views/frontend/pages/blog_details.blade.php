@@ -4,7 +4,10 @@
 @section('meta_description'," $blog->meta_description")
 
 @section('meta')
-<meta name="keywords" content="{{ $blog->tags ?? 'blog, taxi service, Boston' }}">
+ @php
+        $keywords = is_array($blog->tags) ? implode(', ', $blog->tags) : ($blog->tags ?? 'blog, taxi service, Boston');
+    @endphp
+    <meta name="keywords" content="{{ $keywords }}">
 @endsection
 
 @section('head')
