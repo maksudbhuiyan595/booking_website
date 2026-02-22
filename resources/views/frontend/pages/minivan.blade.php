@@ -1,7 +1,46 @@
 @extends('frontend.pages.master')
 
 @section('content')
+@section('title', "Minivan Taxi And Cab Service Near Me")
+@section('meta_description', "Booking a minivan taxi with Boston Logan Airport Taxi is fast and simple. Just follow these steps")
+@section('schema')
+         @php
+            $taxiSchema = [
+                "@context" => "https://schema.org",
+                "@type" => ["TaxiService", "LocalBusiness"],
+                "@id" =>url()->current() .'/' . "#taxi",
+                "name" => "Boston Logan Airport Taxi",
+                "url" => url()->current() .'/',
+                "image" => asset('images/Toyota sienna 2020 white 1.png'),
+                "telephone" => "+1857-331-9544",
+                "priceRange" => "$$",
+                "address" => [
+                    "@type" => "PostalAddress",
+                    "streetAddress" => "Boston Logan International Airport",
+                    "addressLocality" => "Boston",
+                    "addressRegion" => "MA",
+                    "postalCode" => "02128",
+                    "addressCountry" => "US"
+                ],
+                "areaServed" => [
+                    "@type" => "AdministrativeArea",
+                    "name" => "Greater Boston Area"
+                ],
+                "serviceType" => "Airport Taxi Service",
+                "openingHoursSpecification" => [
+                    "@type" => "OpeningHoursSpecification",
+                    "dayOfWeek" => ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+                    "opens" => "00:00",
+                    "closes" => "23:59"
+                ]
+            ];
 
+        @endphp
+
+        <script type="application/ld+json">
+            {!! json_encode($taxiSchema, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
+            </script>
+@endsection
 <style>
     /* --- PAGE STYLES --- */
     body {
