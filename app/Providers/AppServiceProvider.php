@@ -21,6 +21,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-            $settings = app(GeneralSettings::class);
+            // $settings = app(GeneralSettings::class);
     }
 }
