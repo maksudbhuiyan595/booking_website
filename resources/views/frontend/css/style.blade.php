@@ -75,7 +75,7 @@
             position: relative;
             flex: 1;
             padding-top: 30px;
-            padding-bottom: 60px; /* Extra padding for form overlap */
+            padding-bottom: 10px; /* Extra padding for form overlap */
             background-color: #ffffff;
             z-index: 1;
         }
