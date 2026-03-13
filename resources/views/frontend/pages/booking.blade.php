@@ -108,7 +108,7 @@
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-chair"></i></span>
                                     <select name="seats_dummy" id="childSeatsTrigger" class="form-select">
-                                        <option value="0">Select</option>
+                                        <option value="">Select</option>
                                         <option value="0">0</option>
                                         <option value="1">1</option>
                                         <option value="2">2</option>

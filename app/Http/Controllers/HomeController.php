@@ -95,7 +95,7 @@ class HomeController extends Controller
         // ---------------------------------------------------
         // 2. VALIDATION
         // ---------------------------------------------------
-        $request->validate([
+      $request->validate([
             'tripType'     => 'required|in:fromAirport,toAirport,doorToDoor',
             'from_airport' => 'nullable|exists:airports,id',
             'to_airport'   => 'nullable|exists:airports,id',
@@ -174,22 +174,39 @@ class HomeController extends Controller
             $frontSeatFee   = ($settings->regular_Seat_rules ?? 0) * ($request->front_seat ?? 0);
 
             // ZIP Code Logic
-            $extractZip = function($address) { preg_match('/\b\d{5}\b/', $address, $matches); return $matches[0] ?? null; };
-            $originZip = $extractZip($origin);
-            $destinationZip = $extractZip($destination);
+            $extractZip = function($address) {
+                preg_match('/\b\d{5}(-\d{4})?\b/', $address, $matches);
+                return $matches[0] ?? null;
+            };
+
+            // Prefer formatted addresses from Google Maps
+            $originAddress = $data['origin_addresses'][0] ?? $origin;
+            $destinationAddress = $data['destination_addresses'][0] ?? $destination;
+
+            $originZip = $extractZip($originAddress);
+            $destinationZip = $extractZip($destinationAddress);
+
+            // return [$originZip, $destinationZip];
 
             $extraChargeTotal = 0;
-            $tollFeeTotal = 0;
-            $appliedExtraCharges = [];
-
+           $tollFeeTotal = 0;
+           $appliedExtraCharges = []; // ADD THIS
+            // Multiplier Logic
+            $multiplier = $request->adults > 7 ? 2 : 1;
             if ($originZip || $destinationZip) {
                 $extraCharges = ExtraCharge::where('is_active', true)->get();
+
                 foreach ($extraCharges as $charge) {
                     $zipCodes = is_array($charge->zip_codes) ? $charge->zip_codes : json_decode($charge->zip_codes, true);
+
                     if ($zipCodes && (in_array($originZip, $zipCodes) || in_array($destinationZip, $zipCodes))) {
-                        $extraChargeTotal += $charge->price ?? 0;
-                        $tollFeeTotal += $charge->toll_fee ?? 0;
-                        $appliedExtraCharges[] = ['name' => $charge->name, 'amount' => $charge->price];
+                        $extraChargeTotal += ($charge->price ?? 0) * $multiplier;
+                        $tollFeeTotal += ($charge->toll_fee ?? 0) * $multiplier;
+
+                        $appliedExtraCharges[] = [
+                            'name' => $charge->name,
+                            'amount' => ($charge->price ?? 0) * $multiplier
+                        ];
                     }
                 }
             }
@@ -261,13 +278,17 @@ class HomeController extends Controller
                 $freeLuggageCapacity = (int) $vehicle->capacity_luggage;
 
                 $extraLuggageCount =max(0, $request->luggage - $reqPassengers);
+
                 $child_seat = ((int) ($request->children ?? 0));
+
                 $extraLuggageFee = $extraLuggageCount * ($settings->luggage_fee ?? 0);
 
                 // E. Final Total
                 $totalFare = $estimatedFare + $gratuityFee + $pickupTax + $dropoffTax + $parkingFee +
                             $childSeatFee + $boosterSeatFee + $stopoverFee + $frontSeatFee + $petFee +
                             $extraChargeTotal + $tollFeeTotal + $surchargeTotal + $extraLuggageFee;
+
+
 
                 // Store Data
                 $vehicleOptions[] = [
@@ -315,7 +336,9 @@ class HomeController extends Controller
             if (!$defaultVehicle) {
                 $defaultVehicle = $vehicleOptions[0] ?? null;
             }
-            // dd($defaultVehicle);
+
+             $child_seat = ((int) ($request->children ?? 0));
+
             return view('frontend.pages.step2', [
                 'trip_type' => $request->tripType,
                 'distance_miles' => $distanceMiles,
@@ -405,7 +428,7 @@ class HomeController extends Controller
         $blog = BlogPost::where('slug',$slug)->first();
         return view("frontend.pages.blog_details",compact("blog"));
     }
-       public function confirmBooking(Request $request)
+    public function confirmBooking(Request $request)
     {
         // ======================================================
         // STEP 1: INPUT VALIDATION
