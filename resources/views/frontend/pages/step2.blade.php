@@ -343,7 +343,7 @@
                     @if($defaultVehicle['child_seat_fee'] > 0) <tr><td>Infant Seat Fee</td><td>:</td><td>${{ number_format($defaultVehicle['child_seat_fee'], 2) }}</td></tr> @endif
                     @if($defaultVehicle['booster_seat_fee'] > 0) <tr><td>Booster Seat Fee</td><td>:</td><td>${{ number_format($defaultVehicle['booster_seat_fee'], 2) }}</td></tr> @endif
                     @if($defaultVehicle['front_seat_fee'] > 0) <tr><td>Front Seat Fee</td><td>:</td><td>${{ number_format($defaultVehicle['front_seat_fee'], 2) }}</td></tr> @endif
-                    @if($defaultVehicle['toll_fee'] > 0) <tr><td>Toll Fee</td><td>:</td><td>${{ number_format($defaultVehicle['toll_fee'], 2) }}</td></tr> @endif
+                    @if($defaultVehicle['toll_fee'] > 0) <tr><td>Extra Toll Fee</td><td>:</td><td>${{ number_format($defaultVehicle['toll_fee'], 2) }}</td></tr> @endif
                     @if($defaultVehicle['extra_charges'] > 0) <tr><td>Zip Extra Charges</td><td>:</td><td>${{ number_format($defaultVehicle['extra_charges'], 2) }}</td></tr> @endif
 
                     <tr id="row_surcharge" style="{{ $defaultVehicle['surcharge_fee'] > 0 ? '' : 'display:none;' }}">
