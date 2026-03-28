@@ -192,7 +192,7 @@
         </div>
     </div>
     @include('frontend.pages.booking')
-    @include('frontend.pages.rating')
+    {{-- @include('frontend.pages.rating') --}}
 
     <div class="container py-5">
         <div class="row justify-content-center">
