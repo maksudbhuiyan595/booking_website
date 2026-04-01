@@ -42,7 +42,7 @@
             "aggregateRating" => [
                 "@type" => "AggregateRating",
                 "ratingValue" => "4.9",
-                "reviewCount" => "5000"
+                "reviewCount" => "5296"
             ]
         ];
 
