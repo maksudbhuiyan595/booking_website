@@ -49,9 +49,12 @@
 
             {{-- 1. Google --}}
             <div class="text-center">
-                <img src="{{ asset('images/google.png') }}"
-                     alt="Google Rating"
-                     class="rating-logo">
+                <a href="https://www.google.com/maps/place//data=!4m3!3m2!1s0x6d2fa2315524a15:0xa7d62692b0494a24!12e1?source=g.page.m.ia._&laa=nmx-review-solicitation-ia2" target="_blank">
+                    <img src="{{ asset('images/google.png') }}"
+                         alt="Google Rating"
+                         class="rating-logo">
+
+                </a>
             </div>
 
             {{-- 2. Tripadvisor --}}

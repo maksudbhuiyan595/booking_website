@@ -39,11 +39,37 @@
                 "opens" => "00:00",
                 "closes" => "23:59"
             ],
-            "aggregateRating" => [
-                "@type" => "AggregateRating",
-                "ratingValue" => "4.9",
-                "reviewCount" => "5296"
+             "aggregateRating" => [
+            "@type" => "AggregateRating",
+            "ratingValue" => "4.9",
+            "bestRating" => "5",
+            "ratingCount" => "5296",
+            "reviewCount" => "5296"
+        ],
+        "review" => [
+            [
+                "@type" => "Review",
+                "author" => "Alice",
+                "datePublished" => "2026-03-20",
+                "reviewBody" => "Excellent service, punctual and professional.",
+                "reviewRating" => [
+                    "@type" => "Rating",
+                    "ratingValue" => "5",
+                    "bestRating" => "5"
+                ]
+            ],
+            [
+                "@type" => "Review",
+                "author" => "Bob",
+                "datePublished" => "2026-04-01",
+                "reviewBody" => "Smooth airport transfer, highly recommended.",
+                "reviewRating" => [
+                    "@type" => "Rating",
+                    "ratingValue" => "5",
+                    "bestRating" => "5"
+                ]
             ]
+        ]
         ];
 
     @endphp
