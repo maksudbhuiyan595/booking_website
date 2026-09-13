@@ -243,7 +243,7 @@
 
 {{-- GOOGLE MAPS LOADER --}}
 <script
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB8jlhc5ZRDUU1SHHpxuwFh4dM0Ggq4n2Q&libraries=places&loading=async&callback=initMap"
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBwYKK_P6c2iuMDT_ijxC5tWRzBRcdTCq8&libraries=places&loading=async&callback=initMap"
     async
     defer>
 </script>

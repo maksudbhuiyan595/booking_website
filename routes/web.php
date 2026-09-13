@@ -3,6 +3,7 @@
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\BookingController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\StripeWebhookController;
 
 Route::get('/sitemap.xml', function () {
     return generate_sitemap_xml();
@@ -30,8 +31,14 @@ Route::controller(HomeController::class)->group(function () {
     Route::get('/{slug}', 'serviceDetials')->name('service.details');
     Route::get('/setting', 'setting')->name('setting');
 });
+Route::post(
+    '/stripe/webhook',
+    [StripeWebhookController::class, 'handle']
+)->name('stripe.webhook');
+
 Route::controller(BookingController::class)->group(function () {
     Route::post('/book-confirm', 'confirmBooking')->name('book.confirm');
 });
+
 
 
