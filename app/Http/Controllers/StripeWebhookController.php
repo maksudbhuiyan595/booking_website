@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\AdminBookingConfirmationMail;
 use App\Mail\BookingConfirmationMail;
 use App\Mail\PaymentFailedMail;
 use App\Models\Booking;
@@ -875,6 +876,10 @@ class StripeWebhookController extends Controller
                     $booking
                 )
             );
+          Mail::to(config('mail.from.address'))
+            ->send(
+                new AdminBookingConfirmationMail($booking)
+            );
 
         } catch (\Throwable $e) {
 
@@ -963,6 +968,7 @@ class StripeWebhookController extends Controller
                     $booking
                 )
             );
+
 
         } catch (\Throwable $e) {
 
