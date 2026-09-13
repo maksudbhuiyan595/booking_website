@@ -800,20 +800,7 @@ class BookingController extends Controller
         |
         */
 
-        // return redirect()
-        //     ->route('home')
-        //     ->with(
-        //         'success',
-        //         'Payment is being processed. Your booking will be confirmed automatically.'
-        //     )
-        //     ->with(
-        //         'payment',
-        //         'processing'
-        //     )
-        //     ->with(
-        //         'booking',
-        //         $booking->booking_no
-        //     );
+       
          return redirect()->route('home', [
                 'payment' => 'success',
                 'booking' => $booking->booking_no
