@@ -9,7 +9,7 @@ return new class extends SettingsMigration
      */
    public function up(): void
     {
-        $this->migrator->add('general.regular_Seat_rules', []);
+        $this->migrator->add('general.regular_Seat_rules', 0);
     }
 
     /**
