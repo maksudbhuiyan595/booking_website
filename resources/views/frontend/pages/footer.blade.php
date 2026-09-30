@@ -37,7 +37,7 @@
                 </div>
             </div>
             <div class="copyright-text">
-                Copyright © 2025. Logan Airport Taxi All Rights Reserved | Designed by Virtual Click USA
+                Copyright © {{ date('Y') }}. Logan Airport Taxi All Rights Reserved | Designed by Virtual Click USA
             </div>
         </div>
     </footer>
