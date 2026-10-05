@@ -31,10 +31,10 @@ Route::controller(HomeController::class)->group(function () {
     Route::get('/{slug}', 'serviceDetials')->name('service.details');
     Route::get('/setting', 'setting')->name('setting');
 });
-Route::post(
-    '/stripe/webhook',
-    [StripeWebhookController::class, 'handle']
-)->name('stripe.webhook');
+// Route::post(
+//     '/stripe/webhook',
+//     [StripeWebhookController::class, 'handle']
+// )->name('stripe.webhook');
 
 Route::controller(BookingController::class)->group(function () {
     Route::post('/book-confirm', 'confirmBooking')->name('book.confirm');
