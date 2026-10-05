@@ -25,19 +25,9 @@ class BookingForm
                 Section::make('Trip Information')
                     ->schema([
                         TextInput::make('booking_no')
-                            ->default(function () {
-                                $lastBookingNo = Booking::max('booking_no');
-
-                                if (!$lastBookingNo) {
-                                    return 'BLAT-1001';
-                                }
-                                $number = (int) str_replace('BLAT-', '', $lastBookingNo);
-
-                                return 'BLAT-' . ($number + 1);
-                            })
+                            ->placeholder('Auto-generated on save')
                             ->disabled()
-                            ->dehydrated()
-                            ->required()
+                            ->dehydrated(false)
                             ->unique(Booking::class, 'booking_no', ignoreRecord: true),
                         Select::make('trip_type')
                             ->options([

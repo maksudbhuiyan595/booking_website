@@ -368,7 +368,12 @@ class HomeController extends Controller
     }
     public function step4(Request $request)
     {
-        // dd($request->all());
+        if (!$request->has('fare')) {
+            return redirect()->route('home')->with('notify', [
+                'type' => 'error',
+                'message' => 'Session expired or invalid data. Please start over.'
+            ]);
+        }
         return view("frontend.pages.step4",compact("request"));
     }
     public function about(Request $request)

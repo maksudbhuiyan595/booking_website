@@ -24,6 +24,7 @@ class PagesTable
                     ->defaultImageUrl(url('/images/placeholder.png')),
                 TextColumn::make('route_name')
                     ->badge()
+                    ->searchable()
                     ->color('info')
                     ->label('Route ID')
                     ->copyable()

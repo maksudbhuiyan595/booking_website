@@ -483,7 +483,7 @@
                                 </div>
                             @empty
                                 <div class="col-12 text-center py-4">
-                                    <p class="text-muted">No recent blog posts available.</p>
+A                                    <p class="text-muted">No recent blog posts available.</p>
                                 </div>
                             @endforelse
                         </div>
@@ -528,3 +528,4 @@
         @endif
     </body>
 @endsection
+
