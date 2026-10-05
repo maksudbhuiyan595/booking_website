@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\AdminBookingConfirmationMail;
+use App\Mail\BookingConfirmationMail;
 use App\Mail\PaymentFailedMail;
 use App\Models\Booking;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use Stripe\Exception\ApiErrorException;
 use Stripe\PaymentIntent;
 use Stripe\Stripe;
 
@@ -56,34 +57,11 @@ class BookingController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | 2. Stripe Token Required
-        |--------------------------------------------------------------------------
-        |
-        | ALL payment options use Stripe.
-        |
-        | cash    = $1 Stripe reservation fee
-        | deposit = $1 Stripe reservation fee
-        | card    = Full fare Stripe payment
-        |
-        */
-
-        if (empty($request->stripe_token)) {
-            return back()
-                ->withInput()
-                ->with(
-                    'error',
-                    'Stripe payment information is required.'
-                );
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | 3. Create Booking
+        | 2. Create Booking
         |--------------------------------------------------------------------------
         */
 
         try {
-
             $booking = DB::transaction(function () use ($request, $paymentMethod) {
 
                 $booking = new Booking();
@@ -94,29 +72,6 @@ class BookingController extends Controller
                 |--------------------------------------------------------------------------
                 */
 
-                // $lastBooking = Booking::lockForUpdate()
-                //     ->orderByDesc('id')
-                //     ->first();
-
-                // if (
-                //     $lastBooking &&
-                //     preg_match(
-                //         '/BLAT-(\d+)/',
-                //         (string) $lastBooking->booking_no,
-                //         $matches
-                //     )
-                // ) {
-                //     $nextNumber = ((int) $matches[1]) + 1;
-                // } else {
-                //     $nextNumber = 1;
-                // }
-
-                // $booking->booking_no = 'BLAT-' . str_pad(
-                //     $nextNumber,
-                //     4,
-                //     '0',
-                //     STR_PAD_LEFT
-                // );
                 $lastNumber = Booking::where('booking_no', 'like', 'BLAT-%')
                     ->selectRaw("
                         MAX(
@@ -130,12 +85,13 @@ class BookingController extends Controller
 
                 $nextNumber = ((int) ($lastNumber ?? 0)) + 1;
 
-                $booking->booking_no = 'BLAT-' . str_pad(
-                    $nextNumber,
-                    4,
-                    '0',
-                    STR_PAD_LEFT
-                );
+                $booking->booking_no =
+                    'BLAT-' . str_pad(
+                        $nextNumber,
+                        4,
+                        '0',
+                        STR_PAD_LEFT
+                    );
 
                 /*
                 |--------------------------------------------------------------------------
@@ -143,26 +99,13 @@ class BookingController extends Controller
                 |--------------------------------------------------------------------------
                 */
 
-                $booking->passenger_name =
-                    $request->passenger_name;
-
-                $booking->passenger_email =
-                    $request->passenger_email;
-
-                $booking->passenger_phone =
-                    $request->phone_number;
-
-                $booking->phone_country_code =
-                    $request->phone_country_code;
-
-                $booking->alternate_phone =
-                    $request->alternate_phone;
-
-                $booking->mailing_address =
-                    $request->mailing_address;
-
-                $booking->special_needs =
-                    $request->special_needs;
+                $booking->passenger_name = $request->passenger_name;
+                $booking->passenger_email = $request->passenger_email;
+                $booking->passenger_phone = $request->phone_number;
+                $booking->phone_country_code = $request->phone_country_code;
+                $booking->alternate_phone = $request->alternate_phone;
+                $booking->mailing_address = $request->mailing_address;
+                $booking->special_needs = $request->special_needs;
 
                 /*
                 |--------------------------------------------------------------------------
@@ -170,22 +113,15 @@ class BookingController extends Controller
                 |--------------------------------------------------------------------------
                 */
 
-                $booking->trip_type =
-                    $request->trip_type;
-
-                $booking->pickup_date =
-                    $request->date;
-
-                $booking->pickup_time =
-                    $request->time;
+                $booking->trip_type = $request->trip_type;
+                $booking->pickup_date = $request->date;
+                $booking->pickup_time = $request->time;
 
                 $booking->pickup_address =
-                    $request->pickup
-                    ?? $request->fromAddress;
+                    $request->pickup ?? $request->fromAddress;
 
                 $booking->dropoff_address =
-                    $request->dropoff
-                    ?? $request->to_address;
+                    $request->dropoff ?? $request->to_address;
 
                 $booking->distance_miles =
                     (float) ($request->distance_miles ?? 0);
@@ -196,11 +132,8 @@ class BookingController extends Controller
                 |--------------------------------------------------------------------------
                 */
 
-                $booking->airline_name =
-                    $request->airline_name;
-
-                $booking->flight_number =
-                    $request->flight_number;
+                $booking->airline_name = $request->airline_name;
+                $booking->flight_number = $request->flight_number;
 
                 /*
                 |--------------------------------------------------------------------------
@@ -208,12 +141,8 @@ class BookingController extends Controller
                 |--------------------------------------------------------------------------
                 */
 
-                $booking->vehicle_id =
-                    $request->vehicle_id;
-
-                $booking->vehicle_type =
-                    $request->vehicle_type;
-
+                $booking->vehicle_id = $request->vehicle_id;
+                $booking->vehicle_type = $request->vehicle_type;
                 $booking->vehicles_used =
                     (int) ($request->vehicles_used ?? 1);
 
@@ -246,29 +175,19 @@ class BookingController extends Controller
                 */
 
                 $booking->booster_seat_count =
-                    (int) (
-                        $request->booster_seat ?? 0
-                    );
+                    (int) ($request->booster_seat ?? 0);
 
                 $booking->infant_seat_count =
-                    (int) (
-                        $request->infant_seat ?? 0
-                    );
+                    (int) ($request->infant_seat ?? 0);
 
                 $booking->front_seat_count =
-                    (int) (
-                        $request->front_seat ?? 0
-                    );
+                    (int) ($request->front_seat ?? 0);
 
                 $booking->stopover_count =
-                    (int) (
-                        $request->stopover ?? 0
-                    );
+                    (int) ($request->stopover ?? 0);
 
                 $booking->pet_count =
-                    (int) (
-                        $request->pets ?? 0
-                    );
+                    (int) ($request->pets ?? 0);
 
                 /*
                 |--------------------------------------------------------------------------
@@ -310,59 +229,37 @@ class BookingController extends Controller
                     );
 
                 $booking->gratuity =
-                    (float) (
-                        $fare['gratuity'] ?? 0
-                    );
+                    (float) ($fare['gratuity'] ?? 0);
 
                 $booking->pickup_tax =
-                    (float) (
-                        $fare['pickup_tax'] ?? 0
-                    );
+                    (float) ($fare['pickup_tax'] ?? 0);
 
                 $booking->dropoff_tax =
-                    (float) (
-                        $fare['dropoff_tax'] ?? 0
-                    );
+                    (float) ($fare['dropoff_tax'] ?? 0);
 
                 $booking->parking_fee =
-                    (float) (
-                        $fare['parking_fee'] ?? 0
-                    );
+                    (float) ($fare['parking_fee'] ?? 0);
 
                 $booking->toll_fee =
-                    (float) (
-                        $fare['toll_fee'] ?? 0
-                    );
+                    (float) ($fare['toll_fee'] ?? 0);
 
                 $booking->surcharge_fee =
-                    (float) (
-                        $fare['surcharge_fee'] ?? 0
-                    );
+                    (float) ($fare['surcharge_fee'] ?? 0);
 
                 $booking->extra_luggage_fee =
-                    (float) (
-                        $fare['extra_luggage_fee'] ?? 0
-                    );
+                    (float) ($fare['extra_luggage_fee'] ?? 0);
 
                 $booking->child_seat_fee =
-                    (float) (
-                        $fare['child_seat_fee'] ?? 0
-                    );
+                    (float) ($fare['child_seat_fee'] ?? 0);
 
                 $booking->booster_seat_fee =
-                    (float) (
-                        $fare['booster_seat_fee'] ?? 0
-                    );
+                    (float) ($fare['booster_seat_fee'] ?? 0);
 
                 $booking->front_seat_fee =
-                    (float) (
-                        $fare['front_seat_fee'] ?? 0
-                    );
+                    (float) ($fare['front_seat_fee'] ?? 0);
 
                 $booking->stopover_fee =
-                    (float) (
-                        $fare['stopover_fee'] ?? 0
-                    );
+                    (float) ($fare['stopover_fee'] ?? 0);
 
                 $booking->extras_total =
                     (float) (
@@ -371,16 +268,8 @@ class BookingController extends Controller
                         ?? 0
                     );
 
-                /*
-                |--------------------------------------------------------------------------
-                | Total Fare
-                |--------------------------------------------------------------------------
-                */
-
                 $totalFare =
-                    (float) (
-                        $fare['total'] ?? 0
-                    );
+                    (float) ($fare['total'] ?? 0);
 
                 if ($totalFare <= 0) {
                     throw new \Exception(
@@ -388,36 +277,20 @@ class BookingController extends Controller
                     );
                 }
 
-                $booking->total_fare =
-                    $totalFare;
+                $booking->total_fare = $totalFare;
 
                 /*
                 |--------------------------------------------------------------------------
                 | Initial Payment State
                 |--------------------------------------------------------------------------
-                |
-                | DO NOT mark booking as confirmed here.
-                |
-                | Stripe webhook will confirm after successful capture.
-                |
                 */
 
                 $booking->paid_amount = 0;
-
-                $booking->due_amount =
-                    $totalFare;
-
-                $booking->payment_method =
-                    $paymentMethod;
-
-                $booking->payment_status =
-                    'pending';
-
-                $booking->status =
-                    'pending';
-
-                $booking->transaction_id =
-                    null;
+                $booking->due_amount = $totalFare;
+                $booking->payment_method = $paymentMethod;
+                $booking->payment_status = 'pending';
+                $booking->status = 'pending';
+                $booking->transaction_id = null;
 
                 $booking->save();
 
@@ -426,19 +299,11 @@ class BookingController extends Controller
 
         } catch (\Throwable $e) {
 
-            Log::error(
-                'Booking Creation Failed',
-                [
-                    'message' =>
-                        $e->getMessage(),
-
-                    'file' =>
-                        $e->getFile(),
-
-                    'line' =>
-                        $e->getLine(),
-                ]
-            );
+            Log::error('Booking Creation Failed', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
 
             return back()
                 ->withInput()
@@ -450,12 +315,12 @@ class BookingController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | 4. Determine Stripe Amount
+        | 3. Determine Stripe Amount
         |--------------------------------------------------------------------------
         |
-        | CASH    = $1.00 reservation fee
-        | DEPOSIT = $1.00 reservation fee
-        | CARD    = Full Fare
+        | card    = full fare
+        | cash    = $1 reservation fee
+        | deposit = $1 reservation fee
         |
         */
 
@@ -464,89 +329,14 @@ class BookingController extends Controller
             $amountToCharge =
                 (float) $booking->total_fare;
 
-        } elseif (
-            in_array(
-                $paymentMethod,
-                ['cash', 'deposit'],
-                true
-            )
-        ) {
-
-            $amountToCharge = 1.00;
-
         } else {
 
-            $booking->payment_status =
-                'failed';
-
-            $booking->status =
-                'pending';
-
-            $booking->save();
-
-            Log::error(
-                'Invalid Payment Method',
-                [
-                    'booking_id' =>
-                        $booking->id,
-
-                    'payment_method' =>
-                        $paymentMethod,
-                ]
-            );
-
-            return back()
-                ->withInput()
-                ->with(
-                    'error',
-                    'Invalid payment method.'
-                );
+            $amountToCharge = 1.00;
         }
 
         /*
         |--------------------------------------------------------------------------
-        | 5. Validate Stripe Amount
-        |--------------------------------------------------------------------------
-        */
-
-        if ($amountToCharge <= 0) {
-
-            $booking->payment_status =
-                'failed';
-
-            $booking->status =
-                'pending';
-
-            $booking->save();
-
-            Log::error(
-                'Invalid Stripe Payment Amount',
-                [
-                    'booking_id' =>
-                        $booking->id,
-
-                    'booking_no' =>
-                        $booking->booking_no,
-
-                    'amount' =>
-                        $amountToCharge,
-
-                    'payment_method' =>
-                        $paymentMethod,
-                ]
-            );
-
-            return back()
-                ->withInput()
-                ->with(
-                    'error',
-                    'Invalid payment amount.'
-                );
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | 6. Create Stripe PaymentIntent
+        | 4. Stripe Payment
         |--------------------------------------------------------------------------
         */
 
@@ -556,32 +346,29 @@ class BookingController extends Controller
                 config('services.stripe.secret');
 
             if (empty($stripeSecret)) {
-
                 throw new \Exception(
                     'Stripe secret key is not configured.'
                 );
             }
 
-            Stripe::setApiKey(
-                $stripeSecret
-            );
+            Stripe::setApiKey($stripeSecret);
 
             /*
             |--------------------------------------------------------------------------
-            | Stripe Idempotency Key
+            | Idempotency Key
             |--------------------------------------------------------------------------
             */
 
             $idempotencyKey =
-                'booking-' .
-                $booking->id .
-                '-' .
-                md5(
-                    $booking->booking_no .
-                    '|' .
-                    $amountToCharge .
-                    '|' .
-                    $paymentMethod
+                'booking-'
+                . $booking->id
+                . '-'
+                . md5(
+                    $booking->booking_no
+                    . '|'
+                    . $amountToCharge
+                    . '|'
+                    . $paymentMethod
                 );
 
             /*
@@ -590,140 +377,79 @@ class BookingController extends Controller
             |--------------------------------------------------------------------------
             */
 
-            $paymentIntent =
-                PaymentIntent::create(
-                    [
+            $paymentIntent = PaymentIntent::create(
+                [
+                    'amount' => (int) round(
+                        $amountToCharge * 100
+                    ),
 
-                        /*
-                        |--------------------------------------------------------------------------
-                        | Amount
-                        |--------------------------------------------------------------------------
-                        */
+                    'currency' => 'usd',
 
-                        'amount' =>
-                            (int) round(
-                                $amountToCharge * 100
-                            ),
+                    'payment_method_data' => [
+                        'type' => 'card',
 
-                        'currency' =>
-                            'usd',
-
-                        /*
-                        |--------------------------------------------------------------------------
-                        | Card Payment
-                        |--------------------------------------------------------------------------
-                        */
-
-                        'payment_method_data' => [
-                            'type' => 'card',
-
-                            'card' => [
-                                'token' =>
-                                    $request->stripe_token,
-                            ],
-                        ],
-
-                        /*
-                        |--------------------------------------------------------------------------
-                        | Manual Confirmation
-                        |--------------------------------------------------------------------------
-                        */
-
-                        'confirmation_method' =>
-                            'manual',
-
-                        /*
-                        |--------------------------------------------------------------------------
-                        | Automatic Capture
-                        |--------------------------------------------------------------------------
-                        */
-
-                        'capture_method' =>
-                            'automatic',
-
-                        /*
-                        |--------------------------------------------------------------------------
-                        | Confirm Immediately
-                        |--------------------------------------------------------------------------
-                        */
-
-                        'confirm' =>
-                            true,
-
-                        /*
-                        |--------------------------------------------------------------------------
-                        | Return URL
-                        |--------------------------------------------------------------------------
-                        */
-
-                        'return_url' =>
-                            route('home'),
-
-                        /*
-                        |--------------------------------------------------------------------------
-                        | Description
-                        |--------------------------------------------------------------------------
-                        */
-
-                        'description' =>
-                            'Booking: ' .
-                            $booking->booking_no,
-
-                        /*
-                        |--------------------------------------------------------------------------
-                        | Receipt Email
-                        |--------------------------------------------------------------------------
-                        */
-
-                        'receipt_email' =>
-                            $booking->passenger_email,
-
-                        /*
-                        |--------------------------------------------------------------------------
-                        | Metadata
-                        |--------------------------------------------------------------------------
-                        */
-
-                        'metadata' => [
-
-                            'booking_id' =>
-                                (string) $booking->id,
-
-                            'booking_no' =>
-                                (string) $booking->booking_no,
-
-                            'payment_method' =>
-                                (string) $paymentMethod,
-
-                            'phone' =>
-                                (string) (
-                                    $booking->passenger_phone
-                                    ?? ''
-                                ),
-
-                            'total_fare' =>
-                                (string) $booking->total_fare,
-
-                            'amount_to_charge' =>
-                                (string) $amountToCharge,
+                        'card' => [
+                            'token' => $request->stripe_token,
                         ],
                     ],
 
                     /*
                     |--------------------------------------------------------------------------
-                    | Stripe Request Options
+                    | Automatically capture payment
                     |--------------------------------------------------------------------------
                     */
 
-                    [
-                        'idempotency_key' =>
-                            $idempotencyKey,
-                    ]
-                );
+                    'capture_method' => 'automatic',
+
+                    'confirm' => true,
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | IMPORTANT
+                    |--------------------------------------------------------------------------
+                    |
+                    | Prevent Stripe from using redirect-based
+                    | payment methods.
+                    |
+                    */
+
+                    'automatic_payment_methods' => [
+                        'enabled' => true,
+                        'allow_redirects' => 'never',
+                    ],
+
+                    'description' =>
+                        'Booking: ' . $booking->booking_no,
+
+                    'receipt_email' =>
+                        $booking->passenger_email,
+
+                    'metadata' => [
+                        'booking_id' =>
+                            (string) $booking->id,
+
+                        'booking_no' =>
+                            (string) $booking->booking_no,
+
+                        'payment_method' =>
+                            (string) $paymentMethod,
+
+                        'total_fare' =>
+                            (string) $booking->total_fare,
+
+                        'amount_to_charge' =>
+                            (string) $amountToCharge,
+                    ],
+                ],
+                [
+                    'idempotency_key' =>
+                        $idempotencyKey,
+                ]
+            );
 
             /*
             |--------------------------------------------------------------------------
-            | 7. Save Stripe PaymentIntent ID
+            | Save PaymentIntent ID
             |--------------------------------------------------------------------------
             */
 
@@ -731,12 +457,6 @@ class BookingController extends Controller
                 $paymentIntent->id;
 
             $booking->save();
-
-            /*
-            |--------------------------------------------------------------------------
-            | 8. Log PaymentIntent
-            |--------------------------------------------------------------------------
-            */
 
             Log::info(
                 'Stripe PaymentIntent Created',
@@ -753,12 +473,6 @@ class BookingController extends Controller
                     'amount' =>
                         $amountToCharge,
 
-                    'amount_cents' =>
-                        $paymentIntent->amount,
-
-                    'payment_method' =>
-                        $paymentMethod,
-
                     'status' =>
                         $paymentIntent->status,
                 ]
@@ -766,17 +480,38 @@ class BookingController extends Controller
 
             /*
             |--------------------------------------------------------------------------
-            | 9. Handle Immediate Stripe Status
+            | 5. Verify Payment
             |--------------------------------------------------------------------------
             */
 
+            if ($paymentIntent->status !== 'succeeded') {
+
+                throw new \Exception(
+                    'Stripe payment was not successful. Status: '
+                    . $paymentIntent->status
+                );
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | 6. Verify Amount
+            |--------------------------------------------------------------------------
+            */
+
+            $amountPaid =
+                (float) (
+                    ($paymentIntent->amount_received ?? 0)
+                    / 100
+                );
+
             if (
-                $paymentIntent->status ===
-                'requires_capture'
+                abs(
+                    $amountPaid - $amountToCharge
+                ) > 0.01
             ) {
 
-                Log::info(
-                    'Stripe Payment Authorization Successful',
+                Log::error(
+                    'Stripe Payment Amount Mismatch',
                     [
                         'booking_id' =>
                             $booking->id,
@@ -787,49 +522,238 @@ class BookingController extends Controller
                         'payment_intent_id' =>
                             $paymentIntent->id,
 
-                        'status' =>
-                            $paymentIntent->status,
+                        'expected_amount' =>
+                            $amountToCharge,
+
+                        'received_amount' =>
+                            $amountPaid,
+                    ]
+                );
+
+                throw new \Exception(
+                    'Stripe payment amount mismatch.'
+                );
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | 7. Calculate Due Amount
+            |--------------------------------------------------------------------------
+            */
+
+            $totalFare =
+                (float) $booking->total_fare;
+
+            $dueAmount =
+                max(
+                    0,
+                    $totalFare - $amountPaid
+                );
+
+            $paymentStatus =
+                $dueAmount <= 0.01
+                    ? 'paid'
+                    : 'partial';
+
+            /*
+            |--------------------------------------------------------------------------
+            | 8. Card Information
+            |--------------------------------------------------------------------------
+            |
+            | This is optional. PaymentIntent charges may not always
+            | contain expanded charge data.
+            |
+            */
+
+            try {
+
+                $charge =
+                    $paymentIntent->charges->data[0]
+                    ?? null;
+
+                if ($charge) {
+
+                    $paymentMethodDetails =
+                        $charge->payment_method_details
+                        ?? null;
+
+                    if (
+                        $paymentMethodDetails
+                        && isset(
+                            $paymentMethodDetails->card
+                        )
+                    ) {
+
+                        $booking->card_brand =
+                            $paymentMethodDetails
+                                ->card
+                                ->brand
+                                ?? null;
+
+                        $booking->card_last_four =
+                            $paymentMethodDetails
+                                ->card
+                                ->last4
+                                ?? null;
+                    }
+                }
+
+            } catch (\Throwable $e) {
+
+                Log::warning(
+                    'Unable To Read Stripe Card Details',
+                    [
+                        'payment_intent_id' =>
+                            $paymentIntent->id,
+
+                        'error' =>
+                            $e->getMessage(),
                     ]
                 );
             }
 
             /*
             |--------------------------------------------------------------------------
-            | 10. Return Processing Response
+            | 9. Confirm Booking
+            |--------------------------------------------------------------------------
+            */
+
+            $booking->paid_amount =
+                $amountPaid;
+
+            $booking->due_amount =
+                $dueAmount;
+
+            $booking->transaction_id =
+                $paymentIntent->id;
+
+            $booking->payment_status =
+                $paymentStatus;
+
+            $booking->status =
+                'confirmed';
+
+            $booking->save();
+
+            /*
+            |--------------------------------------------------------------------------
+            | 10. Log Success
+            |--------------------------------------------------------------------------
+            */
+
+            Log::info(
+                'Booking Confirmed Successfully',
+                [
+                    'booking_id' =>
+                        $booking->id,
+
+                    'booking_no' =>
+                        $booking->booking_no,
+
+                    'payment_intent_id' =>
+                        $paymentIntent->id,
+
+                    'payment_method' =>
+                        $paymentMethod,
+
+                    'total_fare' =>
+                        $totalFare,
+
+                    'paid_amount' =>
+                        $amountPaid,
+
+                    'due_amount' =>
+                        $dueAmount,
+
+                    'payment_status' =>
+                        $paymentStatus,
+
+                    'booking_status' =>
+                        $booking->status,
+                ]
+            );
+
+            /*
+            |--------------------------------------------------------------------------
+            | 11. Send Emails
             |--------------------------------------------------------------------------
             |
-            | IMPORTANT:
-            |
-            | DO NOT confirm booking here.
-            |
-            | Stripe webhook will:
-            |
-            | requires_capture
-            |       ↓
-            | capture()
-            |       ↓
-            | payment_intent.succeeded
-            |       ↓
-            | paid / partial
-            |       ↓
-            | confirmed
+            | Email failure must NOT make payment fail.
             |
             */
 
+            try {
 
-            return redirect()->route('home', [
-                'payment' => 'success',
-                'booking' => $booking->booking_no
-            ])->with('notify', [
+                if (!empty($booking->passenger_email)) {
+
+                    Mail::to(
+                        $booking->passenger_email
+                    )->queue(
+                        new BookingConfirmationMail(
+                            $booking
+                        )
+                    );
+                }
+
+                $adminEmail =
+                     config('mail.from.address');
+
+                if (!empty($adminEmail)) {
+
+                    Mail::to($adminEmail)->queue(
+                        new AdminBookingConfirmationMail(
+                            $booking
+                        )
+                    );
+                }
+
+            } catch (\Throwable $e) {
+
+                Log::error(
+                    'Booking Confirmation Email Failed',
+                    [
+                        'booking_id' =>
+                            $booking->id,
+
+                        'booking_no' =>
+                            $booking->booking_no,
+
+                        'error' =>
+                            $e->getMessage(),
+                    ]
+                );
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | 12. Success Redirect
+            |--------------------------------------------------------------------------
+            */
+
+            return redirect()
+                ->route(
+                    'home',
+                    [
+                        'payment' => 'success',
+                        'booking' =>
+                            $booking->booking_no,
+                    ]
+                )
+                ->with(
+                    'notify',
+                    [
                         'type' => 'success',
-                        'message' => 'Payment successful! Booking confirmed.'
-                    ]);
+
+                        'message' =>
+                            'Payment successful! Booking confirmed.',
+                    ]
+                );
 
         } catch (\Throwable $e) {
 
             /*
             |--------------------------------------------------------------------------
-            | 11. Stripe Payment Failed
+            | Payment Failed
             |--------------------------------------------------------------------------
             */
 
@@ -842,7 +766,7 @@ class BookingController extends Controller
             $booking->save();
 
             Log::error(
-                'Stripe Payment Creation Failed',
+                'Stripe Payment Failed',
                 [
                     'booking_id' =>
                         $booking->id,
@@ -869,19 +793,22 @@ class BookingController extends Controller
 
             /*
             |--------------------------------------------------------------------------
-            | 12. Send Payment Failed Email
+            | Payment Failed Email
             |--------------------------------------------------------------------------
             */
 
             try {
 
-                Mail::to(
-                    $booking->passenger_email
-                )->send(
+                if (!empty($booking->passenger_email)) {
+
+                    Mail::to(
+                        $booking->passenger_email
+                    )->queue(
                         new PaymentFailedMail(
                             $booking
                         )
                     );
+                }
 
             } catch (\Throwable $mailException) {
 
@@ -900,12 +827,6 @@ class BookingController extends Controller
                 );
             }
 
-            /*
-            |--------------------------------------------------------------------------
-            | 13. Return Error
-            |--------------------------------------------------------------------------
-            */
-
             return back()
                 ->withInput()
                 ->with(
@@ -914,5 +835,4 @@ class BookingController extends Controller
                 );
         }
     }
-
 }
