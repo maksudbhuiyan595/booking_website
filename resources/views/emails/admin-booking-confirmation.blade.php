@@ -173,7 +173,7 @@
 
             <tr>
                 <td class="label">Payment Status:</td>
-                <td class="value" style="text-transform: capitalize;">{{ $booking->payment_status }}</td>
+                <td class="value" style="text-transform: capitalize;">{{ $booking->status }}</td>
             </tr>
         </table>
         @endif

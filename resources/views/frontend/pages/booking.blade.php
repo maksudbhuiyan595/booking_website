@@ -65,12 +65,12 @@
 
                         <div class="row g-1 mt-1">
                             <div class="col-6">
-                                <span class="mini-label">Adults (8+)</span>
+                                <span class="mini-label">Adults (6+)</span>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-users"></i></span>
                                     <select name="adults" id="adults" class="form-select" required>
                                         <option value="">Select</option>
-                                        @for ($i = 1; $i <= 14; $i++)
+                                        @for ($i = 1; $i <= 12; $i++)
                                             <option value="{{ $i }}">{{ $i }}</option>
                                         @endfor
                                     </select>
@@ -536,8 +536,8 @@
             const valChildren = parseInt(childrenSelect.value) || 0;
             const totalPax = valAdults + valChildren;
 
-            if (totalPax > 14) {
-                 Swal.fire({ icon: 'warning', title: 'Capacity Exceeded', html: `Total passengers cannot exceed 14.`, confirmButtonColor: '#d33' });
+            if (totalPax > 12) {
+                 Swal.fire({ icon: 'warning', title: 'Capacity Exceeded', html: `Total passengers cannot excede 142.`, confirmButtonColor: '#d33' });
                 return;
             }
 
