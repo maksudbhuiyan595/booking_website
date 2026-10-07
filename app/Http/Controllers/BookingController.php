@@ -17,6 +17,7 @@ class BookingController extends Controller
 {
     public function confirmBooking(Request $request)
     {
+
         /*
         |--------------------------------------------------------------------------
         | 1. Validate Request

@@ -103,7 +103,7 @@ class HomeController extends Controller
             'to_address'   => 'nullable|string',
             'date'         => 'required|date',
             'time'         => 'required',
-            'adults'       => 'required|integer|min:1|max:14',
+            'adults'       => 'required|integer|min:1|max:12',
             'luggage'      => 'nullable|integer|min:0',
             'children'     => 'nullable|integer|min:0',
             'booster_seat' => 'nullable|integer|min:0',
@@ -192,7 +192,7 @@ class HomeController extends Controller
            $tollFeeTotal = 0;
            $appliedExtraCharges = []; // ADD THIS
             // Multiplier Logic
-            $multiplier = $request->adults > 7 ? 2 : 1;
+            $multiplier = $request->adults > 6 ? 2 : 1;
             if ($originZip || $destinationZip) {
                 $extraCharges = ExtraCharge::where('is_active', true)->get();
 
